@@ -1,0 +1,35 @@
+---
+title: "data_scraping"
+output: html_document
+date: "2023-06-06"
+---
+
+```{r}
+##install.packages("tcltk2")
+##install.packages("PDE", dependencies = TRUE)
+
+##install.packages("pdftools")
+library(pdftools)
+
+## scan for hurtful and insensitive wording
+
+evals_pdf <- pdf_text("STAT113_Fall_2020_1.pdf") 
+evals_pdf 
+evals_pdf_1 <- pdf_text("STAT113_Fall_2020_1.pdf") |> 
+  str_split("\n")
+evals_pdf_1
+
+## https://crimebythenumbers.com/scrape-table.html
+tab <- pdf_text("STAT113_Fall_2020_1.pdf")
+head(tab)
+first_page <- strsplit(tab[1], "\n")[[1]]
+first_page |> trimws()
+
+
+tab2 <- pdf_text("STAT113_Fall_2020_1.pdf")
+head(tab2)
+first_page2 <- strsplit(tab2[1], "\n")[[1]]
+first_page2 |> trimws()
+
+```
+
