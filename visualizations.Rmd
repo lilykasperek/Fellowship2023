@@ -8,6 +8,15 @@ date: "2023-06-06"
 library(readxl)
 library(tidyverse)
 evals_prof_p2 <- read_excel("data/evals_prof_p2.xlsx")
+
+prof_evals <- evals_prof_p2 %>%
+  mutate(total = `Agree strongly` + Agree + `Agree Somewhat` + Neutral + `Disagree Somewhat` + Disagree + `Disagree Strongly`,
+         meanscore = 7 * `Agree strongly` / total + 6 * Agree / total +
+           5 * `Agree Somewhat` / total + 4 * Neutral / total +
+           3 * `Disagree Somewhat` / total + 2 * `Disagree` / total + 
+           1 * `Disagree Strongly` / total)
+
+prof_evals
 ```
 
 

@@ -9,27 +9,39 @@ date: "2023-06-06"
 ##install.packages("PDE", dependencies = TRUE)
 
 ##install.packages("pdftools")
+library(tidyverse)
 library(pdftools)
 
 ## scan for hurtful and insensitive wording
 
 evals_pdf <- pdf_text("STAT113_Fall_2020_1.pdf") 
 evals_pdf 
-evals_pdf_1 <- pdf_text("STAT113_Fall_2020_1.pdf") |> 
-  str_split("\n")
-evals_pdf_1
 
 ## https://crimebythenumbers.com/scrape-table.html
 tab <- pdf_text("STAT113_Fall_2020_1.pdf")
 head(tab)
 first_page <- strsplit(tab[1], "\n")[[1]]
 first_page |> trimws()
+first_page
 
+tab_read <- tab |> readr::read_lines()
+
+tab_pdf_1 <- tab_read[-c(1, 2, 71:133)]
+tab_pdf_1
+
+tab_pdf_1 |> str_squish()
 
 tab2 <- pdf_text("STAT113_Fall_2020_1.pdf")
 head(tab2)
 first_page2 <- strsplit(tab2[1], "\n")[[1]]
 first_page2 |> trimws()
 
+tab_pdf_2 <- tab_read[-c(1:76, 128:133)]
+tab_pdf_2
+
+one_table <- tab_pdf_2[-c(11:51)]
+
+one_table[1] |> strsplit("Q6b: I would recommend this")
+one_table[3] |> strsplit("Agree strongly                               9      50%        38%")
 ```
 
