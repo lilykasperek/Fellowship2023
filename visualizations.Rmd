@@ -9,14 +9,92 @@ library(readxl)
 library(tidyverse)
 evals_prof_p2 <- read_excel("data/evals_prof_p2.xlsx")
 
-prof_evals <- evals_prof_p2 %>%
-  mutate(total = `Agree strongly` + Agree + `Agree Somewhat` + Neutral + `Disagree Somewhat` + Disagree + `Disagree Strongly`,
-         meanscore = 7 * `Agree strongly` / total + 6 * Agree / total +
-           5 * `Agree Somewhat` / total + 4 * Neutral / total +
-           3 * `Disagree Somewhat` / total + 2 * `Disagree` / total + 
-           1 * `Disagree Strongly` / total)
+evals <- evals_prof_p2 |> filter(Course == "113-04") |>
+  mutate(question = fct_recode(Question, Valuable = "1. Course has been a valuable educational experience",
+                               Organized = "2. Effectively Organized",
+                               Learning = "3. Environment Conducive to Learning",
+                               Fair = "5a. Fair Assessment of Student work",
+                                   Timely = "5b. Timely Assessment of Student Work",
+                                   Constructive = "5c. Constructive Assessment of Student Work",
+                                   Rec_Prof = "6a. Recommend Instructor to another student",
+                                   Rec_Course = "6b. Recommend Course to another student",
+                                   Effective = "6c. Instructor was an effective teacher")) |> select(Term, Course, question, everything()) |>
+  select(-Question)
 
-prof_evals
+evals_pivot <- evals |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree Somewhat', 
+                               Neutral, 'Disagree Somewhat', Disagree, 'Disagree Strongly'),
+                               names_to = "response", values_to = "count") |>
+  select(-Course, question) |>
+  mutate(response = fct_recode(response, AgreeStrongly = "Agree strongly",
+                               AgreeSomewhat = 'Agree Somewhat',
+                               DisagreeSomewhat = 'Disagree Somewhat',
+                               DisagreeStrongly = 'Disagree Strongly'))
 ```
 
+```{r}
+evals_bad <- evals |>
+  mutate(n = `Agree strongly` + Agree + `Agree Somewhat` + Neutral + `Disagree Somewhat` + Disagree + `Disagree Strongly`,
+         meanscore_prof = 7 * `Agree strongly` / n + 6 * Agree / n +
+           5 * `Agree Somewhat` / n + 4 * Neutral / n +
+           3 * `Disagree Somewhat` / n + 2 * `Disagree` / n + 
+           1 * `Disagree Strongly` / n) |>
+  select(Term, Course, question, meanscore_prof, everything())
+
+ggplot(data = evals_bad, aes(x = question, y = meanscore_prof)) +
+  geom_col() +
+  facet_wrap(~Term) +
+  labs(x = "Question", y = "Average Response",
+       title = "Comparing Average Responses",
+       subtitle = "from Student Evaluation Data") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) 
+
+evals_bad_2020 <- evals_bad |> filter(Term == "F20") |>
+  mutate(question_ordered = fct_reorder(.f = question, .x = meanscore_prof))
+  
+ggplot(data = evals_bad_2020, aes(x = question, y = meanscore_prof)) +
+  geom_col() 
+
+ggplot(data = evals_bad_2020, aes(x = question_ordered, y = meanscore_prof)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Question", y = "Average Response",
+    title = "Comparing Average Responses",
+       subtitle = "from Student Evaluation Data") +
+   theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) 
+
+ggplot(data = evals_bad_2020, aes(x = question_ordered, y = meanscore_prof)) +
+  geom_segment(aes(x = question_ordered, xend = question_ordered,
+                   y = 0, yend = meanscore_prof)) +
+  geom_point() +
+  coord_flip() +
+  labs(x = "Question", y = "Average Response",
+    title = "Comparing Average Responses",
+       subtitle = "from Student Evaluation Data") +
+   theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5)) 
+```
+
+```{r}
+ggplot(data = evals_pivot, aes(x = response, y = count)) +
+  geom_col() + 
+  facet_wrap(~question + Term)
+
+evals_valuable <- evals_pivot |> filter(question == "Valuable")
+ggplot(data = evals_valuable, aes(x = response, y = count)) +
+  geom_col() +
+  facet_wrap(~Term) +
+  theme_bw() +
+  labs(title = "Course has been a valuable educational experience") +
+  theme(plot.title = element_text(hjust = 0.5))
+ 
+evals_organized <- evals_pivot |> filter(question == "Organized")
+ggplot(data = evals_organized, aes(x = response, y = count)) +
+  geom_col() +
+  facet_wrap(~Term) +
+  theme_bw() +
+  labs(title = "Effectively organized") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
 
