@@ -122,8 +122,8 @@ ggplot(ex_1_long, aes(value)) +
 
 
 ```{r}
-evals_pivot |> group_by(question, response) |>
-  summarise()
+evals_pivot |> group_by(response) |>
+  summarise(n = n())
 
 evals_hist <- evals_pivot |> mutate(value =
                           case_when(response == "DisagreeStrongly" ~ 1,
@@ -132,12 +132,11 @@ evals_hist <- evals_pivot |> mutate(value =
                                     response == "Neutral" ~ 4,
                                     response == "AgreeSomewhat" ~ 5,
                                     response == "Agree" ~ 6,
-                                    response == "AgreeStrongly" ~ 7)) |>
-  select(-count)
+                                    response == "AgreeStrongly" ~ 7))
 
 evals_hist 
 
-ggplot(data = evals_hist, aes(x = response)) +
-  geom_histogram(stat = "count")
+ggplot(data = evals_hist, aes(x = value)) +
+  geom_histogram()
 ```
 
