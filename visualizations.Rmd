@@ -87,7 +87,7 @@ ggplot(data = evals_valuable, aes(x = response, y = count)) +
   facet_wrap(~Term) +
   theme_bw() +
   labs(title = "Course has been a valuable educational experience") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5)) 
  
 evals_organized <- evals_pivot |> filter(question == "Organized")
 ggplot(data = evals_organized, aes(x = response, y = count)) +
@@ -96,5 +96,48 @@ ggplot(data = evals_organized, aes(x = response, y = count)) +
   theme_bw() +
   labs(title = "Effectively organized") +
   theme(plot.title = element_text(hjust = 0.5))
+```
+
+```{r}
+person = c('A','B','C','D','E','F')
+# Original
+year1 = c(5,4,4,4,4,4) 
+year2 = c(2,5,5,5,5,4) 
+year3 = c(3,5,5,5,5,3) 
+year4 = c(1,5,5,5,5,5)
+# A more obvious version
+# year1 = c(3,3,3,3,3,3)
+# year2 = c(4,4,4,2,2,2)
+# year3 = c(5,4,3,3,2,1)
+# year4 = c(5,5,5,1,1,1)
+ex_1 = data.frame(person, year1, year2, year3, year4) 
+ex_1_long = reshape2::melt(ex_1)
+
+ggplot(ex_1_long, aes(value)) + 
+  geom_histogram(binwidth=1) + 
+  facet_wrap(~variable, ncol=1) + 
+  xlab("Likert Scale Value") + 
+  theme_bw()
+```
+
+
+```{r}
+evals_pivot |> group_by(question, response) |>
+  summarise()
+
+evals_hist <- evals_pivot |> mutate(value =
+                          case_when(response == "DisagreeStrongly" ~ 1,
+                                    response == "Disagree" ~ 2,
+                                    response == "DisagreeSomewhat" ~ 3,
+                                    response == "Neutral" ~ 4,
+                                    response == "AgreeSomewhat" ~ 5,
+                                    response == "Agree" ~ 6,
+                                    response == "AgreeStrongly" ~ 7)) |>
+  select(-count)
+
+evals_hist 
+
+ggplot(data = evals_hist, aes(x = response)) +
+  geom_histogram(stat = "count")
 ```
 

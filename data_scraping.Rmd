@@ -45,3 +45,5 @@ one_table[1] |> strsplit("Q6b: I would recommend this")
 one_table[3] |> strsplit("Agree strongly                               9      50%        38%")
 ```
 
+
+
