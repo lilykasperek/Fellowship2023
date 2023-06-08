@@ -45,8 +45,9 @@ tab_pdf_2
 one_table <- tab_pdf_2[-c(11:51)]
 one_table
 
-one_table[1] |> strsplit("Q6b: I would recommend this")
-one_table[3] |> strsplit("Agree strongly                               9      50%        38%")
+noquote(one_table[1] |> strsplit("Q6b: I would recommend this"))
+noquote(one_table[3] |> strsplit("Agree strongly                               9      50%        38%"))
+noquote(one_table |> strsplit("  "))
 ```
 
 ```{r}
@@ -61,14 +62,30 @@ remotes::install_github(c("ropensci/tabulizerjars", "ropensci/tabulizer"), INSTA
 remotes::install_github(c("ropensci/tabulizerjars", "ropensci/tabulizer"))
 
 library("tabulizer")
-f <- system.file("examples", "data.pdf", package = "tabulizer")
-out1 <- extract_tables(f)
-str(out1)
+#f <- system.file("examples", "data.pdf", package = "tabulizer")
+#out1 <- extract_tables(f)
+#str(out1)
 
-eval_scrape <- extract_tables(
+eval_scrape_1 <- extract_tables(
     file   = "STAT113_Fall_2020_1.pdf", 
     method = "decide", 
-    output = "data.frame")
+    output = "data.frame",
+    pages = 1)
+eval_scrape_1
+
+test <- extract_tables(
+    file   = "STAT113_Fall_2020_1.pdf", 
+    method = "stream", 
+    output = "data.frame",
+    pages = 1)
+
+eval_scrape_2 <- extract_tables(
+    file   = "STAT113_Fall_2020_1.pdf", 
+    method = "decide", 
+    output = "data.frame",
+    pages = 2)
+
+eval_scrape_2
 
 eval_tbl <- eval_scrape %>% 
     pluck(1) %>% 
