@@ -21,77 +21,48 @@ evals_pdf
 tab <- pdf_text("STAT113_Fall_2020_1.pdf")
 head(tab)
 first_page <- strsplit(tab[1], "\n")[[1]]
-first_page |> trimws()
-first_page <- noquote(first_page)
+first_page
 
-tab_read <- tab |> readr::read_lines()
-tab_read <- noquote(tab_read)
+first_page_zeroes <- str_replace_all(first_page,
+                                     pattern = "-",
+                                     replacement = "0")
+first_page_zeroes
 
-tab_pdf_1 <- tab_read[-c(1, 2, 71:133)]
-tab_pdf_1
+only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+only_numbers
 
-tab_pdf_1 |> str_squish()
-
-tab2 <- pdf_text("STAT113_Fall_2020_1.pdf")
-head(tab2)
-first_page2 <- strsplit(tab2[1], "\n")[[1]]
-first_page2 |> trimws()
-first_page2 <- noquote(first_page2)
-first_page2
-
-tab_pdf_2 <- tab_read[-c(1:76, 128:133)]
-tab_pdf_2
-
-one_table <- tab_pdf_2[-c(11:51)]
-one_table
-
-noquote(one_table[1] |> strsplit("Q6b: I would recommend this"))
-noquote(one_table[3] |> strsplit("Agree strongly                               9      50%        38%"))
-noquote(one_table |> strsplit("  "))
+metadata_df <- tibble::tibble(control_num = only_numbers[[1]][2],
+                              year = only_numbers[[2]][1],
+                              course = only_numbers[[2]][3],
+                              n_evals = only_numbers[[4]][1],
+                              n_evals_univ = only_numbers[[8]][1])
+metadata_df
 ```
 
+question 2
 ```{r}
-install.packages("tabulizer")
+q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
+q2 <- only_numbers[q2_indeces]
+q2
 
-if (!require("remotes")) {
-    install.packages("remotes")
-}
-# on 64-bit Windows
-remotes::install_github(c("ropensci/tabulizerjars", "ropensci/tabulizer"), INSTALL_opts = "--no-multiarch")
-# elsewhere
-remotes::install_github(c("ropensci/tabulizerjars", "ropensci/tabulizer"))
+q2[[7]] <- q2[[7]][4:6]
 
-library("tabulizer")
-#f <- system.file("examples", "data.pdf", package = "tabulizer")
-#out1 <- extract_tables(f)
-#str(out1)
+q2_df <- do.call(rbind.data.frame, q2)
+names(q2_df) <- c("n_students", "perc", "univ_perc")
+q2_df
 
-eval_scrape_1 <- extract_tables(
-    file   = "STAT113_Fall_2020_1.pdf", 
-    method = "decide", 
-    output = "data.frame",
-    pages = 1)
-eval_scrape_1
+responses <- c("strongly agree",
+               "agree", 
+               "agree somewhat",
+               "neutral",
+               "disagree somewhat",
+               "disagree",
+               "disagree strongly")
 
-test <- extract_tables(
-    file   = "STAT113_Fall_2020_1.pdf", 
-    method = "stream", 
-    output = "data.frame",
-    pages = 1)
-
-eval_scrape_2 <- extract_tables(
-    file   = "STAT113_Fall_2020_1.pdf", 
-    method = "decide", 
-    output = "data.frame",
-    pages = 2)
-
-eval_scrape_2
-
-eval_tbl <- eval_scrape %>% 
-    pluck(1) %>% 
-    as_tibble()
-eval_tbl
-
-eval_tbl %>% head() %>% knitr::kable()
+core_df <- tibble::tibble(responses = responses,
+                          q2_df) |>
+  mutate(question = "Q2")
+core_df
 ```
+
 
