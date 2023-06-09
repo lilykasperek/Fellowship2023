@@ -9,7 +9,7 @@ library(readxl)
 library(tidyverse)
 evals_prof_p2 <- read_excel("data/evals_prof_p2.xlsx")
 
-evals <- evals_prof_p2 |> filter(Course == "113-04") |>
+evals <- evals_prof_p2 |> 
   mutate(question = fct_recode(Question, Valuable = "1. Course has been a valuable educational experience",
                                Organized = "2. Effectively Organized",
                                Learning = "3. Environment Conducive to Learning",
@@ -24,11 +24,18 @@ evals <- evals_prof_p2 |> filter(Course == "113-04") |>
 evals_pivot <- evals |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree Somewhat', 
                                Neutral, 'Disagree Somewhat', Disagree, 'Disagree Strongly'),
                                names_to = "response", values_to = "count") |>
-  select(-Course, question) |>
   mutate(response = fct_recode(response, AgreeStrongly = "Agree strongly",
                                AgreeSomewhat = 'Agree Somewhat',
                                DisagreeSomewhat = 'Disagree Somewhat',
-                               DisagreeStrongly = 'Disagree Strongly'))
+                               DisagreeStrongly = 'Disagree Strongly')) |> mutate(response_2 = 
+                       fct_relevel(response, c("DisagreeStrongly",
+                                             "Disagree",
+                                             "DisagreeSomewhat",
+                                             "Neutral",
+                                             "AgreeSomewhat",
+                                             "Agree",
+                                             "AgreeStrongly")))
+evals_pivot
 ```
 
 ```{r}
@@ -50,6 +57,7 @@ ggplot(data = evals_bad, aes(x = question, y = meanscore_prof)) +
         plot.subtitle = element_text(hjust = 0.5)) 
 
 evals_bad_2020 <- evals_bad |> filter(Term == "F20") |>
+  filter(Course == "113-04" ) |>
   mutate(question_ordered = fct_reorder(.f = question, .x = meanscore_prof))
   
 ggplot(data = evals_bad_2020, aes(x = question, y = meanscore_prof)) +
@@ -77,66 +85,96 @@ ggplot(data = evals_bad_2020, aes(x = question_ordered, y = meanscore_prof)) +
 ```
 
 ```{r}
-ggplot(data = evals_pivot, aes(x = response, y = count)) +
-  geom_col() + 
-  facet_wrap(~question + Term)
+evals_2020 <- evals_pivot |> filter(Course == "113-04") |>
+  filter(Term == "F20")
 
-evals_valuable <- evals_pivot |> filter(question == "Valuable")
+view_course <- evals_pivot |> arrange(Course)
+
+evals_2020_full <- evals_pivot |> filter(Course == "113-01" |
+                                           Course == "113-02" |
+                                           Course == "113-03" |
+                                           Course == "113-04" |
+                                           Course == "113-05" |
+                                           Course == "113-07") |>
+  filter(Term == "F20")
+
+evals_2020_full |> arrange(Course)
+
+ggplot(data = evals_2020, aes(x = response, y = count)) +
+  geom_col() + 
+  facet_wrap(~question)
+
+ggplot(data = evals_2020_full, aes(x = response, y = count)) +
+  geom_col() + 
+  facet_wrap(~question)
+
+ggplot(data = evals_2020_full, aes(x = response, y = count)) +
+  geom_col() + 
+  facet_wrap(~question + Course)
+
+evals_valuable <- evals_2020 |> filter(question == "Valuable")
+evals_valuable2 <- evals_2020_full |> filter(question == "Valuable")
+
 ggplot(data = evals_valuable, aes(x = response, y = count)) +
   geom_col() +
   facet_wrap(~Term) +
   theme_bw() +
   labs(title = "Course has been a valuable educational experience") +
   theme(plot.title = element_text(hjust = 0.5)) 
+
+ggplot(data = evals_valuable2, aes(x = response, y = count)) +
+  geom_col() +
+  facet_wrap(~Term) +
+  theme_bw() +
+  labs(title = "Course has been a valuable educational experience") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~Course)
  
-evals_organized <- evals_pivot |> filter(question == "Organized")
+evals_organized <- evals_2020 |> filter(question == "Organized")
+evals_organized2 <- evals_2020_full |> filter(question == "Organized")
+
 ggplot(data = evals_organized, aes(x = response, y = count)) +
   geom_col() +
   facet_wrap(~Term) +
   theme_bw() +
   labs(title = "Effectively organized") +
   theme(plot.title = element_text(hjust = 0.5))
+
+ggplot(data = evals_organized2, aes(x = response, y = count)) +
+  geom_col() +
+  facet_wrap(~Term) +
+  theme_bw() +
+  labs(title = "Effectively organized") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  facet_wrap(~Course)
 ```
 
 ```{r}
-person = c('A','B','C','D','E','F')
-# Original
-year1 = c(5,4,4,4,4,4) 
-year2 = c(2,5,5,5,5,4) 
-year3 = c(3,5,5,5,5,3) 
-year4 = c(1,5,5,5,5,5)
-# A more obvious version
-# year1 = c(3,3,3,3,3,3)
-# year2 = c(4,4,4,2,2,2)
-# year3 = c(5,4,3,3,2,1)
-# year4 = c(5,5,5,1,1,1)
-ex_1 = data.frame(person, year1, year2, year3, year4) 
-ex_1_long = reshape2::melt(ex_1)
-
-ggplot(ex_1_long, aes(value)) + 
-  geom_histogram(binwidth=1) + 
-  facet_wrap(~variable, ncol=1) + 
-  xlab("Likert Scale Value") + 
-  theme_bw()
-```
-
-
-```{r}
-evals_pivot |> group_by(response) |>
-  summarise(n = n())
-
-evals_hist <- evals_pivot |> mutate(value =
+evals_col <- evals_pivot |> mutate(value =
                           case_when(response == "DisagreeStrongly" ~ 1,
                                     response == "Disagree" ~ 2,
                                     response == "DisagreeSomewhat" ~ 3,
                                     response == "Neutral" ~ 4,
                                     response == "AgreeSomewhat" ~ 5,
                                     response == "Agree" ~ 6,
-                                    response == "AgreeStrongly" ~ 7))
+                                    response == "AgreeStrongly" ~ 7)) |>
+  filter(Term == "F20") |> mutate(response_2 = 
+                       fct_relevel(response, c("DisagreeStrongly",
+                                             "Disagree",
+                                             "DisagreeSomewhat",
+                                             "Neutral",
+                                             "AgreeSomewhat",
+                                             "Agree",
+                                             "AgreeStrongly")))
 
-evals_hist 
-
-ggplot(data = evals_hist, aes(x = value)) +
-  geom_histogram()
+ggplot(data = evals_col, aes(x = response_2, y = count)) +
+  geom_col() +
+  labs(x = "Response",
+       y = "Count",
+       title = "Student Evaluation Data for",
+       subtitle = "STAT-113 Fall 2020") +
+   theme(plot.title = element_text(hjust = 0.5),
+         plot.subtitle = element_text(hjust = 0.5)) 
 ```
+
 
