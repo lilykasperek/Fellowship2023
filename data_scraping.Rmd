@@ -97,6 +97,8 @@ q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
 q3 <- only_numbers[q3_indeces]
 q3
 
+q3[[1]] <- q3[[1]][4:6]
+q3[[2]] <- q3[[2]][4:6]
 q3[[4]] <- q3[[4]][4:6]
 q3
 
@@ -109,6 +111,73 @@ core_df_3 <- tibble::tibble(responses = responses,
   mutate(question = "Q3")
 core_df_3
 ```
+
+question 4a
+```{r}
+q4a_indeces <- c(38, 39, 40, 41, 43)
+q4a <- only_numbers[q4a_indeces]
+q4a
+
+q4a[[1]] <- q4a[[1]][4:6]
+q4a[[2]] <- q4a[[2]][4:6]
+q4a[[3]] <- q4a[[3]][4:6]
+q4a
+
+q4a_df <- do.call(rbind.data.frame, q4a)
+names(q4a_df) <- c("n_students", "perc", "univ_perc")
+q4a_df
+
+responses_2 <- c("too high",
+               "somewhat high", 
+               "appropriate",
+               "somewhat low",
+               "too low") 
+
+core_df_4a <- tibble::tibble(responses = responses_2,
+                          q4a_df) |>
+  mutate(question = "Q4a")
+core_df_4a
+```
+
+question 4b
+```{r}
+q4b_indeces <- c(50, 52, 54, 56, 57)
+q4b <- only_numbers[q4b_indeces]
+q4b
+
+q4b_df <- do.call(rbind.data.frame, q4b)
+names(q4b_df) <- c("n_students", "perc", "univ_perc")
+q4b_df
+
+core_df_4b <- tibble::tibble(responses = responses_2,
+                          q4b_df) |>
+  mutate(question = "Q4b")
+core_df_4b
+```
+
+question 4c
+```{r}
+q4c_indeces <- c(63, 64, 65, 66, 67)
+q4c <- only_numbers[q4c_indeces]
+q4c
+
+q4c[[1]] <- q4c[[1]][4:6]
+q4c[[2]] <- q4c[[2]][4:6]
+q4c[[3]] <- q4c[[3]][4:6]
+q4c[[4]] <- q4c[[4]][4:6]
+q4c[[5]] <- q4c[[5]][4:6]
+q4c
+
+q4c_df <- do.call(rbind.data.frame, q4c)
+names(q4c_df) <- c("n_students", "perc", "univ_perc")
+q4c_df
+
+core_df_4c <- tibble::tibble(responses = responses_2,
+                          q4c_df) |>
+  mutate(question = "Q4c")
+core_df_4c
+```
+
 
 ```{r}
 second_page <- strsplit(tab[2], "\n")[[1]]
