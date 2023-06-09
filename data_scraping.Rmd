@@ -39,17 +39,23 @@ metadata_df <- tibble::tibble(control_num = only_numbers[[1]][2],
 metadata_df
 ```
 
-question 2
+question 1
 ```{r}
-q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
-q2 <- only_numbers[q2_indeces]
-q2
+q1_indeces <- c(63, 64, 65, 66, 67, 68, 69)
+q1 <- only_numbers[q1_indeces]
+q1
 
-q2[[7]] <- q2[[7]][4:6]
+q1[[1]] <- q1[[1]][1:3]
+q1[[2]] <- q1[[2]][1:3]
+q1[[3]] <- q1[[3]][1:3]
+q1[[4]] <- q1[[4]][1:3]
+q1[[5]] <- q1[[5]][1:3]
+q1[[6]] <- q1[[6]][1:3]
+q1
 
-q2_df <- do.call(rbind.data.frame, q2)
-names(q2_df) <- c("n_students", "perc", "univ_perc")
-q2_df
+q1_df <- do.call(rbind.data.frame, q1)
+names(q1_df) <- c("n_students", "perc", "univ_perc")
+q1_df
 
 responses <- c("strongly agree",
                "agree", 
@@ -59,10 +65,223 @@ responses <- c("strongly agree",
                "disagree",
                "disagree strongly")
 
-core_df <- tibble::tibble(responses = responses,
-                          q2_df) |>
-  mutate(question = "Q2")
-core_df
+core_df_1 <- tibble::tibble(responses = responses,
+                            q1_df) |>
+  mutate(question = "Q1")
+core_df_1
 ```
 
+question 2
+```{r}
+q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
+q2 <- only_numbers[q2_indeces]
+q2
+
+# only getting last three numbers of 16 
+q2[[7]] <- q2[[7]][4:6]
+q2
+
+q2_df <- do.call(rbind.data.frame, q2)
+names(q2_df) <- c("n_students", "perc", "univ_perc")
+q2_df
+
+core_df_2 <- tibble::tibble(responses = responses,
+                          q2_df) |>
+  mutate(question = "Q2")
+core_df_2
+```
+
+question 3
+```{r}
+q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
+q3 <- only_numbers[q3_indeces]
+q3
+
+q3[[4]] <- q3[[4]][4:6]
+q3
+
+q3_df <- do.call(rbind.data.frame, q3)
+names(q3_df) <- c("n_students", "perc", "univ_perc")
+q3_df
+
+core_df_3 <- tibble::tibble(responses = responses,
+                          q3_df) |>
+  mutate(question = "Q3")
+core_df_3
+```
+
+```{r}
+second_page <- strsplit(tab[2], "\n")[[1]]
+
+second_page_zeroes <- str_replace_all(second_page,
+                                     pattern = "-",
+                                     replacement = "0")
+second_page_zeroes
+
+only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
+only_numbers_2
+```
+
+question 5a
+```{r}
+q5a_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+q5a <- only_numbers_2[q5a_indeces]
+q5a
+
+q5a[[1]] <- q5a[[1]][1:3]
+q5a[[2]] <- q5a[[2]][1:3]
+q5a[[3]] <- q5a[[3]][1:3]
+q5a[[4]] <- q5a[[4]][1:3]
+q5a[[5]] <- q5a[[5]][1:3]
+q5a[[6]] <- q5a[[6]][1:3]
+q5a[[7]] <- q5a[[7]][1:3]
+q5a
+
+q5a_df <- do.call(rbind.data.frame, q5a)
+names(q5a_df) <- c("n_students", "perc", "univ_perc")
+q5a_df
+
+core_df_5a <- tibble::tibble(responses = responses,
+                          q5a_df) |>
+  mutate(question = "Q5a")
+core_df_5a
+```
+
+question 5b
+```{r}
+q5b_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+q5b <- only_numbers_2[q5b_indeces]
+q5b
+
+q5b[[1]] <- q5b[[1]][1:3]
+q5b[[2]] <- q5b[[2]][1:3]
+q5b[[3]] <- q5b[[3]][1:3]
+q5b[[4]] <- q5b[[4]][1:3]
+q5b[[5]] <- q5b[[5]][1:3]
+q5b[[6]] <- q5b[[6]][1:3]
+q5b[[7]] <- q5b[[7]][1:3]
+q5b
+
+q5b_df <- do.call(rbind.data.frame, q5b)
+names(q5b_df) <- c("n_students", "perc", "univ_perc")
+q5b_df
+
+core_df_5b <- tibble::tibble(responses = responses,
+                          q5b_df) |>
+  mutate(question = "Q5b")
+core_df_5b
+```
+
+question 5c
+```{r}
+q5c_indeces <- c(24, 26, 27, 28, 31, 33, 34)
+q5c <- only_numbers_2[q5c_indeces]
+q5c
+
+q5c[[2]] <- q5c[[2]][1:3]
+q5c[[4]] <- q5c[[4]][1:3]
+q5c[[7]] <- q5c[[7]][1:3]
+q5c
+
+q5c_df <- do.call(rbind.data.frame, q5c)
+names(q5c_df) <- c("n_students", "perc", "univ_perc")
+q5c_df
+
+core_df_5c <- tibble::tibble(responses = responses,
+                             q5c_df) |>
+  mutate(question = "Q5c")
+core_df_5c
+```
+
+question 6a
+```{r}
+q6a_indeces <- c(40, 41, 43, 45, 47, 48, 50)
+q6a <- only_numbers_2[q6a_indeces]
+q6a
+
+q6a[[2]] <- q6a[[2]][1:3]
+q6a[[7]] <- q6a[[7]][1:3]
+q6a
+
+q6a_df <- do.call(rbind.data.frame, q6a)
+names(q6a_df) <- c("n_students", "perc", "univ_perc")
+q6a_df
+
+core_df_6a <- tibble::tibble(responses = responses,
+                             q6a_df) |>
+  mutate(question = "Q6a")
+core_df_6a
+```
+
+question 6b
+```{r}
+q6b_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+q6b <- only_numbers_2[q6b_indeces]
+q6b
+
+q6b[[1]] <- q6b[[1]][4:6]
+q6b[[2]] <- q6b[[2]][4:6]
+q6b[[3]] <- q6b[[3]][4:6]
+q6b[[4]] <- q6b[[4]][4:6]
+q6b[[5]] <- q6b[[5]][4:6]
+q6b[[6]] <- q6b[[6]][4:6]
+q6b[[7]] <- q6b[[7]][4:6]
+q6b
+
+q6b_df <- do.call(rbind.data.frame, q6b)
+names(q6b_df) <- c("n_students", "perc", "univ_perc")
+q6b_df
+
+core_df_6b <- tibble::tibble(responses = responses,
+                             q6b_df) |>
+  mutate(question = "Q6b")
+core_df_6b
+```
+
+question 6c
+```{r}
+q6c_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+q6c <- only_numbers_2[q6c_indeces]
+q6c
+
+q6c[[1]] <- q6c[[1]][4:6]
+q6c[[2]] <- q6c[[2]][4:6]
+q6c[[3]] <- q6c[[3]][4:6]
+q6c[[4]] <- q6c[[4]][4:6]
+q6c[[5]] <- q6c[[5]][4:6]
+q6c[[6]] <- q6c[[6]][4:6]
+q6c[[7]] <- q6c[[7]][4:6]
+q6c
+
+q6c_df <- do.call(rbind.data.frame, q6c)
+names(q6c_df) <- c("n_students", "perc", "univ_perc")
+q6c_df
+
+core_df_6c <- tibble::tibble(responses = responses, 
+                             q6c_df) |>
+  mutate(question = "Q6c")
+core_df_6c
+```
+
+summary of means 
+```{r}
+som_indeces <- c(22, 26, 28, 32, 34, 37, 39, 41, 44)
+som_indeces <- only_numbers_2[som_indeces]
+som_indeces
+
+## separates decimals into individual digit 
+
+som_indeces[[1]] <- som_indeces[[1]][-1]
+som_indeces[[2]] <- som_indeces[[2]][6:9]
+som_indeces[[3]] <- som_indeces[[3]][6:9]
+som_indeces[[4]] <- som_indeces[[4]][-1:-2]
+som_indeces[[5]] <- som_indeces[[5]][6:9]
+som_indeces[[6]] <- som_indeces[[6]][-1:-2]
+som_indeces[[7]] <- som_indeces[[7]][-1:-2]
+som_indeces[[8]] <- som_indeces[[8]][6:9]
+som_indeces[[9]] <- som_indeces[[9]][-1:-2]
+som_indeces
+
+# need to combine the decimals and then create df 
+```
 
