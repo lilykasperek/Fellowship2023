@@ -1,0 +1,66 @@
+---
+title: "data_scraping_234"
+output: html_document
+date: "2023-06-10"
+---
+
+234-01 Fall 2022
+```{r}
+evals_234_pdf <- pdf_text("STAT234_Fall_2022.pdf") 
+evals_234_pdf 
+
+## https://crimebythenumbers.com/scrape-table.html
+tab_2 <- pdf_text("STAT234_Fall_2022.pdf")
+head(tab_2)
+first_page_2 <- strsplit(tab_2[1], "\n")[[1]]
+first_page_2
+
+first_page_zeroes_2 <- str_replace_all(first_page_2,
+                                     pattern = "-",
+                                     replacement = "0")
+first_page_zeroes_2
+
+only_numbers_234_1 <- str_extract_all(first_page_zeroes_2, "\\d+")
+only_numbers_234_1
+
+metadata_df_2 <- tibble::tibble(control_num = only_numbers_234_1[[1]][2],
+                              year = only_numbers_234_1[[2]][1],
+                              course = only_numbers_234_1[[2]][3],
+                              n_evals = only_numbers_234_1[[4]][1],
+                              n_evals_univ = only_numbers_234_1[[8]][1])
+metadata_df_2
+```
+
+question 1
+```{r}
+q1_indeces_234 <- c(63, 64, 65, 66, 67, 68, 69)
+q1_234 <- only_numbers_234_1[q1_indeces_234]
+q1_234
+
+q1_234[[1]] <- q1_234[[1]][1:3]
+q1_234[[2]] <- q1_234[[2]][1:3]
+q1_234[[3]] <- q1_234[[3]][1:3]
+q1_234[[4]] <- q1_234[[4]][1:3]
+q1_234[[5]] <- q1_234[[5]][1:3]
+q1_234[[6]] <- q1_234[[6]][1:3]
+q1_234
+
+q1_df_234 <- do.call(rbind.data.frame, q1_234)
+names(q1_df_234) <- c("n_students", "perc", "univ_perc")
+q1_df_234
+
+responses <- c("strongly agree",
+               "agree", 
+               "agree somewhat",
+               "neutral",
+               "disagree somewhat",
+               "disagree",
+               "disagree strongly")
+
+core_df_1_234 <- tibble::tibble(responses = responses,
+                            q1_df_234) |>
+  mutate(question = "Q1")
+core_df_1_234
+```
+
+
