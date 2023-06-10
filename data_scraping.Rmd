@@ -332,25 +332,133 @@ core_df_6c <- tibble::tibble(responses = responses,
 core_df_6c
 ```
 
+primary reason for enrolling in course
+```{r}
+reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
+reasons <- only_numbers[reasons_indeces] 
+reasons
+
+reasons[[1]] <- reasons[[1]][1:3]
+reasons[[2]] <- reasons[[2]][1:3]
+reasons[[3]] <- reasons[[3]][1:3]
+reasons[[5]] <- reasons[[5]][1:3]
+reasons[[6]] <- reasons[[6]][1:3]
+reasons[[7]] <- reasons[[7]][1:3]
+reasons
+
+reasons_df <- do.call(rbind.data.frame, reasons)
+names(reasons_df) <- c("n_students", "perc", "univ_perc")
+reasons_df
+
+reasons_responses <- c("major",
+                       "minor",
+                       "distribution/diversity",
+                       "interest in subject",
+                       "instructor",
+                       "off campus",
+                       "work on own schedule",
+                       "other")
+
+core_reasons_df <- tibble::tibble(responses = reasons_responses,
+                                  reasons_df) |>
+  mutate(question = "primary reason for enrollment")
+core_reasons_df
+```
+
+gender 
+```{r}
+gender_indeces <- c(35, 37, 38, 39)
+gender <- only_numbers[gender_indeces]
+gender
+
+gender[[3]] <- gender[[3]][1:3]
+gender[[4]] <- gender[[4]][1:3]
+gender
+
+gender_df <- do.call(rbind.data.frame, gender)
+names(gender_df) <- c("n_students", "perc", "univ_perc")
+gender_df
+
+gender_responses <- c("male",
+                      "female",
+                      "other",
+                      "prefer not to disclose")
+
+core_gender_df <- tibble::tibble(responses = gender_responses,
+                                 gender_df) |>
+  mutate(question = "gender")
+core_gender_df
+```
+
+class year
+```{r}
+class_indeces <- c(44, 45, 47, 48, 51, 53)
+class_year <- only_numbers[class_indeces]
+class_year
+
+class_year[[1]] <- class_year[[1]][1:3]
+class_year[[2]] <- class_year[[2]][1:3]
+class_year[[3]] <- class_year[[3]][1:3]
+class_year
+
+classyear_df <- do.call(rbind.data.frame, class_year)
+names(classyear_df) <- c("n_students", "perc", "univ_perc")
+classyear_df
+
+class_responses <- c("first year",
+                     "sophomore",
+                     "junior",
+                     "senior",
+                     "grad student",
+                     "other")
+
+core_class_df <- tibble::tibble(responses = class_responses,
+                                classyear_df) |>
+  mutate(question = "class year")
+core_class_df
+```
+
 summary of means 
 ```{r}
 som_indeces <- c(22, 26, 28, 32, 34, 37, 39, 41, 44)
-som_indeces <- only_numbers_2[som_indeces]
-som_indeces
+som <- only_numbers_2[som_indeces]
+som
 
-## separates decimals into individual digit 
+som[[1]] <- som[[1]][-1]
+som[[2]] <- som[[2]][6:9]
+som[[3]] <- som[[3]][6:9]
+som[[4]] <- som[[4]][-1:-2]
+som[[5]] <- som[[5]][6:9]
+som[[6]] <- som[[6]][-1:-2]
+som[[7]] <- som[[7]][-1:-2]
+som[[8]] <- som[[8]][6:9]
+som[[9]] <- som[[9]][-1:-2]
+som
 
-som_indeces[[1]] <- som_indeces[[1]][-1]
-som_indeces[[2]] <- som_indeces[[2]][6:9]
-som_indeces[[3]] <- som_indeces[[3]][6:9]
-som_indeces[[4]] <- som_indeces[[4]][-1:-2]
-som_indeces[[5]] <- som_indeces[[5]][6:9]
-som_indeces[[6]] <- som_indeces[[6]][-1:-2]
-som_indeces[[7]] <- som_indeces[[7]][-1:-2]
-som_indeces[[8]] <- som_indeces[[8]][6:9]
-som_indeces[[9]] <- som_indeces[[9]][-1:-2]
-som_indeces
+som_df <- do.call(rbind.data.frame, som)
+names(som_df) <- c("mean", "x", "univ_mean", "y")
+som_df
 
-# need to combine the decimals and then create df 
+som_responses <- c("q1: valuable",
+                   "q2: organized",
+                   "q3: environmemt",
+                   "q5a: fair",
+                   "q5b: timely",
+                   "q5c: constructive",
+                   "q6a: recommend prof",
+                   "q6b: recommend course",
+                   "q6c: effective")
+
+core_som_df <- tibble::tibble(responses = som_responses,
+                              som_df) |>
+  mutate(question = "summary of means")
+core_som_df
+
+core_som_df <- core_som_df |> unite("new_mean", c(mean, x),
+                     sep = ".") |>
+  unite("new_univ_mean", c(univ_mean, y),
+        sep = ".") |>
+  rename(mean = new_mean,
+         univ_mean = new_univ_mean)
+core_som_df
 ```
-
