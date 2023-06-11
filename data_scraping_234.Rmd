@@ -6,6 +6,8 @@ date: "2023-06-10"
 
 234-01 Fall 2022
 ```{r}
+library(tidyverse)
+library(pdftools)
 evals_234_pdf <- pdf_text("STAT234_Fall_2022.pdf") 
 evals_234_pdf 
 
@@ -63,4 +65,394 @@ core_df_1_234 <- tibble::tibble(responses = responses,
 core_df_1_234
 ```
 
+question 2
+```{r}
+q2_indeces_234 <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
+q2_234 <- only_numbers_234_1[q2_indeces_234]
+q2_234
 
+# only getting last three numbers of 16 
+q2_234[[7]] <- q2_234[[7]][4:6]
+q2_234
+
+q2_df_234 <- do.call(rbind.data.frame, q2_234)
+names(q2_df_234) <- c("n_students", "perc", "univ_perc")
+q2_df_234
+
+core_df_2_234 <- tibble::tibble(responses = responses,
+                          q2_df_234) |>
+  mutate(question = "Q2")
+core_df_2_234
+```
+
+question 3
+```{r}
+q3_indeces_234 <- c(21, 23, 25, 26, 29, 31, 33)
+q3_234 <- only_numbers_234_1[q3_indeces_234]
+q3_234
+
+q3_234[[1]] <- q3_234[[1]][4:6]
+q3_234[[2]] <- q3_234[[2]][4:6]
+q3_234[[4]] <- q3_234[[4]][4:6]
+q3_234
+
+q3_df_234 <- do.call(rbind.data.frame, q3_234)
+names(q3_df_234) <- c("n_students", "perc", "univ_perc")
+q3_df_234
+
+core_df_3_234 <- tibble::tibble(responses = responses,
+                          q3_df_234) |>
+  mutate(question = "Q3")
+core_df_3_234
+```
+
+question 4a
+```{r}
+q4a_indeces_234 <- c(38, 39, 40, 41, 43)
+q4a_234 <- only_numbers_234_1[q4a_indeces_234]
+q4a_234
+
+q4a_234[[1]] <- q4a_234[[1]][4:6]
+q4a_234[[2]] <- q4a_234[[2]][4:6]
+q4a_234[[3]] <- q4a_234[[3]][4:6]
+q4a_234
+
+q4a_df_234 <- do.call(rbind.data.frame, q4a_234)
+names(q4a_df_234) <- c("n_students", "perc", "univ_perc")
+q4a_df_234
+
+responses_2 <- c("too high",
+               "somewhat high", 
+               "appropriate",
+               "somewhat low",
+               "too low") 
+
+core_df_4a_234 <- tibble::tibble(responses = responses_2,
+                          q4a_df_234) |>
+  mutate(question = "Q4a")
+core_df_4a_234
+```
+
+question 4b
+```{r}
+q4b_indeces_234 <- c(50, 52, 54, 56, 57)
+q4b_234 <- only_numbers_234_1[q4b_indeces_234]
+q4b_234
+
+q4b_df_234 <- do.call(rbind.data.frame, q4b_234)
+names(q4b_df_234) <- c("n_students", "perc", "univ_perc")
+q4b_df_234
+
+core_df_4b_234 <- tibble::tibble(responses = responses_2,
+                          q4b_df_234) |>
+  mutate(question = "Q4b")
+core_df_4b_234
+```
+
+question 4c
+```{r}
+q4c_indeces_234 <- c(63, 64, 65, 66, 67)
+q4c_234 <- only_numbers_234_1[q4c_indeces_234]
+q4c_234
+
+q4c_234[[1]] <- q4c_234[[1]][4:6]
+q4c_234[[2]] <- q4c_234[[2]][4:6]
+q4c_234[[3]] <- q4c_234[[3]][4:6]
+q4c_234[[4]] <- q4c_234[[4]][4:6]
+q4c_234[[5]] <- q4c_234[[5]][4:6]
+q4c_234
+
+q4c_df_234 <- do.call(rbind.data.frame, q4c_234)
+names(q4c_df_234) <- c("n_students", "perc", "univ_perc")
+q4c_df_234
+
+core_df_4c_234 <- tibble::tibble(responses = responses_2,
+                          q4c_df_234) |>
+  mutate(question = "Q4c")
+core_df_4c_234
+```
+
+second page 
+```{r}
+second_page_2 <- strsplit(tab_2[2], "\n")[[1]]
+
+second_page_zeroes_2 <- str_replace_all(second_page_2,
+                                     pattern = "-",
+                                     replacement = "0")
+second_page_zeroes_2
+
+only_numbers_2_234 <- str_extract_all(second_page_zeroes_2, "\\d+")
+only_numbers_2_234
+```
+
+question 5a
+```{r}
+q5a_indeces_234 <- c(3, 4, 5, 6, 7, 8, 9)
+q5a_234 <- only_numbers_2_234[q5a_indeces_234]
+q5a_234
+
+q5a_234[[1]] <- q5a_234[[1]][1:3]
+q5a_234[[2]] <- q5a_234[[2]][1:3]
+q5a_234[[3]] <- q5a_234[[3]][1:3]
+q5a_234[[4]] <- q5a_234[[4]][1:3]
+q5a_234[[5]] <- q5a_234[[5]][1:3]
+q5a_234[[6]] <- q5a_234[[6]][1:3]
+q5a_234[[7]] <- q5a_234[[7]][1:3]
+q5a_234
+
+q5a_df_234 <- do.call(rbind.data.frame, q5a_234)
+names(q5a_df_234) <- c("n_students", "perc", "univ_perc")
+q5a_df_234
+
+core_df_5a_234 <- tibble::tibble(responses = responses,
+                          q5a_df_234) |>
+  mutate(question = "Q5a")
+core_df_5a_234
+```
+
+question 5b
+```{r}
+q5b_indeces_234 <- c(13, 14, 15, 16, 17, 18, 19)
+q5b_234 <- only_numbers_2_234[q5b_indeces_234]
+q5b_234
+
+q5b_234[[1]] <- q5b_234[[1]][1:3]
+q5b_234[[2]] <- q5b_234[[2]][1:3]
+q5b_234[[3]] <- q5b_234[[3]][1:3]
+q5b_234[[4]] <- q5b_234[[4]][1:3]
+q5b_234[[5]] <- q5b_234[[5]][1:3]
+q5b_234[[6]] <- q5b_234[[6]][1:3]
+q5b_234[[7]] <- q5b_234[[7]][1:3]
+q5b_234
+
+q5b_df_234 <- do.call(rbind.data.frame, q5b_234)
+names(q5b_df_234) <- c("n_students", "perc", "univ_perc")
+q5b_df_234
+
+core_df_5b_234 <- tibble::tibble(responses = responses,
+                          q5b_df_234) |>
+  mutate(question = "Q5b")
+core_df_5b_234
+```
+
+question 5c
+```{r}
+q5c_indeces_234 <- c(24, 26, 27, 28, 31, 33, 34)
+q5c_234 <- only_numbers_2_234[q5c_indeces_234]
+q5c_234
+
+q5c_234[[2]] <- q5c_234[[2]][1:3]
+q5c_234[[4]] <- q5c_234[[4]][1:3]
+q5c_234[[7]] <- q5c_234[[7]][1:3]
+q5c_234
+
+q5c_df_234 <- do.call(rbind.data.frame, q5c_234)
+names(q5c_df_234) <- c("n_students", "perc", "univ_perc")
+q5c_df_234
+
+core_df_5c_234 <- tibble::tibble(responses = responses,
+                             q5c_df_234) |>
+  mutate(question = "Q5c")
+core_df_5c_234
+```
+
+question 6a
+```{r}
+q6a_indeces_234 <- c(40, 41, 43, 45, 47, 48, 50)
+q6a_234 <- only_numbers_2_234[q6a_indeces_234]
+q6a_234
+
+q6a_234[[2]] <- q6a_234[[2]][1:3]
+q6a_234[[7]] <- q6a_234[[7]][1:3]
+q6a_234
+
+q6a_df_234 <- do.call(rbind.data.frame, q6a_234)
+names(q6a_df_234) <- c("n_students", "perc", "univ_perc")
+q6a_df_234
+
+core_df_6a_234 <- tibble::tibble(responses = responses,
+                             q6a_df_234) |>
+  mutate(question = "Q6a")
+core_df_6a_234
+```
+
+question 6b
+```{r}
+q6b_indeces_234 <- c(3, 4, 5, 6, 7, 8, 9)
+q6b_234 <- only_numbers_2_234[q6b_indeces_234]
+q6b_234
+
+q6b_234[[1]] <- q6b_234[[1]][4:6]
+q6b_234[[2]] <- q6b_234[[2]][4:6]
+q6b_234[[3]] <- q6b_234[[3]][4:6]
+q6b_234[[4]] <- q6b_234[[4]][4:6]
+q6b_234[[5]] <- q6b_234[[5]][4:6]
+q6b_234[[6]] <- q6b_234[[6]][4:6]
+q6b_234[[7]] <- q6b_234[[7]][4:6]
+q6b_234
+
+q6b_df_234 <- do.call(rbind.data.frame, q6b_234)
+names(q6b_df_234) <- c("n_students", "perc", "univ_perc")
+q6b_df_234
+
+core_df_6b_234 <- tibble::tibble(responses = responses,
+                             q6b_df_234) |>
+  mutate(question = "Q6b")
+core_df_6b_234
+```
+
+question 6c
+```{r}
+q6c_indeces_234 <- c(13, 14, 15, 16, 17, 18, 19)
+q6c_234 <- only_numbers_2_234[q6c_indeces_234]
+q6c_234
+
+q6c_234[[1]] <- q6c_234[[1]][4:6]
+q6c_234[[2]] <- q6c_234[[2]][4:6]
+q6c_234[[3]] <- q6c_234[[3]][4:6]
+q6c_234[[4]] <- q6c_234[[4]][4:6]
+q6c_234[[5]] <- q6c_234[[5]][4:6]
+q6c_234[[6]] <- q6c_234[[6]][4:6]
+q6c_234[[7]] <- q6c_234[[7]][4:6]
+q6c_234
+
+q6c_df_234 <- do.call(rbind.data.frame, q6c_234)
+names(q6c_df_234) <- c("n_students", "perc", "univ_perc")
+q6c_df_234
+
+core_df_6c_234 <- tibble::tibble(responses = responses, 
+                             q6c_df_234) |>
+  mutate(question = "Q6c")
+core_df_6c_234
+```
+
+primary reason for enrolling in course
+```{r}
+reasons_indeces_234 <- c(16, 18, 19, 20, 21, 23, 26, 30)
+reasons_234 <- only_numbers_234_1[reasons_indeces_234] 
+reasons_234
+
+reasons_234[[1]] <- reasons_234[[1]][1:3]
+reasons_234[[2]] <- reasons_234[[2]][1:3]
+reasons_234[[3]] <- reasons_234[[3]][1:3]
+reasons_234[[5]] <- reasons_234[[5]][1:3]
+reasons_234[[6]] <- reasons_234[[6]][1:3]
+reasons_234[[7]] <- reasons_234[[7]][1:3]
+reasons_234
+
+reasons_df_234 <- do.call(rbind.data.frame, reasons_234)
+names(reasons_df_234) <- c("n_students", "perc", "univ_perc")
+reasons_df_234
+
+reasons_responses <- c("major",
+                       "minor",
+                       "distribution/diversity",
+                       "interest in subject",
+                       "instructor",
+                       "off campus",
+                       "work on own schedule",
+                       "other")
+
+core_reasons_df_234 <- tibble::tibble(responses = reasons_responses,
+                                  reasons_df_234) |>
+  mutate(question = "primary reason for enrollment")
+core_reasons_df_234
+```
+
+gender 
+```{r}
+gender_indeces_234 <- c(35, 37, 38, 39)
+gender_234 <- only_numbers_234_1[gender_indeces_234]
+gender_234
+
+gender_234[[3]] <- gender_234[[3]][1:3]
+gender_234[[4]] <- gender_234[[4]][1:3]
+gender_234
+
+gender_df_234 <- do.call(rbind.data.frame, gender_234)
+names(gender_df_234) <- c("n_students", "perc", "univ_perc")
+gender_df_234
+
+gender_responses <- c("male",
+                      "female",
+                      "other",
+                      "prefer not to disclose")
+
+core_gender_df_234 <- tibble::tibble(responses = gender_responses,
+                                 gender_df_234) |>
+  mutate(question = "gender")
+core_gender_df_234
+```
+
+class year
+```{r}
+class_indeces_234 <- c(44, 45, 47, 48, 51, 53)
+class_year_234 <- only_numbers_234_1[class_indeces_234]
+class_year_234
+
+class_year_234[[1]] <- class_year_234[[1]][1:3]
+class_year_234[[2]] <- class_year_234[[2]][1:3]
+class_year_234[[3]] <- class_year_234[[3]][1:3]
+class_year_234
+
+classyear_df_234 <- do.call(rbind.data.frame, class_year_234)
+names(classyear_df_234) <- c("n_students", "perc", "univ_perc")
+classyear_df_234
+
+class_responses <- c("first year",
+                     "sophomore",
+                     "junior",
+                     "senior",
+                     "grad student",
+                     "other")
+
+core_class_df_234 <- tibble::tibble(responses = class_responses,
+                                classyear_df_234) |>
+  mutate(question = "class year")
+core_class_df_234
+```
+
+summary of means 
+```{r}
+som_indeces_234 <- c(22, 26, 28, 32, 34, 37, 39, 41, 44)
+som_234 <- only_numbers_2_234[som_indeces_234]
+som_234
+
+som_234[[1]] <- som_234[[1]][-1]
+som_234[[2]] <- som_234[[2]][6:9]
+som_234[[3]] <- som_234[[3]][6:9]
+som_234[[4]] <- som_234[[4]][-1:-2]
+som_234[[5]] <- som_234[[5]][6:9]
+som_234[[6]] <- som_234[[6]][-1:-2]
+som_234[[7]] <- som_234[[7]][-1:-2]
+som_234[[8]] <- som_234[[8]][6:9]
+som_234[[9]] <- som_234[[9]][-1:-2]
+som_234
+
+som_df_234 <- do.call(rbind.data.frame, som_234)
+names(som_df_234) <- c("mean", "x", "univ_mean", "y")
+som_df_234
+
+som_responses <- c("q1: valuable",
+                   "q2: organized",
+                   "q3: environmemt",
+                   "q5a: fair",
+                   "q5b: timely",
+                   "q5c: constructive",
+                   "q6a: recommend prof",
+                   "q6b: recommend course",
+                   "q6c: effective")
+
+core_som_df_234 <- tibble::tibble(responses = som_responses,
+                              som_df_234) |>
+  mutate(question = "summary of means")
+core_som_df_234
+
+core_som_df_234 <- core_som_df_234 |> unite("new_mean", c(mean, x),
+                     sep = ".") |>
+  unite("new_univ_mean", c(univ_mean, y),
+        sep = ".") |>
+  rename(mean = new_mean,
+         univ_mean = new_univ_mean)
+core_som_df_234
+```
