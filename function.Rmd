@@ -20,11 +20,11 @@ pdf_function <- function(eval) {
   q4b <- only_numbers[q4b_indeces]
   q4b_df <- do.call(rbind.data.frame, q4b)
   names(q4b_df) <- c("n_students", "perc", "univ_perc")
-  responses_2 <- c("too high",
-               "somewhat high", 
-               "appropriate",
-               "somewhat low",
-               "too low") 
+  responses_2 <- c("Too High",
+               "Somewhat High", 
+               "Appropriate",
+               "Somewhat Low",
+               "Too Low") 
   core_df_4b <- tibble::tibble(responses = responses_2,
                           q4b_df) |>
   mutate(question = "Q4b")
@@ -54,40 +54,40 @@ pdf_function_full <- function(eval) {
   only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
   
   # responses 
-  reasons_responses <- c("major",
-                       "minor",
-                       "distribution/diversity",
-                       "interest in subject",
-                       "instructor",
-                       "off campus",
-                       "work on own schedule",
-                       "other")
+  reasons_responses <- c("Major",
+                       "Minor",
+                       "Distribution/Diversity",
+                       "Interest in Subject",
+                       "Instructor",
+                       "Off Campus",
+                       "Work on own schedule",
+                       "Other")
   
-  gender_responses <- c("male",
-                      "female",
-                      "other",
-                      "prefer not to disclose")
+  gender_responses <- c("Male",
+                      "Female",
+                      "Other",
+                      "Prefer not to disclose")
   
-  class_responses <- c("first year",
-                     "sophomore",
-                     "junior",
-                     "senior",
-                     "grad student",
-                     "other")
+  class_responses <- c("First Year",
+                     "Sophomore",
+                     "Junior",
+                     "Senior",
+                     "Grad Student",
+                     "Other")
   
-  responses <- c("strongly agree",
-                 "agree", 
-                 "agree somewhat",
-                 "neutral",
-                 "disagree somewhat",
-                 "disagree",
-                 "disagree strongly")
+  responses <- c("Strongly Agree",
+                 "Agree", 
+                 "Agree Somewhat",
+                 "Neutral",
+                 "Disagree Somewhat",
+                 "Disagree",
+                 "Disagree Strongly")
   
-   responses_2 <- c("too high",
-                 "somewhat high", 
-                 "appropriate",
-                 "somewhat low",
-                 "too low") 
+   responses_2 <- c("Too High",
+                 "Somewhat High", 
+                 "Appropriate",
+                 "Somewhat Low",
+                 "Too Low") 
    
   # primary reason for enrolling
   reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
