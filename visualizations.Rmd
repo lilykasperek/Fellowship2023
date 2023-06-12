@@ -9,7 +9,7 @@ library(readxl)
 library(tidyverse)
 evals_prof_p2 <- read_excel("data/evals_prof_p2.xlsx")
 
-evals <- evals_prof_p2 |> 
+evals_recode <- evals_prof_p2 |> 
   mutate(question = fct_recode(Question, Valuable = "1. Course has been a valuable educational experience",
                                Organized = "2. Effectively Organized",
                                Learning = "3. Environment Conducive to Learning",
@@ -20,8 +20,9 @@ evals <- evals_prof_p2 |>
                                    Rec_Course = "6b. Recommend Course to another student",
                                    Effective = "6c. Instructor was an effective teacher")) |> select(Term, Course, question, everything()) |>
   select(-Question)
+evals_recode
 
-evals_pivot <- evals |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree Somewhat', 
+evals_pivot <- evals_recode |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree Somewhat', 
                                Neutral, 'Disagree Somewhat', Disagree, 'Disagree Strongly'),
                                names_to = "response", values_to = "count") |>
   mutate(response = fct_recode(response, AgreeStrongly = "Agree strongly",
@@ -36,145 +37,186 @@ evals_pivot <- evals |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree So
                                              "Agree",
                                              "AgreeStrongly")))
 evals_pivot
+
+evals <- evals_pivot |> filter(Course == "113-04" &
+                                 Term == "F20") 
+evals
 ```
 
+"bad" visualizations
 ```{r}
-evals_bad <- evals |>
+# getting means from csv
+evals_mean <- evals_recode %>%
   mutate(n = `Agree strongly` + Agree + `Agree Somewhat` + Neutral + `Disagree Somewhat` + Disagree + `Disagree Strongly`,
-         meanscore_prof = 7 * `Agree strongly` / n + 6 * Agree / n +
+         meanscore = 7 * `Agree strongly` / n + 6 * Agree / n +
            5 * `Agree Somewhat` / n + 4 * Neutral / n +
            3 * `Disagree Somewhat` / n + 2 * `Disagree` / n + 
            1 * `Disagree Strongly` / n) |>
-  select(Term, Course, question, meanscore_prof, everything())
+  filter(Course == "113-04" & Term == "F20") |> 
+  select(meanscore, everything())
+evals_mean <- evals_mean |>
+  mutate(ordered = fct_reorder(.f = question,
+                               .x = meanscore))
 
-ggplot(data = evals_bad, aes(x = question, y = meanscore_prof)) +
-  geom_col() +
-  facet_wrap(~Term) +
-  labs(x = "Question", y = "Average Response",
-       title = "Comparing Average Responses",
-       subtitle = "from Student Evaluation Data") +
-  theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5)) 
-
-evals_bad_2020 <- evals_bad |> filter(Term == "F20") |>
-  filter(Course == "113-04" ) |>
-  mutate(question_ordered = fct_reorder(.f = question, .x = meanscore_prof))
-  
-ggplot(data = evals_bad_2020, aes(x = question, y = meanscore_prof)) +
-  geom_col() 
-
-ggplot(data = evals_bad_2020, aes(x = question_ordered, y = meanscore_prof)) +
+# bar graph
+ggplot(data = evals_mean, aes(x = ordered, y = meanscore)) +
   geom_col() +
   coord_flip() +
-  labs(x = "Question", y = "Average Response",
-    title = "Comparing Average Responses",
-       subtitle = "from Student Evaluation Data") +
-   theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5)) 
+  labs(x = "Mean",
+       y = "Responses",
+       title = "Average Responses",
+       subtitle = "STAT 113-04 Fall 2020") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 16),
+        plot.subtitle = element_text(hjust = 0.5))
 
-ggplot(data = evals_bad_2020, aes(x = question_ordered, y = meanscore_prof)) +
-  geom_segment(aes(x = question_ordered, xend = question_ordered,
-                   y = 0, yend = meanscore_prof)) +
+# lollipop chart 
+ggplot(data = evals_mean, aes(x = ordered, y = meanscore)) +
+  geom_segment(aes(x = ordered, xend = ordered,
+                   y = 0, yend = meanscore)) +
   geom_point() +
   coord_flip() +
-  labs(x = "Question", y = "Average Response",
-    title = "Comparing Average Responses",
-       subtitle = "from Student Evaluation Data") +
-   theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5)) 
-```
-
-```{r}
-evals_2020 <- evals_pivot |> filter(Course == "113-04") |>
-  filter(Term == "F20")
-
-view_course <- evals_pivot |> arrange(Course)
-
-evals_2020_full <- evals_pivot |> filter(Course == "113-01" |
-                                           Course == "113-02" |
-                                           Course == "113-03" |
-                                           Course == "113-04" |
-                                           Course == "113-05" |
-                                           Course == "113-07") |>
-  filter(Term == "F20")
-
-evals_2020_full |> arrange(Course)
-
-ggplot(data = evals_2020, aes(x = response, y = count)) +
-  geom_col() + 
-  facet_wrap(~question)
-
-ggplot(data = evals_2020_full, aes(x = response, y = count)) +
-  geom_col() + 
-  facet_wrap(~question)
-
-ggplot(data = evals_2020_full, aes(x = response, y = count)) +
-  geom_col() + 
-  facet_wrap(~question + Course)
-
-evals_valuable <- evals_2020 |> filter(question == "Valuable")
-evals_valuable2 <- evals_2020_full |> filter(question == "Valuable")
-
-ggplot(data = evals_valuable, aes(x = response, y = count)) +
-  geom_col() +
-  facet_wrap(~Term) +
+  labs(x = "Mean",
+       y = "Responses",
+       title = "Average Responses",
+       subtitle = "STAT 113-04 Fall 2020") +
   theme_bw() +
-  labs(title = "Course has been a valuable educational experience") +
-  theme(plot.title = element_text(hjust = 0.5)) 
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 16),
+        plot.subtitle = element_text(hjust = 0.5))
 
-ggplot(data = evals_valuable2, aes(x = response, y = count)) +
+## can make same visualization with summary of means df scraped from pdf 
+core_som_df
+core_som_df_viz <- core_som_df |> mutate(responses_ordered = 
+                        fct_reorder(.f = responses,
+                                    .x = mean))
+
+ggplot(data = core_som_df_viz, aes(x = responses_ordered, y = mean)) +
   geom_col() +
-  facet_wrap(~Term) +
+  coord_flip() +
+  labs(x = "Responses",
+       y = "Mean",
+       title = "Average Responses",
+       subtitle = "STAT 113-04 Fall 2020") +
   theme_bw() +
-  labs(title = "Course has been a valuable educational experience") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  facet_wrap(~Course)
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 16),
+        plot.subtitle = element_text(hjust = 0.5))
  
-evals_organized <- evals_2020 |> filter(question == "Organized")
-evals_organized2 <- evals_2020_full |> filter(question == "Organized")
-
-ggplot(data = evals_organized, aes(x = response, y = count)) +
-  geom_col() +
-  facet_wrap(~Term) +
+# lollipop chart
+ggplot(data = core_som_df_viz, aes(x = responses_ordered, y = mean)) +
+  geom_point() +
+  geom_segment(aes(x = responses_ordered, xend = responses_ordered,
+                   y = 0, yend = mean)) +
+  coord_flip() +
+  labs(x = "Responses",
+       y = "Mean",
+       title = "Average Responses",
+       subtitle = "STAT 113-04 Fall 2020") +
   theme_bw() +
-  labs(title = "Effectively organized") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 16),
+        plot.subtitle = element_text(hjust = 0.5))
 
-ggplot(data = evals_organized2, aes(x = response, y = count)) +
-  geom_col() +
-  facet_wrap(~Term) +
-  theme_bw() +
-  labs(title = "Effectively organized") +
-  theme(plot.title = element_text(hjust = 0.5)) +
-  facet_wrap(~Course)
-```
+# want to add text box explaining likert values/where the numbers come from 
 
-```{r}
-evals_col <- evals_pivot |> mutate(value =
-                          case_when(response == "DisagreeStrongly" ~ 1,
-                                    response == "Disagree" ~ 2,
-                                    response == "DisagreeSomewhat" ~ 3,
-                                    response == "Neutral" ~ 4,
-                                    response == "AgreeSomewhat" ~ 5,
-                                    response == "Agree" ~ 6,
-                                    response == "AgreeStrongly" ~ 7)) |>
-  filter(Term == "F20") |> mutate(response_2 = 
-                       fct_relevel(response, c("DisagreeStrongly",
-                                             "Disagree",
-                                             "DisagreeSomewhat",
-                                             "Neutral",
-                                             "AgreeSomewhat",
-                                             "Agree",
-                                             "AgreeStrongly")))
+  ##annotate("text", x = 3, y = 4, label = "Likert Values",
+           ##size = 3) +
+  ##annotate("text", x = 2.7, y = 4, label = "Agree Strongly = 7",
+          ## size = 3) +
+  ##annotate("text", x = 2.4, y = 4, label = "Agree = 6",
+           ##size = 3)
 
-ggplot(data = evals_col, aes(x = response_2, y = count)) +
-  geom_col() +
-  labs(x = "Response",
+# stacked bar plot 
+ggplot(data = evals, aes(x = response_2, y = count,
+                         fill = question)) +
+  geom_col(position = "fill") +
+  coord_flip() +
+   labs(x = "Responses",
+       y = "Proportion",
+       fill = "Question",
+       title = "Responses Across All Questions",
+       subtitle = "STAT 113-04 Fall 2020") +
+   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15),
+        plot.subtitle = element_text(hjust = 0.5)) 
+
+# making same visualization with scraped df 
+ggplot(data = test, aes(x = responses_hm, y = count_hm,
+                         fill = full_question)) +
+  geom_col(position = "fill") +
+  coord_flip() +
+  labs(x = "Responses",
        y = "Count",
-       title = "Student Evaluation Data for",
-       subtitle = "STAT-113 Fall 2020") +
-   theme(plot.title = element_text(hjust = 0.5),
-         plot.subtitle = element_text(hjust = 0.5)) 
+       fill = "Question",
+       title = "Responses Across All Questions",
+       subtitle = "STAT 113-04 Fall 2020") +
+   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15),
+        plot.subtitle = element_text(hjust = 0.5))
 ```
 
+"good" visualizations using count
+```{r}
+# csv data 
+evals
+
+# bar graph, not specifying question with csv data 
+ggplot(data = evals, aes(x = response_2, y = count)) +
+  geom_col() +
+  coord_flip() +
+  labs(x = "Responses",
+       y = "Count",
+       title = "Responses Across All Questions",
+       subtitle = "STAT 113-04 Fall 2020") +
+   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15),
+        plot.subtitle = element_text(hjust = 0.5))
+
+# faceted with question
+ggplot(data = evals, aes(x = response_2, y = count)) +
+  geom_col() +
+  coord_flip() +
+  facet_wrap(~question) +
+  labs(x = "Responses",
+       y = "Count",
+       title = "Responses Across All Questions",
+       subtitle = "STAT 113-04 Fall 2020") +
+   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15),
+        plot.subtitle = element_text(hjust = 0.5))
+
+# making same visualizations using scraped df
+test
+
+ggplot(data = test, aes(x = responses_hm, y = count_hm)) +
+  geom_col() +
+  labs(x = "Responses",
+       y = "Count",
+       title = "Responses Across All Questions",
+       subtitle = "STAT 113-04 Fall 2020") +
+  coord_flip() +
+   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15),
+        plot.subtitle = element_text(hjust = 0.5))
+
+ggplot(data = test, aes(x = responses_hm, y = count_hm)) +
+  geom_col() +
+  labs(x = "Responses",
+       y = "Count",
+       title = "Responses Across All Questions",
+       subtitle = "STAT 113-04 Fall 2020") +
+  coord_flip() +
+  facet_wrap(~full_question) +
+   theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 15),
+        plot.subtitle = element_text(hjust = 0.5))
+```
 
