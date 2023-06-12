@@ -51,13 +51,13 @@ q1_df_234 <- do.call(rbind.data.frame, q1_234)
 names(q1_df_234) <- c("n_students", "perc", "univ_perc")
 q1_df_234
 
-responses <- c("strongly agree",
-               "agree", 
-               "agree somewhat",
-               "neutral",
-               "disagree somewhat",
-               "disagree",
-               "disagree strongly")
+responses <- c("Strongly Agree",
+               "Agree", 
+               "Agree Somewhat",
+               "Neutral",
+               "Disagree Somewhat",
+               "Disagree",
+               "Disagree Strongly")
 
 core_df_1_234 <- tibble::tibble(responses = responses,
                             q1_df_234) |>
@@ -121,11 +121,11 @@ q4a_df_234 <- do.call(rbind.data.frame, q4a_234)
 names(q4a_df_234) <- c("n_students", "perc", "univ_perc")
 q4a_df_234
 
-responses_2 <- c("too high",
-               "somewhat high", 
-               "appropriate",
-               "somewhat low",
-               "too low") 
+responses_2 <- c("Too High",
+               "Somewhat High", 
+               "Appropriate",
+               "Somewhat Low",
+               "Too Low") 
 
 core_df_4a_234 <- tibble::tibble(responses = responses_2,
                           q4a_df_234) |>
@@ -344,14 +344,14 @@ reasons_df_234 <- do.call(rbind.data.frame, reasons_234)
 names(reasons_df_234) <- c("n_students", "perc", "univ_perc")
 reasons_df_234
 
-reasons_responses <- c("major",
-                       "minor",
-                       "distribution/diversity",
-                       "interest in subject",
-                       "instructor",
-                       "off campus",
-                       "work on own schedule",
-                       "other")
+reasons_responses <- c("Major",
+                       "Minor",
+                       "Distribution/Diversity",
+                       "Interest in Subject",
+                       "Instructor",
+                       "Off Campus",
+                       "Work on own schedule",
+                       "Other")
 
 core_reasons_df_234 <- tibble::tibble(responses = reasons_responses,
                                   reasons_df_234) |>
@@ -373,10 +373,10 @@ gender_df_234 <- do.call(rbind.data.frame, gender_234)
 names(gender_df_234) <- c("n_students", "perc", "univ_perc")
 gender_df_234
 
-gender_responses <- c("male",
-                      "female",
-                      "other",
-                      "prefer not to disclose")
+gender_responses <- c("Male",
+                      "Female",
+                      "Other",
+                      "Prefer not to disclose")
 
 core_gender_df_234 <- tibble::tibble(responses = gender_responses,
                                  gender_df_234) |>
@@ -399,12 +399,12 @@ classyear_df_234 <- do.call(rbind.data.frame, class_year_234)
 names(classyear_df_234) <- c("n_students", "perc", "univ_perc")
 classyear_df_234
 
-class_responses <- c("first year",
-                     "sophomore",
-                     "junior",
-                     "senior",
-                     "grad student",
-                     "other")
+class_responses <- c("First Year",
+                     "Sophomore",
+                     "Junior",
+                     "Senior",
+                     "Grad Student",
+                     "Other")
 
 core_class_df_234 <- tibble::tibble(responses = class_responses,
                                 classyear_df_234) |>
@@ -433,15 +433,15 @@ som_df_234 <- do.call(rbind.data.frame, som_234)
 names(som_df_234) <- c("mean", "x", "univ_mean", "y")
 som_df_234
 
-som_responses <- c("q1: valuable",
-                   "q2: organized",
-                   "q3: environmemt",
-                   "q5a: fair",
-                   "q5b: timely",
-                   "q5c: constructive",
-                   "q6a: recommend prof",
-                   "q6b: recommend course",
-                   "q6c: effective")
+som_responses <- c("Valuable",
+                   "Organized",
+                   "Environmemt",
+                   "Fair",
+                   "Timely",
+                   "Constructive",
+                   "Recommend Prof",
+                   "Recommend Course",
+                   "Effective")
 
 core_som_df_234 <- tibble::tibble(responses = som_responses,
                               som_df_234) |>
@@ -455,4 +455,24 @@ core_som_df_234 <- core_som_df_234 |> unite("new_mean", c(mean, x),
   rename(mean = new_mean,
          univ_mean = new_univ_mean)
 core_som_df_234
+```
+
+binding data sets, missing summary of means 
+```{r}
+full_df_234 <- bind_rows(core_reasons_df_234,
+                         core_gender_df_234,
+                         core_class_df_234,
+                         core_df_1_234,
+                         core_df_2_234,
+                         core_df_3_234,
+                         core_df_4a_234,
+                         core_df_4b_234,
+                         core_df_4c_234,
+                         core_df_5a_234,
+                         core_df_5b_234,
+                         core_df_5c_234,
+                         core_df_6a_234,
+                         core_df_6b_234,
+                         core_df_6c_234)
+full_df_234
 ```
