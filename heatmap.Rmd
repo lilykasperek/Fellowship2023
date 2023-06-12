@@ -4,11 +4,12 @@ output: html_document
 date: "2023-06-10"
 ---
 ```{r}
+# heatmap using csv 
 library(readxl)
 library(tidyverse)
 evals_prof_p2 <- read_excel("data/evals_prof_p2.xlsx")
 
-evals <- evals_prof_p2 |> 
+evals_recode <- evals_prof_p2 |> 
   mutate(question = fct_recode(Question, Valuable = "1. Course has been a valuable educational experience",
                                Organized = "2. Effectively Organized",
                                Learning = "3. Environment Conducive to Learning",
@@ -19,8 +20,7 @@ evals <- evals_prof_p2 |>
                                    Rec_Course = "6b. Recommend Course to another student",
                                    Effective = "6c. Instructor was an effective teacher")) |> select(Term, Course, question, everything()) |>
   select(-Question)
-
-evals_pivot <- evals |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree Somewhat', 
+evals_pivot <- evals_recode |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree Somewhat', 
                                Neutral, 'Disagree Somewhat', Disagree, 'Disagree Strongly'),
                                names_to = "response", values_to = "count") |>
   mutate(response = fct_recode(response, AgreeStrongly = "Agree strongly",
@@ -36,15 +36,14 @@ evals_pivot <- evals |> pivot_longer(cols = c('Agree strongly', Agree, 'Agree So
                                              "AgreeStrongly")))
 evals_pivot
 
-evals_2020 <- evals_pivot |> filter(Course == "113-04") |>
-  filter(Term == "F20")
+evals <- evals_pivot |> filter(Course == "113-04" &
+                                 Term == "F20") 
+evals
 ```
 
 ```{r}
-evals_2020
-
 ## not working on plot 
-evals_2020 <- evals_2020 |> 
+evals <- evals |> 
   mutate(question_2 = 
                        fct_relevel(question, c("Valuable",
                                                "Organized",
@@ -55,18 +54,64 @@ evals_2020 <- evals_2020 |>
                                                "Rec_Prof",
                                                "Rec_Course",
                                                "Effective")))
-evals_2020 
+evals
 
-ggplot(data = evals_2020, aes(x = response_2, y = question_2,
+ggplot(data = evals, aes(x = response_2, y = question_2,
                               fill = count)) +
   geom_tile() +
   scale_fill_viridis_c(direction = 1) +
-  theme_minimal() +
   labs(title = "Student Evaluation Data",
        subtitle = "STAT 113-04 Fall 2020",
        x = "Response",
-       y = "Question") +
+       y = "Question",
+       fill = "Count") +
+  theme_bw() +
   theme(plot.title = element_text(hjust = 0.5),
-        plot.subtitle = element_text(hjust = 0.5))
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.box.background = element_rect(colour = "black")) 
 ```
 
+```{r}
+# heatmap using scraped df 
+test <- questions_df |>
+  mutate(responses_hm = 
+           fct_recode(responses, AgreeStrongly = 'Strongly Agree',
+                      AgreeSomewhat = 'Agree Somewhat',
+                      DisagreeSomewhat = 'Disagree Somewhat',
+                      DisagreeStrongly = 'Disagree Strongly')
+         ) |>
+  mutate(question_hm = as.factor(question)) |>
+  mutate(count_hm = as.double(n_students)) |> mutate(responses_hm = 
+                       fct_relevel(responses_hm, c("DisagreeStrongly",
+                                             "Disagree",
+                                             "DisagreeSomewhat",
+                                             "Neutral",
+                                             "AgreeSomewhat",
+                                             "Agree",
+                                             "AgreeStrongly"))) |>
+  mutate(full_question = 
+           case_when(question_hm == "Q1" ~ "Valuable",
+                     question_hm == "Q2" ~ "Organized",
+                     question_hm == "Q3" ~ "Learning",
+                     question_hm == "Q5a" ~ "Fair",
+                     question_hm == "Q5b" ~ "Timely",
+                     question_hm == "Q5c" ~ "Constructive",
+                     question_hm == "Q6a" ~ "Rec_Prof",
+                     question_hm == "Q6b" ~ "Rec_Course",
+                     question_hm == "Q6c" ~ "Effective"))
+test  
+
+ggplot(data = test, aes(x = responses_hm, y = full_question,
+                                fill = count_hm)) +
+  geom_tile() +
+  scale_fill_viridis_c(direction = 1) +
+  labs(title = "Student Evaluation Data",
+       subtitle = "STAT 113-04 Fall 2020",
+       x = "Response",
+       y = "Question",
+       fill = "Count") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.box.background = element_rect(colour = "black")) 
+```
