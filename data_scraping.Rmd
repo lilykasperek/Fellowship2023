@@ -4,6 +4,7 @@ output: html_document
 date: "2023-06-06"
 ---
 
+113-04 Fall 2020 
 ```{r}
 ##install.packages("tcltk2")
 ##install.packages("PDE", dependencies = TRUE)
@@ -57,13 +58,13 @@ q1_df <- do.call(rbind.data.frame, q1)
 names(q1_df) <- c("n_students", "perc", "univ_perc")
 q1_df
 
-responses <- c("strongly agree",
-               "agree", 
-               "agree somewhat",
-               "neutral",
-               "disagree somewhat",
-               "disagree",
-               "disagree strongly")
+responses <- c("Strongly Agree",
+               "Agree", 
+               "Agree Somewhat",
+               "Neutral",
+               "Disagree Somewhat",
+               "Disagree",
+               "Disagree Strongly")
 
 core_df_1 <- tibble::tibble(responses = responses,
                             q1_df) |>
@@ -127,11 +128,11 @@ q4a_df <- do.call(rbind.data.frame, q4a)
 names(q4a_df) <- c("n_students", "perc", "univ_perc")
 q4a_df
 
-responses_2 <- c("too high",
-               "somewhat high", 
-               "appropriate",
-               "somewhat low",
-               "too low") 
+responses_2 <- c("Too High",
+               "Somewhat High", 
+               "Appropriate",
+               "Somewhat Low",
+               "Too Low") 
 
 core_df_4a <- tibble::tibble(responses = responses_2,
                           q4a_df) |>
@@ -177,7 +178,6 @@ core_df_4c <- tibble::tibble(responses = responses_2,
   mutate(question = "Q4c")
 core_df_4c
 ```
-
 
 ```{r}
 second_page <- strsplit(tab[2], "\n")[[1]]
@@ -350,14 +350,14 @@ reasons_df <- do.call(rbind.data.frame, reasons)
 names(reasons_df) <- c("n_students", "perc", "univ_perc")
 reasons_df
 
-reasons_responses <- c("major",
-                       "minor",
-                       "distribution/diversity",
-                       "interest in subject",
-                       "instructor",
-                       "off campus",
-                       "work on own schedule",
-                       "other")
+reasons_responses <- c("Major",
+                       "Minor",
+                       "Distribution/Diversity",
+                       "Interest in Subject",
+                       "Instructor",
+                       "Off Campus",
+                       "Work on own Schedule",
+                       "Other")
 
 core_reasons_df <- tibble::tibble(responses = reasons_responses,
                                   reasons_df) |>
@@ -379,10 +379,10 @@ gender_df <- do.call(rbind.data.frame, gender)
 names(gender_df) <- c("n_students", "perc", "univ_perc")
 gender_df
 
-gender_responses <- c("male",
-                      "female",
-                      "other",
-                      "prefer not to disclose")
+gender_responses <- c("Male",
+                      "Female",
+                      "Other",
+                      "Prefer not to disclose")
 
 core_gender_df <- tibble::tibble(responses = gender_responses,
                                  gender_df) |>
@@ -405,12 +405,12 @@ classyear_df <- do.call(rbind.data.frame, class_year)
 names(classyear_df) <- c("n_students", "perc", "univ_perc")
 classyear_df
 
-class_responses <- c("first year",
-                     "sophomore",
-                     "junior",
-                     "senior",
-                     "grad student",
-                     "other")
+class_responses <- c("First Year",
+                     "Sophomore",
+                     "Junior",
+                     "Senior",
+                     "Grad Student",
+                     "Other")
 
 core_class_df <- tibble::tibble(responses = class_responses,
                                 classyear_df) |>
@@ -439,15 +439,15 @@ som_df <- do.call(rbind.data.frame, som)
 names(som_df) <- c("mean", "x", "univ_mean", "y")
 som_df
 
-som_responses <- c("q1: valuable",
-                   "q2: organized",
-                   "q3: environmemt",
-                   "q5a: fair",
-                   "q5b: timely",
-                   "q5c: constructive",
-                   "q6a: recommend prof",
-                   "q6b: recommend course",
-                   "q6c: effective")
+som_responses <- c("Valuable",
+                   "Organized",
+                   "Environmemt",
+                   "Fair",
+                   "Timely",
+                   "Constructive",
+                   "Recommend Prof",
+                   "Recommend Course",
+                   "Effective")
 
 core_som_df <- tibble::tibble(responses = som_responses,
                               som_df) |>
@@ -461,4 +461,38 @@ core_som_df <- core_som_df |> unite("new_mean", c(mean, x),
   rename(mean = new_mean,
          univ_mean = new_univ_mean)
 core_som_df
+```
+
+binding data sets to match csv
+```{r}
+questions_df <- bind_rows(core_df_1,
+                          core_df_2,
+                          core_df_3,
+                          core_df_5a,
+                          core_df_5b,
+                          core_df_5c,
+                          core_df_6a,
+                          core_df_6b,
+                          core_df_6c)
+questions_df
+```
+
+binding all data sets, missing summary of means 
+```{r}
+full_df <- bind_rows(core_reasons_df,
+                     core_gender_df, 
+                     core_class_df, 
+                     core_df_1, 
+                     core_df_2, 
+                     core_df_3, 
+                     core_df_4a, 
+                     core_df_4b, 
+                     core_df_4c,
+                     core_df_5a, 
+                     core_df_5b, 
+                     core_df_5c,
+                     core_df_6a, 
+                     core_df_6b, 
+                     core_df_6c)
+full_df
 ```
