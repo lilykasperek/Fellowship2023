@@ -222,15 +222,14 @@ ggplot(data = test, aes(x = responses_hm, y = count_hm)) +
 
 student backgrounds
 ```{r}
-enroll <- full_df |> filter(question == "primary reason for enrollment") 
-enroll <- enroll |>
+enroll <- full_df |> filter(question == "primary reason for enrollment") |>
+  mutate(count = as.double(n_students)) |>
   mutate(responses_ordered = fct_reorder(.f = responses,
-                             .x = n_students))
-
-ggplot(data = enroll, aes(x = responses_ordered, y = n_students)) +
+                             .x = count))
+ggplot(data = enroll, aes(x = responses_ordered, y = count)) +
   geom_col() +
-  labs(x = "Count",
-       y = "Responses",
+  labs(x = "Responses",
+       y = "Count",
        title = "Primary Reason for Enrollment",
        subtitle = "STAT 113-04 Fall 2020") +
   coord_flip() +
@@ -238,16 +237,33 @@ ggplot(data = enroll, aes(x = responses_ordered, y = n_students)) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
 
-gen <- full_df |> filter(question == "gender")
-ggplot(data = gen, aes(x = responses, y = n_students)) +
+gen <- full_df |> filter(question == "gender") |> 
+  mutate(count = as.double(n_students)) |>
+  mutate(responses_ordered = fct_reorder(.f = responses,
+                                         .x = count)) 
+ggplot(data = gen, aes(x = responses_ordered, y = count)) +
   geom_col() +
-  labs(x = "Count",
-       y = "Responses",
+  labs(x = "Responses",
+       y = "Count",
        title = "Primary Reason for Enrollment",
        subtitle = "STAT 113-04 Fall 2020") +
+  coord_flip() +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+class <- full_df |> filter(question == "class year") |>
+  mutate(count = as.double(n_students)) |>
+  mutate(responses_ordered = fct_reorder(.f = responses,
+                                         .x = count))
+ggplot(data = class, aes(x = responses_ordered, y = count)) +
+  geom_col() +
+  labs(x = "Responses",
+       y = "Count",
+       title = "Primary Reason for Enrollment",
+       subtitle = "STAT 113-04 Fall 2020") +
+  coord_flip() +
   theme_bw() +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
 ```
-
-
