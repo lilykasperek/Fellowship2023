@@ -220,3 +220,34 @@ ggplot(data = test, aes(x = responses_hm, y = count_hm)) +
         plot.subtitle = element_text(hjust = 0.5))
 ```
 
+student backgrounds
+```{r}
+enroll <- full_df |> filter(question == "primary reason for enrollment") 
+enroll <- enroll |>
+  mutate(responses_ordered = fct_reorder(.f = responses,
+                             .x = n_students))
+
+ggplot(data = enroll, aes(x = responses_ordered, y = n_students)) +
+  geom_col() +
+  labs(x = "Count",
+       y = "Responses",
+       title = "Primary Reason for Enrollment",
+       subtitle = "STAT 113-04 Fall 2020") +
+  coord_flip() +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+
+gen <- full_df |> filter(question == "gender")
+ggplot(data = gen, aes(x = responses, y = n_students)) +
+  geom_col() +
+  labs(x = "Count",
+       y = "Responses",
+       title = "Primary Reason for Enrollment",
+       subtitle = "STAT 113-04 Fall 2020") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
+
