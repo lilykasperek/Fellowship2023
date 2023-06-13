@@ -34,7 +34,7 @@ only_numbers
 
 metadata_df <- tibble::tibble(control_num = only_numbers[[1]][2],
                               year = only_numbers[[2]][1],
-                              course = only_numbers[[2]][3],
+                              course_num = only_numbers[[2]][3],
                               n_evals = only_numbers[[4]][1],
                               n_evals_univ = only_numbers[[8]][1])
 metadata_df
