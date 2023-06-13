@@ -1,0 +1,34 @@
+---
+title: "shiny_app"
+output: html_document
+date: "2023-06-13"
+---
+
+```{r}
+library(tidyverse)
+library(pdftools)
+## install.packages("shiny")
+library(shiny)
+source("pdf_function_full.R")
+pdf_function_full("STAT113_Fall_2020_1.pdf")
+
+ui <- fluidPage( 
+  titlePanel("Testing file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput('file_input', 'upload file (.pdf format only)',
+                accept = c('pdf'))
+    ),
+    
+    mainPanel(
+      uiOutput("pdfview")
+    ))
+)
+
+server <- function(input, output, session) {
+}
+
+shinyApp(ui, server)
+```
+
+
