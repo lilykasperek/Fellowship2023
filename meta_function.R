@@ -15,8 +15,6 @@ meta_function <- function(eval) {
   meta_test <- tibble::tibble(course_num = only_numbers[[2]][3],
                               subject = info_split[[1]][3],
                               semester = semester, 
-                              year = only_numbers[[2]][1]) |>
-    mutate(course_num = as.double(course_num)) |>
-    mutate(year = as.double(year))
+                              year = only_numbers[[2]][1]) 
   return(meta_test)
 }
