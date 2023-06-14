@@ -13,11 +13,13 @@ pdf_function_full("STAT113_Fall_2020_1.pdf")
 source("meta_function.R")
 meta_function("STAT113_Fall_2020_1.pdf")
 
+# displays pdf_function_full table 
 ui <- fluidPage( 
   titlePanel("Testing file upload"),
   sidebarLayout(
     sidebarPanel(
-      fileInput('file_input', 'upload file (.pdf format only)',
+      fileInput('file_input', 'Upload Student Evaluation
+                File (.pdf format only)',
                 accept = c('pdf'))
     ),
     
@@ -37,4 +39,111 @@ server <- function(input, output, session) {
 shinyApp(ui, server)
 ```
 
+```{r}
+# displays meta function 
+ui <- fluidPage( 
+  titlePanel("Testing file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput('file_input', 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'))
+    ),
+    mainPanel(
+      uiOutput(outputId = "pdfview"),
+      tableOutput(outputId = "pdfview2")
+    ))
+)
+
+server <- function(input, output, session) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    core_df <- pdf_function_full(input$file_input$datapath)
+    return(head(core_df))
+  })
+  output$pdfview2 <- renderTable({
+    req(input$file_input)
+    df <- meta_function(input$file_input$datapath)
+    return(head(df))
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+```{r}
+choices <- c("Full Course Eval Information",
+             "Metadata Information")
+choices
+# add buttons
+ui <- fluidPage( 
+  titlePanel("Testing file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput('file_input', 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf')),
+      selectInput(inputId = "choose", label = "choose table", 
+                  choices = choices),
+    ),
+    
+    mainPanel(
+      uiOutput("pdfview"),
+      tableOutput(outputId = "pdfview2")
+    ))
+)
+
+server <- function(input, output, session) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    core_df <- pdf_function_full(input$file_input$datapath)
+    return(head(core_df))
+  })
+  output$pdfview2 <- renderTable({
+    req(input$file_input)
+    df <- meta_function(input$file_input$datapath)
+    return(head(df))
+  })
+  
+}
+
+shinyApp(ui, server)
+```
+
+```{r}
+# make buttons work 
+ui <- fluidPage( 
+  titlePanel("Testing file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput('file_input', 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf')),
+      selectInput(inputId = "choose", label = "choose table", 
+                  choices = choices),
+    ),
+    
+    mainPanel(
+      uiOutput("pdfview"),
+      tableOutput(outputId = "pdfview2")
+    ))
+)
+
+server <- function(input, output, session) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    core_df <- pdf_function_full(input$file_input$datapath)
+    return(head(core_df))
+  })
+  output$pdfview2 <- renderTable({
+    req(input$file_input)
+    df <- meta_function(input$file_input$datapath)
+    return(head(df))
+  })
+  
+}
+
+shinyApp(ui, server)
+```
 
