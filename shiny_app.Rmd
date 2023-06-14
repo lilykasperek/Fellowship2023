@@ -7,10 +7,11 @@ date: "2023-06-13"
 ```{r}
 library(tidyverse)
 library(pdftools)
-## install.packages("shiny")
 library(shiny)
 source("pdf_function_full.R")
 pdf_function_full("STAT113_Fall_2020_1.pdf")
+source("meta_function.R")
+meta_function("STAT113_Fall_2020_1.pdf")
 
 ui <- fluidPage( 
   titlePanel("Testing file upload"),
@@ -26,6 +27,11 @@ ui <- fluidPage(
 )
 
 server <- function(input, output, session) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    core_df <- pdf_function_full(input$file_input$datapath)
+    return(head(core_df))
+  })
 }
 
 shinyApp(ui, server)
