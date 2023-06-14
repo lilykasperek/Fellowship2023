@@ -40,3 +40,21 @@ pdf_function_full("STAT234_Fall_2022.pdf")
 pdf_function_full("STAT4005_Spring_2022_1.pdf")
 ```
 
+```{r}
+source("sb_function.R")
+sb_function("STAT113_Fall_2020_1.pdf")
+sb_function("STAT113_Fall_2020_2.pdf")
+sb_function("STAT113_Fall_2022.pdf")
+sb_function("STAT113_Spring_2020_1.pdf")
+sb_function("STAT113_Spring_2020_2.pdf")
+sb_function("STAT113_Spring_2021_1.pdf")
+sb_function("STAT113_Spring_2021_2.pdf")
+sb_function("STAT113_Spring_2022_1.pdf")
+sb_function("STAT113_Spring_2022_2.pdf")
+sb_function("STAT213_Spring_2020_1.pdf")
+sb_function("STAT213_Spring_2021_1.pdf")
+sb_function("STAT234_Fall_2020_1.pdf")
+sb_function("STAT234_Fall_2022.pdf")
+sb_function("STAT4005_Spring_2022_1.pdf")
+```
+
