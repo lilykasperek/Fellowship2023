@@ -1,3 +1,4 @@
+# full function 
 pdf_function_full <- function(eval) {
   # page 1
   tab <- pdf_text(eval)
@@ -14,28 +15,6 @@ pdf_function_full <- function(eval) {
                                         replacement = "0")
   only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
   
-  # responses 
-  reasons_responses <- c("Major",
-                         "Minor",
-                         "Distribution/Diversity",
-                         "Interest in Subject",
-                         "Instructor",
-                         "Off Campus",
-                         "Work on own schedule",
-                         "Other")
-  
-  gender_responses <- c("Male",
-                        "Female",
-                        "Other",
-                        "Prefer not to disclose")
-  
-  class_responses <- c("First Year",
-                       "Sophomore",
-                       "Junior",
-                       "Senior",
-                       "Grad Student",
-                       "Other")
-  
   responses <- c("Strongly Agree",
                  "Agree", 
                  "Agree Somewhat",
@@ -49,44 +28,6 @@ pdf_function_full <- function(eval) {
                    "Appropriate",
                    "Somewhat Low",
                    "Too Low") 
-  
-  # primary reason for enrolling
-  reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
-  reasons <- only_numbers[reasons_indeces] 
-  reasons[[1]] <- reasons[[1]][1:3]
-  reasons[[2]] <- reasons[[2]][1:3]
-  reasons[[3]] <- reasons[[3]][1:3]
-  reasons[[5]] <- reasons[[5]][1:3]
-  reasons[[6]] <- reasons[[6]][1:3]
-  reasons[[7]] <- reasons[[7]][1:3]
-  reasons_df <- do.call(rbind.data.frame, reasons)
-  names(reasons_df) <- c("n_students", "perc", "univ_perc")
-  core_reasons_df <- tibble::tibble(responses = reasons_responses,
-                                    reasons_df) |>
-    mutate(question = "primary reason for enrollment")
-  
-  # gender
-  gender_indeces <- c(35, 37, 38, 39)
-  gender <- only_numbers[gender_indeces]
-  gender[[3]] <- gender[[3]][1:3]
-  gender[[4]] <- gender[[4]][1:3]
-  gender_df <- do.call(rbind.data.frame, gender)
-  names(gender_df) <- c("n_students", "perc", "univ_perc")
-  core_gender_df <- tibble::tibble(responses = gender_responses,
-                                   gender_df) |>
-    mutate(question = "gender")
-  
-  # class year 
-  class_indeces <- c(44, 45, 47, 48, 51, 53)
-  class_year <- only_numbers[class_indeces]
-  class_year[[1]] <- class_year[[1]][1:3]
-  class_year[[2]] <- class_year[[2]][1:3]
-  class_year[[3]] <- class_year[[3]][1:3]
-  classyear_df <- do.call(rbind.data.frame, class_year)
-  names(classyear_df) <- c("n_students", "perc", "univ_perc")
-  core_class_df <- tibble::tibble(responses = class_responses,
-                                  classyear_df) |>
-    mutate(question = "class year")
   
   # question 1
   q1_indeces <- c(63, 64, 65, 66, 67, 68, 69)
@@ -248,10 +189,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q6c")
   
   # all questions, missing summary of means 
-  full_df <- bind_rows(core_reasons_df,
-                       core_gender_df, 
-                       core_class_df,
-                       core_df_1,
+  full_df <- bind_rows(core_df_1,
                        core_df_2,
                        core_df_3,
                        core_df_4a,
