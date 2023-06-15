@@ -201,5 +201,33 @@ pdf_function_full <- function(eval) {
                        core_df_6a,
                        core_df_6b,
                        core_df_6c)
+  full_df <- full_df |> mutate(responses_hm = 
+                                 fct_recode(responses, AgreeStrongly = 'Strongly Agree',
+                                            AgreeSomewhat = 'Agree Somewhat',
+                                            DisagreeSomewhat = 'Disagree Somewhat',
+                                            DisagreeStrongly = 'Disagree Strongly')
+  ) |>
+    mutate(question_hm = as.factor(question)) |>
+    mutate(count_hm = as.double(n_students)) |> mutate(responses_hm = 
+                                                         fct_relevel(responses_hm, c("DisagreeStrongly",
+                                                                                     "Disagree",
+                                                                                     "DisagreeSomewhat",
+                                                                                     "Neutral",
+                                                                                     "AgreeSomewhat",
+                                                                                     "Agree",
+                                                                                     "AgreeStrongly"))) |>
+    mutate(full_question = 
+             case_when(question_hm == "Q1" ~ "Valuable",
+                       question_hm == "Q2" ~ "Organized",
+                       question_hm == "Q3" ~ "Learning",
+                       question_hm == "Q5a" ~ "Fair",
+                       question_hm == "Q5b" ~ "Timely",
+                       question_hm == "Q5c" ~ "Constructive",
+                       question_hm == "Q6a" ~ "Rec_Prof",
+                       question_hm == "Q6b" ~ "Rec_Course",
+                       question_hm == "Q6c" ~ "Effective",
+                       question_hm == "Q4a" ~ "Workload",
+                       question_hm == "Q4b" ~ "Grading",
+                       question_hm == "Q4c" ~ "Sophistication")) 
   return(full_df)
 }
