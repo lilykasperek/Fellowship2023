@@ -172,3 +172,31 @@ ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
         legend.box.background = element_rect(colour = "black")) 
 ```
 
+```{r}
+labels <- meta_function("STAT113_Fall_2020_1.pdf")
+labels
+labels[1, 1]
+labels[1, 2]
+labels[1, 3]
+labels[1, 4]
+
+title <- paste(labels[1, 2], labels[1, 1], sep = " ", collapse = NULL)
+title
+subtitle <- paste(labels[1, 3], labels[1, 4], sep = " ", collapse = NULL)
+subtitle
+
+ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
+                                fill = count_hm)) +
+    geom_tile() +
+    scale_fill_viridis_c(direction = 1) +
+      labs(x = "Responses",
+           y = "Questions",
+           fill = "Count",
+           title = title,
+           subtitle = subtitle) +
+  geom_text(aes(label = count_hm,
+                fontface = 'bold')) +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.box.background = element_rect(colour = "black")) 
+```
