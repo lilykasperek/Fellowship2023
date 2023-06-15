@@ -115,3 +115,60 @@ ggplot(data = test, aes(x = responses_hm, y = full_question,
         plot.subtitle = element_text(hjust = 0.5),
         legend.box.background = element_rect(colour = "black")) 
 ```
+
+```{r}
+source("pdf_function_full.R")
+pdf_test <- pdf_function_full("STAT113_Fall_2020_1.pdf")
+pdf_hm_test <- pdf_test |> mutate(responses_hm = 
+           fct_recode(responses, AgreeStrongly = 'Strongly Agree',
+                      AgreeSomewhat = 'Agree Somewhat',
+                      DisagreeSomewhat = 'Disagree Somewhat',
+                      DisagreeStrongly = 'Disagree Strongly')
+         ) |>
+  mutate(question_hm = as.factor(question)) |>
+  mutate(count_hm = as.double(n_students)) |> mutate(responses_hm = 
+                       fct_relevel(responses_hm, c("DisagreeStrongly",
+                                             "Disagree",
+                                             "DisagreeSomewhat",
+                                             "Neutral",
+                                             "AgreeSomewhat",
+                                             "Agree",
+                                             "AgreeStrongly"))) |>
+  mutate(full_question = 
+           case_when(question_hm == "Q1" ~ "Valuable",
+                     question_hm == "Q2" ~ "Organized",
+                     question_hm == "Q3" ~ "Learning",
+                     question_hm == "Q5a" ~ "Fair",
+                     question_hm == "Q5b" ~ "Timely",
+                     question_hm == "Q5c" ~ "Constructive",
+                     question_hm == "Q6a" ~ "Rec_Prof",
+                     question_hm == "Q6b" ~ "Rec_Course",
+                     question_hm == "Q6c" ~ "Effective",
+                     question_hm == "Q4a" ~ "Workload",
+                     question_hm == "Q4b" ~ "Grading",
+                     question_hm == "Q4c" ~ "Sophistication")) 
+pdf_hm_test |> print(n = 78)
+
+pdf_hm_test <- pdf_hm_test |> filter(responses_hm != "Too High" &
+                        responses_hm != "Too Low" &
+                        responses_hm != "Appropriate" &
+                        responses_hm != "Somewhat High" &
+                        responses_hm != "Somewhat Low") |>
+  arrange(question_hm) |>
+  print(n = 63)
+pdf_hm_test
+  
+ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
+                                fill = count_hm)) +
+  geom_tile() +
+  scale_fill_viridis_c(direction = 1) +
+  labs(title = "Student Evaluation Data",
+       x = "Response",
+       y = "Question",
+       fill = "Count") +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.box.background = element_rect(colour = "black")) 
+```
+
