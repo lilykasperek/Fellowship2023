@@ -267,3 +267,29 @@ ggplot(data = class, aes(x = responses_ordered, y = count)) +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
 ```
+
+```{r}
+source("pdf_function_full.R")
+pdf_facet_test <- pdf_function_full("STAT113_Fall_2020_1.pdf")
+pdf_facet_test <- pdf_facet_test |> mutate(perc = as.double(perc)) |>
+  mutate(question_2 = 
+                       fct_relevel(full_question, c("Valuable",
+                                               "Organized",
+                                               "Learning",
+                                               "Fair",
+                                               "Timely",
+                                               "Constructive",
+                                               "Rec_Prof",
+                                               "Rec_Course",
+                                               "Effective")))
+pdf_facet_test
+
+ggplot(data = pdf_facet_test, aes(x = responses_hm, y = count_hm)) +
+  geom_col() +
+  facet_wrap(~question_2)
+
+ggplot(data = pdf_facet_test, aes(x = responses_hm, y = perc)) +
+  geom_col() +
+  facet_wrap(~question_2)
+```
+
