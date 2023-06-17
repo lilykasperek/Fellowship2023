@@ -16,373 +16,104 @@ source("sb_function.R")
 sb_function("STAT113_Fall_2020_1.pdf")
 ```
 
-with table and heatmap 
+most current version of shiny app
 ```{r}
 ui <- fluidPage( 
   titlePanel("Upload File Here"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))),
-    mainPanel(
-      uiOutput("pdfview"), 
-      plotOutput("heatmap")
-    ))
-)
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                        responses_hm != "Too Low" &
-                        responses_hm != "Appropriate" &
-                        responses_hm != "Somewhat High" &
-                        responses_hm != "Somewhat Low")
-    pdf_display <- pdf_df |>
-      select(responses, n_students, perc, univ_perc, full_question) |>
-      rename(Responses = 'responses',
-             Count = 'n_students',
-             Percent_of_Students = 'perc',
-             University_Percent = 'univ_perc',
-             Question = 'full_question')
-    return(head(pdf_display))
-  })
-  output$heatmap <- renderPlot({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                        responses_hm != "Too Low" &
-                        responses_hm != "Appropriate" &
-                        responses_hm != "Somewhat High" &
-                        responses_hm != "Somewhat Low")
-    meta_df <- meta_function(input$file_input$datapath)
-    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
-    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-    ggplot(data = pdf_df, aes(x = responses_hm, y = full_question,
-                                fill = count_hm)) +
-    geom_tile() +
-    scale_fill_viridis_c(direction = 1) +
-      labs(x = "Responses",
-           y = "Questions",
-           fill = "Count",
-           title = title,
-           subtitle = subtitle) +
-  geom_text(aes(label = count_hm,
-                fontface = 'bold')) +
-      theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5,
-                                  size = 16),
-        plot.subtitle = element_text(hjust = 0.5,
-                                     size = 14),
-        legend.box.background = element_rect(colour = "black"),
-        ) 
-  })
-}
-shinyApp(ui, server)
-```
-
-without table, just heatmap 
-```{r}
-ui <- fluidPage( 
-  titlePanel("Upload File Here"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))),
-    mainPanel( 
-      plotOutput("heatmap")
-    ))
-)
-server <- function(input, output, session) {
-  output$heatmap <- renderPlot({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                        responses_hm != "Too Low" &
-                        responses_hm != "Appropriate" &
-                        responses_hm != "Somewhat High" &
-                        responses_hm != "Somewhat Low")
-    meta_df <- meta_function(input$file_input$datapath)
-    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
-    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-    ggplot(data = pdf_df, aes(x = responses_hm, y = full_question,
-                                fill = count_hm)) +
-    geom_tile() +
-    scale_fill_viridis_c(direction = 1) +
-      labs(x = "Responses",
-           y = "Questions",
-           fill = "Count",
-           title = title,
-           subtitle = subtitle) +
-      theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5,
-                                  size = 16),
-        plot.subtitle = element_text(hjust = 0.5,
-                                     size = 14),
-        legend.box.background = element_rect(colour = "black"),
-        ) 
-  })
-}
-shinyApp(ui, server)
-```
-
-
-
-```{r}
-# displays pdf_function_full table 
-ui <- fluidPage( 
-  titlePanel("Testing file upload"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))
-    ),
-    
-    mainPanel(
-      uiOutput("pdfview")
-    ))
-)
-
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    return(head(pdf_df))
-  })
-}
-
-shinyApp(ui, server)
-```
-
-```{r}
-# displays meta function 
-ui <- fluidPage( 
-  titlePanel("Testing file upload"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))
-    ),
-    mainPanel(
-      uiOutput(outputId = "pdfview"),
-      tableOutput(outputId = "pdfview2")
-    ))
-)
-
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    return(head(pdf_df))
-  })
-  output$pdfview2 <- renderTable({
-    req(input$file_input)
-    meta_df <- meta_function(input$file_input$datapath)
-    return(meta_df)
-  })
-  
-}
-
-shinyApp(ui, server)
-```
-
-```{r}
-ui <- fluidPage( 
-  titlePanel("Testing file upload"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))
-    ),
-    mainPanel(
-      uiOutput(outputId = "pdfview"),
-      tableOutput(outputId = "pdfview2"),
-      tableOutput(outputId = "pdfview3")
-    ))
-)
-
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> rename(Responses = 'responses',
-                     Count = 'n_students',
-                     Percent = 'perc',
-                     University_Percent = 'univ_perc',
-                     Question = 'question')
-    return(head(pdf_df))
-  })
-  output$pdfview2 <- renderTable({
-    req(input$file_input)
-    meta_df <- meta_function(input$file_input$datapath)
-    return(meta_df)
-  })
-  output$pdfview3 <- renderTable({
-    req(input$file_input)
-    sb_df <- sb_function(input$file_input$datapath)
-    return(head(sb_df))
-  })
-  
-}
-
-shinyApp(ui, server)
-```
-
-```{r}
-pdf_function_full("STAT113_Fall_2020_1.pdf")
-ui <- fluidPage( 
-  titlePanel("Testing file upload"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))
-    ),
-    
-    mainPanel(
-      uiOutput("pdfview")
-    ))
-)
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    return(head(pdf_df))
-  })
-}
-
-shinyApp(ui, server)
-```
-
-```{r}
-ui <- fluidPage( 
-  titlePanel("Testing file upload"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))
-    ),
-    
-    mainPanel(
-      uiOutput("pdfview")
-    ))
-)
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                        responses_hm != "Too Low" &
-                        responses_hm != "Appropriate" &
-                        responses_hm != "Somewhat High" &
-                        responses_hm != "Somewhat Low")
-    return(pdf_df)
-  })
-  
-}
-
-shinyApp(ui, server)
-```
-
-```{r}
-ui <- fluidPage( 
-  titlePanel("Upload File Here"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput('file_input', 'Upload Student Evaluation
-                File (.pdf format only)',
-                accept = c('pdf'))),
-    mainPanel(
-      uiOutput("pdfview"),
-      plotOutput("heatmap")
-    ))
-)
-server <- function(input, output, session) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                        responses_hm != "Too Low" &
-                        responses_hm != "Appropriate" &
-                        responses_hm != "Somewhat High" &
-                        responses_hm != "Somewhat Low")
-    pdf_display <- pdf_df |>
-      select(responses, n_students, perc, univ_perc, full_question) |>
-      rename(Responses = 'responses',
-             Count = 'n_students',
-             Percent_of_Students = 'perc',
-             University_Percent = 'univ_perc',
-             Question = 'full_question')
-    return(head(pdf_display))
-  })
-  output$heatmap <- renderPlot({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
-    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                        responses_hm != "Too Low" &
-                        responses_hm != "Appropriate" &
-                        responses_hm != "Somewhat High" &
-                        responses_hm != "Somewhat Low")
-    ggplot(data = pdf_df, aes(x = responses_hm, y = full_question,
-                                fill = count_hm)) +
-    geom_tile() +
-    scale_fill_viridis_c(direction = 1) +
-      labs(x = "Responses",
-           y = "Questions",
-           fill = "Count")
-  })
-}
-shinyApp(ui, server)
-```
-
-
-```{r}
-choices <- c("pdf_function_full",
-             "meta_function")
-choices
-# add buttons
-ui <- fluidPage( 
-  titlePanel("Testing file upload"),
   sidebarLayout(
     sidebarPanel(
       fileInput('file_input', 'Upload Student Evaluation
                 File (.pdf format only)',
                 accept = c('pdf')),
-      selectInput(inputId = "choose", label = "choose table", 
-                  choices = choices),
-    ),
-    
+      radioButtons(inputId = "choose", label = "Counts or Percent of Students",
+                   choices = c("Count", "Percent")),
+      ),
     mainPanel(
-      tableOutput(outputId = "pdfview"),
-      tableOutput(outputId = "pdfview2")
+      plotOutput("heatmap", width = "100%"),
+      uiOutput("pdfview"),
+      uiOutput("pdf_display")
     ))
 )
-
 server <- function(input, output, session) {
-  
-  output$pdfview <- renderTable({
+  output$heatmap <- renderPlot({
     req(input$file_input)
     pdf_df <- pdf_function_full(input$file_input$datapath)
-    return(head(pdf_df))
-  })
-  
-  output$pdfview2 <- renderTable({
+    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
+                        responses_hm != "Too Low" &
+                        responses_hm != "Appropriate" &
+                        responses_hm != "Somewhat High" &
+                        responses_hm != "Somewhat Low")
+    pdf_df <- pdf_df |> mutate(question_2 = 
+                       fct_relevel(full_question, c("Valuable",
+                                               "Organized",
+                                               "Learning",
+                                               "Fair",
+                                               "Timely",
+                                               "Constructive",
+                                               "Rec_Prof",
+                                               "Rec_Course",
+                                               "Effective")))
+    pdf_df <- pdf_df |> mutate(perc = as.double(perc))
+    pdf_df <- pdf_df |> rename(Count = 'count_hm',
+                               Percent = 'perc')
+    meta_df <- meta_function(input$file_input$datapath)
+    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
+    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    ggplot(data = pdf_df, aes(x = responses_hm, y = fct_rev(question_2),
+                                fill = .data[[input$choose]])) +
+    geom_tile() +
+    scale_fill_viridis_c(direction = 1) +
+      labs(x = "Responses",
+           y = "Questions",
+           fill = input$choose,
+           title = title,
+           subtitle = subtitle) +
+      geom_text(aes(label = .data[[input$choose]],
+                  fontface = 'bold',
+                  size = 20),
+            show.legend = FALSE) +
+      theme_bw() +
+      theme(plot.title = element_text(hjust = 0.5,
+                                  size = 17),
+            plot.subtitle = element_text(hjust = 0.5),
+            legend.box.background = element_rect(colour = "black"),
+            axis.text = element_text(size = 13),
+            axis.title = element_text(size = 15),
+            legend.title = element_text(size = 12,
+                                        hjust = 0.5),
+            legend.text = element_text(size = 9,
+                                       hjust = 0.5)) 
+  }, height = 400, width = 900)
+  output$pdfview <- renderTable({
     req(input$file_input)
     meta_df <- meta_function(input$file_input$datapath)
+    meta_df <- meta_df |> rename(Course_Number = 'course_num',
+                                 Subject = 'subject',
+                                 Semester = 'semester',
+                                 Year = 'year',
+                                 Control_Number = 'control_num',
+                                 Total_Evals = 'n_evals',
+                                 Total_Evals_University = 'n_evals_univ')
     return(meta_df)
   })
-  
+  output$pdf_display <- renderTable({
+    req(input$file_input)
+    pdf_df <- pdf_function_full(input$file_input$datapath)
+    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
+                        responses_hm != "Too Low" &
+                        responses_hm != "Appropriate" &
+                        responses_hm != "Somewhat High" &
+                        responses_hm != "Somewhat Low")
+    pdf_display <- pdf_df |>
+      select(responses, n_students, perc, univ_perc, full_question) |>
+      rename(Responses = 'responses',
+             Count = 'n_students',
+             Percent_of_Students = 'perc',
+             University_Percent = 'univ_perc',
+             Question = 'full_question')
+    return(head(pdf_display))
+  })
 }
-
 shinyApp(ui, server)
 ```
-
-
-
 
