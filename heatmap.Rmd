@@ -56,7 +56,7 @@ evals <- evals |>
                                                "Effective")))
 evals
 
-ggplot(data = evals, aes(x = response_2, y = question_2,
+ggplot(data = evals, aes(x = response_2, y = fct_rev(question_2),
                               fill = count)) +
   geom_tile() +
   scale_fill_viridis_c(direction = 1) +
@@ -170,6 +170,23 @@ ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.box.background = element_rect(colour = "black")) 
+
+# percents
+pdf_hm_test <- pdf_hm_test |> mutate(perc = as.double(perc))
+ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
+                               fill = perc)) +
+  geom_tile() +
+  scale_fill_viridis_c(direction = 1) +
+  labs(title = "Student Evaluation Data",
+       x = "Response",
+       y = "Question",
+       fill = "Percent of Students") +
+  geom_text(aes(label = perc,
+                fontface = 'bold')) +
+  theme_bw() +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        legend.box.background = element_rect(colour = "black")) 
 ```
 
 ```{r}
@@ -200,3 +217,5 @@ ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
         plot.subtitle = element_text(hjust = 0.5),
         legend.box.background = element_rect(colour = "black")) 
 ```
+
+
