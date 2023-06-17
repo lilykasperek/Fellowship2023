@@ -15,6 +15,9 @@ meta_function <- function(eval) {
   meta_test <- tibble::tibble(course_num = only_numbers[[2]][3],
                               subject = info_split[[1]][3],
                               semester = semester, 
-                              year = only_numbers[[2]][1]) 
+                              year = only_numbers[[2]][1],
+                              control_num = only_numbers[[1]][2],
+                              n_evals = only_numbers[[4]][1],
+                              n_evals_univ = only_numbers[[8]][1]) 
   return(meta_test)
 }
