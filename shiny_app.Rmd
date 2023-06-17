@@ -31,16 +31,16 @@ ui <- fluidPage(
                    choices = c("Count", "Percent")),
       ),
     mainPanel(
-      plotOutput("heatmap", width = "100%"),
-      plotOutput("bar_graph", width = "100%"), 
+      plotOutput("choose_plot"),
       uiOutput("pdfview"),
       uiOutput("pdf_display")
     ))
 )
 server <- function(input, output, session) {
-  output$heatmap <- renderPlot({
+  output$choose_plot <- renderPlot({
     req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
+    if (input$choose_graph == "Heatmap") {
+      pdf_df <- pdf_function_full(input$file_input$datapath)
     pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
                         responses_hm != "Too Low" &
                         responses_hm != "Appropriate" &
@@ -86,10 +86,8 @@ server <- function(input, output, session) {
                                         hjust = 0.5),
             legend.text = element_text(size = 10,
                                        hjust = 0.5)) 
-  }, height = 400, width = 900)
-  output$bar_graph <- renderPlot({
-    req(input$file_input)
-    pdf_df <- pdf_function_full(input$file_input$datapath)
+    } else{
+      pdf_df <- pdf_function_full(input$file_input$datapath)
     pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
                         responses_hm != "Too Low" &
                         responses_hm != "Appropriate" &
@@ -132,8 +130,8 @@ server <- function(input, output, session) {
             legend.text = element_text(size = 10,
                                        hjust = 0.5),
             strip.text.x = element_text(size = 14)) 
-      
-  }, height = 400, width = 800)
+    }
+  })
   output$pdfview <- renderTable({
     req(input$file_input)
     meta_df <- meta_function(input$file_input$datapath)
