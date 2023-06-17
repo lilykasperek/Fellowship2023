@@ -181,12 +181,16 @@ ggplot(data = pdf_hm_test, aes(x = responses_hm, y = full_question,
        x = "Response",
        y = "Question",
        fill = "Percent of Students") +
-  geom_text(aes(label = perc,
-                fontface = 'bold')) +
+  geom_text(aes(label = perc, fontface = 'bold',
+                size = 1),
+            show.legend = FALSE) +
   theme_bw() +
-  theme(plot.title = element_text(hjust = 0.5),
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 16),
         plot.subtitle = element_text(hjust = 0.5),
-        legend.box.background = element_rect(colour = "black")) 
+        legend.box.background = element_rect(colour = "black"),
+        axis.text = element_text(size = 13),
+        axis.title = element_text(size = 15)) 
 ```
 
 ```{r}
