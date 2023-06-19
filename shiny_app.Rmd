@@ -26,14 +26,14 @@ ui <- fluidPage(
                 File (.pdf format only)',
                 accept = c('pdf')),
       radioButtons(inputId = "choose_graph", label = "Heatmap or Bar Plot",
-                   choices = c("Heatmap", "Bar_Plot")),
+                   choices = c("Heatmap", "Bar Plot")),
       radioButtons(inputId = "choose", label = "Counts or Percent of Students",
                    choices = c("Count", "Percent")),
       ),
     mainPanel(
-      plotOutput("choose_plot"),
-      uiOutput("pdfview"),
-      uiOutput("pdf_display")
+      plotOutput("choose_plot", width = "100%"),
+      tableOutput("pdfview"),
+      tableOutput("pdf_display")
     ))
 )
 server <- function(input, output, session) {
@@ -47,15 +47,15 @@ server <- function(input, output, session) {
                         responses_hm != "Somewhat High" &
                         responses_hm != "Somewhat Low")
     pdf_df <- pdf_df |> mutate(question_2 = 
-                       fct_relevel(full_question, c("Valuable",
-                                               "Organized",
-                                               "Learning",
-                                               "Fair",
-                                               "Timely",
-                                               "Constructive",
-                                               "Rec_Prof",
-                                               "Rec_Course",
-                                               "Effective")))
+                       fct_relevel(full_question, c("Q1. Valuable",
+                                               "Q2. Organized",
+                                               "Q3. Learning",
+                                               "Q5a. Fair",
+                                               "Q5b. Timely",
+                                               "Q5c. Constructive",
+                                               "Q6a. Rec_Prof",
+                                               "Q6b. Rec_Course",
+                                               "Q6c. Effective")))
     pdf_df <- pdf_df |> mutate(perc = as.double(perc))
     pdf_df <- pdf_df |> rename(Count = 'count_hm',
                                Percent = 'perc')
@@ -71,9 +71,9 @@ server <- function(input, output, session) {
            fill = input$choose,
            title = title,
            subtitle = subtitle) +
-      geom_text(aes(label = .data[[input$choose]],
-                  fontface = 'bold',
-                  size = 20),
+      geom_shadowtext(aes(label = .data[[input$choose]],
+                  fontface = 'bold'), size = 6,
+                colour = "gray",
             show.legend = FALSE) +
       theme_bw() +
       theme(plot.title = element_text(hjust = 0.5,
@@ -94,15 +94,15 @@ server <- function(input, output, session) {
                         responses_hm != "Somewhat High" &
                         responses_hm != "Somewhat Low")
     pdf_df <- pdf_df |> mutate(question_2 = 
-                       fct_relevel(full_question, c("Valuable",
-                                               "Organized",
-                                               "Learning",
-                                               "Fair",
-                                               "Timely",
-                                               "Constructive",
-                                               "Rec_Prof",
-                                               "Rec_Course",
-                                               "Effective")))
+                       fct_relevel(full_question, c("Q1. Valuable",
+                                               "Q2. Organized",
+                                               "Q3. Learning",
+                                               "Q5a. Fair",
+                                               "Q5b. Timely",
+                                               "Q5c. Constructive",
+                                               "Q6a. Rec_Prof",
+                                               "Q6b. Rec_Course",
+                                               "Q6c. Effective")))
     pdf_df <- pdf_df |> mutate(perc = as.double(perc))
     pdf_df <- pdf_df |> rename(Count = 'count_hm',
                                Percent = 'perc')
@@ -122,7 +122,8 @@ server <- function(input, output, session) {
                                   size = 18),
             plot.subtitle = element_text(hjust = 0.5),
             legend.box.background = element_rect(colour = "black"),
-            axis.text.x = element_text(size = 7),
+            axis.text.x = element_text(size = 5.5,
+                                       face = "bold"),
             axis.text.y = element_text(size = 12),
             axis.title = element_text(size = 16),
             legend.title = element_text(size = 13,
@@ -131,7 +132,7 @@ server <- function(input, output, session) {
                                        hjust = 0.5),
             strip.text.x = element_text(size = 14)) 
     }
-  })
+  }, height = 400, width = 920)
   output$pdfview <- renderTable({
     req(input$file_input)
     meta_df <- meta_function(input$file_input$datapath)
@@ -143,7 +144,7 @@ server <- function(input, output, session) {
                                  Total_Evals = 'n_evals',
                                  Total_Evals_University = 'n_evals_univ')
     return(meta_df)
-  })
+  }, align = 'c')
   output$pdf_display <- renderTable({
     req(input$file_input)
     pdf_df <- pdf_function_full(input$file_input$datapath)
@@ -159,8 +160,10 @@ server <- function(input, output, session) {
              Percent_of_Students = 'perc',
              University_Percent = 'univ_perc',
              Question = 'full_question')
+    pdf_display <- pdf_display |> filter(Responses == "Strongly Agree" |
+                                           Responses == "Agree")
     return(head(pdf_display))
-  })
+  }, align = 'l')
 }
 shinyApp(ui, server)
 ```
