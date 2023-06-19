@@ -217,17 +217,17 @@ pdf_function_full <- function(eval) {
                                                                                      "Agree",
                                                                                      "AgreeStrongly"))) |>
     mutate(full_question = 
-             case_when(question_hm == "Q1" ~ "Valuable",
-                       question_hm == "Q2" ~ "Organized",
-                       question_hm == "Q3" ~ "Learning",
-                       question_hm == "Q5a" ~ "Fair",
-                       question_hm == "Q5b" ~ "Timely",
-                       question_hm == "Q5c" ~ "Constructive",
-                       question_hm == "Q6a" ~ "Rec_Prof",
-                       question_hm == "Q6b" ~ "Rec_Course",
-                       question_hm == "Q6c" ~ "Effective",
-                       question_hm == "Q4a" ~ "Workload",
-                       question_hm == "Q4b" ~ "Grading",
-                       question_hm == "Q4c" ~ "Sophistication")) 
+             case_when(question_hm == "Q1" ~ "Q1. Valuable",
+                       question_hm == "Q2" ~ "Q2. Organized",
+                       question_hm == "Q3" ~ "Q3. Learning",
+                       question_hm == "Q5a" ~ "Q5a. Fair",
+                       question_hm == "Q5b" ~ "Q5b. Timely",
+                       question_hm == "Q5c" ~ "Q5c. Constructive",
+                       question_hm == "Q6a" ~ "Q6a. Rec_Prof",
+                       question_hm == "Q6b" ~ "Q6b. Rec_Course",
+                       question_hm == "Q6c" ~ "Q6c. Effective",
+                       question_hm == "Q4a" ~ "Q4a. Workload",
+                       question_hm == "Q4b" ~ "Q4b. Grading",
+                       question_hm == "Q4c" ~ "Q4c. Sophistication")) 
   return(full_df)
 }
