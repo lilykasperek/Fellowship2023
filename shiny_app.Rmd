@@ -14,6 +14,8 @@ source("meta_function.R")
 meta_function("STAT113_Fall_2020_1.pdf")
 source("sb_function.R")
 sb_function("STAT113_Fall_2020_1.pdf")
+library(shinythemes)
+library(shadowtext)
 ```
 
 most current version of shiny app
@@ -185,6 +187,7 @@ ui <- fluidPage(
                                        choices = c("Count", "Percent")),
                           width = 3),
                         mainPanel(
+                          tableOutput("pdf_summary"), 
                           plotOutput("choose_plot", width = "100%")
                         )
                       )
@@ -196,8 +199,7 @@ ui <- fluidPage(
                       sidebarLayout(
                         sidebarPanel(
                           radioButtons(inputId = "choose_table", label = "Choose Table",
-                                   choices = c("Summary Output",
-                                               "Full Dataset",
+                                   choices = c("Full Dataset",
                                                "Student Backgrounds")),
                         ),
                           mainPanel(
@@ -206,6 +208,18 @@ ui <- fluidPage(
           ))
 ))
 server <- function(input, output, session) {
+  output$pdf_summary <- renderTable({
+    req(input$file_input)
+    meta_df <- meta_function(input$file_input$datapath)
+    meta_df <- meta_df |> rename(Course_Number = 'course_num',
+                                   Subject = 'subject',
+                                   Semester = 'semester',
+                                   Year = 'year',
+                                   Control_Number = 'control_num',
+                                   Total_Evals = 'n_evals',
+                                   Total_Evals_University = 'n_evals_univ')
+    return(meta_df)
+  })
   output$choose_plot <- renderPlot({
     req(input$file_input)
     if (input$choose_graph == "Heatmap") {
@@ -272,22 +286,13 @@ server <- function(input, output, session) {
                                                "Q6a. Rec_Prof",
                                                "Q6b. Rec_Course",
                                                "Q6c. Effective")))
-    pdf_df <- pdf_df |> mutate(responses_barplot =
-                                 fct_recode(responses_hm,
-                                            AgStrongly = "AgreeStrongly",
-                                            A = "Agree",
-                                            AgSome = "AgreeSomewhat",
-                                            N = "Neutral",
-                                            DisSome = "DisagreeSomewhat",
-                                            D = "Disagree",
-                                            DisStrong = "DisagreeStrongly"))
     pdf_df <- pdf_df |> mutate(perc = as.double(perc))
     pdf_df <- pdf_df |> rename(Count = 'count_hm',
                                Percent = 'perc')
     meta_df <- meta_function(input$file_input$datapath)
     title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
     subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-    ggplot(data = pdf_df, aes(x = responses_barplot, y = .data[[input$choose]])) +
+    ggplot(data = pdf_df, aes(y = responses_hm, x = .data[[input$choose]])) +
       geom_col(aes(fill = .data[[input$choose]])) +
       facet_wrap(~question_2) +
       labs(x = "Responses",
@@ -307,22 +312,13 @@ server <- function(input, output, session) {
                                         hjust = 0.5),
             legend.text = element_text(size = 10,
                                        hjust = 0.5),
-            strip.text.x = element_text(size = 14)) 
+            strip.text.x = element_text(size = 14),
+            legend.position = "none") 
     }
-  }, height = 550, width = 1050)
+  }, height = 475, width = 1025)
   output$pdfview <- renderDataTable({
     req(input$file_input)
-    if (input$choose_table == "Summary Output") {
-      meta_df <- meta_function(input$file_input$datapath)
-      meta_df <- meta_df |> rename(Course_Number = 'course_num',
-                                   Subject = 'subject',
-                                   Semester = 'semester',
-                                   Year = 'year',
-                                   Control_Number = 'control_num',
-                                   Total_Evals = 'n_evals',
-                                   Total_Evals_University = 'n_evals_univ')
-      return(meta_df)
-    } else if (input$choose_table == "Full Dataset") {
+    if (input$choose_table == "Full Dataset") {
       pdf_df <- pdf_function_full(input$file_input$datapath)
       pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
                           responses_hm != "Too Low" &
@@ -337,7 +333,7 @@ server <- function(input, output, session) {
                University_Percent = 'univ_perc',
                Question = 'full_question')
       return(pdf_display)
-    } else{
+    } else {
       pdf_df <- sb_function(input$file_input$datapath)
       pdf_df <- pdf_df |>
         mutate(question_2 = fct_recode(question,
