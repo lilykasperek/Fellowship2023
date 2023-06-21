@@ -1,0 +1,46 @@
+---
+title: "Visualizing Student Evaluation Data"
+format: revealjs
+editor: visual
+---
+## Student Evaluation Data 
+
+![Evaluation Data Example](page_2.jpg)
+
+## Likert Scale Data 
+
+```{r}
+# show why means of likert scale data is bad 
+library(tidyverse)
+mock_df <- tibble(year = c(rep(1, 5), rep(2, 5)),
+                  resp = rep(c("Agree", "Agree Somewhat", "Neutral",
+                               "Disagree Somewhat", "Disagree"), 2),
+                  n_resp = c(5, 2, 1, 2, 5,
+                             0, 2, 12, 1, 0)) |>
+  mutate(resp = fct_inorder(resp))
+
+ggplot(data = mock_df, aes(x = resp, y = n_resp)) +
+  geom_col(colour = "black", fill = "blue") +
+  facet_wrap(~year) +
+  coord_flip() +
+  labs(x = "response", y = "number of students")
+```
+
+-   Completely different spreads, with the same mean 
+
+## Process
+
+-   Scrape data from pdf into R
+-   Wrangle the data 
+-   Construct visualizations 
+-   Write functions for data scraping/wrangling 
+-   Build and test shiny app 
+
+## Shiny App
+
+
+## Moving Forward 
+
+-   More visualizations 
+-   Allow for multiple pdf files to be uploaded at once
+-   Construct visualizations for new evaluation system
