@@ -67,7 +67,8 @@ server <- function(input, output, session) {
                                    Total_Evals = 'n_evals',
                                    Total_Evals_University = 'n_evals_univ')
     return(meta_df)
-  })
+  }, align = 'c',
+  width = 100000)
   output$choose_plot <- renderPlot({
     req(input$file_input)
     if (input$choose_graph == "Heatmap") {
