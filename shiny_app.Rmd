@@ -41,20 +41,20 @@ ui <- fluidPage(
                       )
                     )
                     ),
-           # fill content for this tab 
           tabPanel(title = "Questions with Different Scale",
                    fluidPage(fluidRow(
                      sidebarLayout(
                        sidebarPanel(
-                       radioButtons(inputId = "choose_graph_special", label = "Choose Visualization: These
-                                    questions use a different Likert scale",
+                       radioButtons(inputId = "choose_graph_special", label = "Choose Visualization:
+                                    These questions use a different Likert scale",
                                     choices = c("Heatmap", "Bar Plot")),
                        radioButtons(inputId = "choose_special", label = "Count or Percent
                                     of Students", 
                                     choices = c("Count", "Percent")),
-                                    ),
+                       width = 3),
                        mainPanel(tableOutput("pdf_summary_special"),
-                                             plotOutput("choose_plot_special"))
+                                             plotOutput("choose_plot_special", width = "100%")
+                                 )
                      )
                    ))),
           tabPanel(title = "Summary Output Tables",
@@ -64,9 +64,10 @@ ui <- fluidPage(
                           radioButtons(inputId = "choose_table", label = "Choose Table",
                                    choices = c("Full Dataset",
                                                "Student Backgrounds")),
-                        ),
+                          width = 3),
                           mainPanel(
-                            dataTableOutput("pdfview")),
+                            dataTableOutput("pdfview")
+                            ),
           ))
           )),
 ))
@@ -203,7 +204,8 @@ server <- function(input, output, session) {
                                    Total_Evals = 'n_evals',
                                    Total_Evals_University = 'n_evals_univ')
     return(meta_df)
-  }, align = 'c')
+  }, align = 'c',
+  width = 100000)
   output$pdfview <- renderDataTable({
     req(input$file_input)
     if (input$choose_table == "Full Dataset") {
@@ -322,7 +324,7 @@ server <- function(input, output, session) {
             strip.text.x = element_text(size = 14),
             legend.position = "none")
   }
-}, width = 900)
+}, height = 475, width = 1025)
 }
 shinyApp(ui, server)
 ```
