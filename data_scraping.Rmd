@@ -66,9 +66,21 @@ responses <- c("Strongly Agree",
                "Disagree",
                "Disagree Strongly")
 
+year <- c(only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1])
+
 core_df_1 <- tibble::tibble(responses = responses,
                             q1_df) |>
   mutate(question = "Q1")
+core_df_1
+
+core_df_1 <- tibble::tibble(year = year, 
+                            core_df_1)
 core_df_1
 ```
 
@@ -90,6 +102,10 @@ core_df_2 <- tibble::tibble(responses = responses,
                           q2_df) |>
   mutate(question = "Q2")
 core_df_2
+
+core_df_2 <- tibble::tibble(year = year,
+                            core_df_2)
+core_df_2 
 ```
 
 question 3
@@ -110,6 +126,10 @@ q3_df
 core_df_3 <- tibble::tibble(responses = responses,
                           q3_df) |>
   mutate(question = "Q3")
+core_df_3
+
+core_df_3 <- tibble::tibble(year = year,
+                            core_df_3)
 core_df_3
 ```
 
@@ -134,9 +154,20 @@ responses_2 <- c("Too High",
                "Somewhat Low",
                "Too Low") 
 
+year_2 <- c(only_numbers[[2]][1],
+            only_numbers[[2]][1],
+            only_numbers[[2]][1],
+            only_numbers[[2]][1],
+            only_numbers[[2]][1])
+
 core_df_4a <- tibble::tibble(responses = responses_2,
                           q4a_df) |>
   mutate(question = "Q4a")
+core_df_4a
+
+core_df_4a <- tibble::tibble(year_2 = year_2,
+                            core_df_4a) 
+core_df_4a <- core_df_4a |> rename(year = 'year_2')
 core_df_4a
 ```
 
@@ -153,6 +184,12 @@ q4b_df
 core_df_4b <- tibble::tibble(responses = responses_2,
                           q4b_df) |>
   mutate(question = "Q4b")
+core_df_4b
+
+core_df_4b <- tibble::tibble(year_2 = year_2,
+                            core_df_4b)
+core_df_4b
+core_df_4b <- core_df_4b |> rename(year = 'year_2')
 core_df_4b
 ```
 
@@ -177,16 +214,21 @@ core_df_4c <- tibble::tibble(responses = responses_2,
                           q4c_df) |>
   mutate(question = "Q4c")
 core_df_4c
+
+core_df_4c <- tibble::tibble(year_2 = year_2,
+                            core_df_4c)
+core_df_4c
+
+core_df_4c <- core_df_4c |> rename(year = 'year_2')
+core_df_4c
 ```
 
 ```{r}
 second_page <- strsplit(tab[2], "\n")[[1]]
-
 second_page_zeroes <- str_replace_all(second_page,
                                      pattern = "-",
                                      replacement = "0")
 second_page_zeroes
-
 only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
 only_numbers_2
 ```
@@ -214,6 +256,10 @@ core_df_5a <- tibble::tibble(responses = responses,
                           q5a_df) |>
   mutate(question = "Q5a")
 core_df_5a
+
+core_df_5a <- tibble::tibble(year = year,
+                             core_df_5a) 
+core_df_5a
 ```
 
 question 5b
@@ -239,6 +285,10 @@ core_df_5b <- tibble::tibble(responses = responses,
                           q5b_df) |>
   mutate(question = "Q5b")
 core_df_5b
+
+core_df_5b <- tibble::tibble(year = year,
+                             core_df_5b)
+core_df_5b
 ```
 
 question 5c
@@ -260,6 +310,10 @@ core_df_5c <- tibble::tibble(responses = responses,
                              q5c_df) |>
   mutate(question = "Q5c")
 core_df_5c
+
+core_df_5c <- tibble::tibble(year = year,
+                             core_df_5c)
+core_df_5c
 ```
 
 question 6a
@@ -279,6 +333,10 @@ q6a_df
 core_df_6a <- tibble::tibble(responses = responses,
                              q6a_df) |>
   mutate(question = "Q6a")
+core_df_6a
+
+core_df_6a <- tibble::tibble(year = year,
+                             core_df_6a)
 core_df_6a
 ```
 
@@ -305,6 +363,10 @@ core_df_6b <- tibble::tibble(responses = responses,
                              q6b_df) |>
   mutate(question = "Q6b")
 core_df_6b
+
+core_df_6b <- tibble::tibble(year = year, 
+                             core_df_6b)
+core_df_6b
 ```
 
 question 6c
@@ -329,6 +391,10 @@ q6c_df
 core_df_6c <- tibble::tibble(responses = responses, 
                              q6c_df) |>
   mutate(question = "Q6c")
+core_df_6c
+
+core_df_6c <- tibble::tibble(year = year, 
+                             core_df_6c) 
 core_df_6c
 ```
 
@@ -363,6 +429,20 @@ core_reasons_df <- tibble::tibble(responses = reasons_responses,
                                   reasons_df) |>
   mutate(question = "primary reason for enrollment")
 core_reasons_df
+
+year_3 <- c(only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1])
+
+core_reasons_df <- tibble::tibble(year_3 = year_3,
+                                  core_reasons_df)
+core_reasons_df <- core_reasons_df |> rename(year = 'year_3')
+core_reasons_df
 ```
 
 gender 
@@ -384,9 +464,19 @@ gender_responses <- c("Male",
                       "Other",
                       "Prefer not to disclose")
 
+year_4 <- c(only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1])
+
 core_gender_df <- tibble::tibble(responses = gender_responses,
                                  gender_df) |>
   mutate(question = "gender")
+core_gender_df
+
+core_gender_df <- tibble::tibble(year_4 = year_4,
+                                 core_gender_df) 
+core_gender_df <- core_gender_df |> rename(year = 'year_4')
 core_gender_df
 ```
 
@@ -412,9 +502,21 @@ class_responses <- c("First Year",
                      "Grad Student",
                      "Other")
 
+year_5 <- c(only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1],
+          only_numbers[[2]][1])
+
 core_class_df <- tibble::tibble(responses = class_responses,
                                 classyear_df) |>
   mutate(question = "class year")
+core_class_df
+
+core_class_df <- tibble::tibble(year_5 = year_5,
+                                core_class_df)
+core_class_df <- core_class_df |> rename(year = 'year_5')
 core_class_df
 ```
 
@@ -494,5 +596,12 @@ full_df <- bind_rows(core_reasons_df,
                      core_df_6a, 
                      core_df_6b, 
                      core_df_6c)
-full_df
+full_df 
 ```
+
+```{r}
+library(lubridate)
+test <- questions_df |> mutate(year = as.numeric(year))
+test
+```
+
