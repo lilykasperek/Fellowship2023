@@ -26,8 +26,6 @@ ggplot(data = mock_df, aes(x = resp, y = n_resp)) +
   labs(x = "response", y = "number of students")
 ```
 
--   Completely different spreads, with the same mean 
-
 ## Process
 
 -   Scrape data from pdf into R
@@ -43,4 +41,3 @@ ggplot(data = mock_df, aes(x = resp, y = n_resp)) +
 
 -   More visualizations 
 -   Allow for multiple pdf files to be uploaded at once
--   Construct visualizations for new evaluation system
