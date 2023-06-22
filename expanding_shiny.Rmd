@@ -4359,20 +4359,20 @@ ui <- fluidPage(
                       )
                     )
                     ),
-           # fill content for this tab 
           tabPanel(title = "Questions with Different Scale",
                    fluidPage(fluidRow(
                      sidebarLayout(
                        sidebarPanel(
-                       radioButtons(inputId = "choose_graph_special", label = "Choose Visualization: These
-                                    questions use a different Likert scale",
+                       radioButtons(inputId = "choose_graph_special", label = "Choose Visualization:
+                                    These questions use a different Likert scale",
                                     choices = c("Heatmap", "Bar Plot")),
                        radioButtons(inputId = "choose_special", label = "Count or Percent
                                     of Students", 
                                     choices = c("Count", "Percent")),
-                                    ),
+                       width = 3),
                        mainPanel(tableOutput("pdf_summary_special"),
-                                             plotOutput("choose_plot_special"))
+                                             plotOutput("choose_plot_special")
+                                 )
                      )
                    ))),
           tabPanel(title = "Summary Output Tables",
@@ -4382,9 +4382,10 @@ ui <- fluidPage(
                           radioButtons(inputId = "choose_table", label = "Choose Table",
                                    choices = c("Full Dataset",
                                                "Student Backgrounds")),
-                        ),
+                          width = 3),
                           mainPanel(
-                            dataTableOutput("pdfview")),
+                            dataTableOutput("pdfview")
+                            ),
           ))
           )),
 ))
