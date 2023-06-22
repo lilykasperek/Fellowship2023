@@ -293,3 +293,48 @@ ggplot(data = pdf_facet_test, aes(x = responses_hm, y = perc)) +
   facet_wrap(~question_2)
 ```
 
+```{r}
+other_questions <- pdf_function_full("STAT113_Fall_2020_1.pdf")
+other_questions <- other_questions |> filter(responses_hm == "Too High" |
+                        responses_hm == "Too Low" |
+                        responses_hm == "Appropriate" |
+                        responses_hm == "Somewhat High" |
+                        responses_hm == "Somewhat Low")
+other_questions <- other_questions |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                          "Somewhat High",
+                                                                          "Appropriate",
+                                                                          "Somewhat Low",
+                                                                          "Too Low")))
+other_questions <- other_questions |> mutate(perc = as.double(perc))
+ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
+                                   fill = count_hm)) +
+  geom_tile() +
+  scale_fill_viridis_c(direction = 1)
+
+ggplot(data = other_questions, aes(x = count_hm, y = ordered_responses,
+                                   fill = count_hm)) +
+  geom_col() +
+  facet_wrap(~full_question, ncol = 1) 
+```
+
+```{r}
+source("multiple_pdf_function.R")
+x <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+y <- multiple_pdf_function("STAT113_Spring_2021_1.pdf")
+z <- multiple_pdf_function("STAT113_Spring_2022_1.pdf")
+
+multiple_df <- bind_rows(x, y, z)
+multiple_df
+
+specific_question <- multiple_df |> filter(question_hm == "Q1")
+specific_question
+ggplot(data = specific_question, aes(x = count_hm, y = responses_hm,
+                                     fill = count_hm)) +
+  geom_col() +
+  facet_wrap(~year, ncol = 1) +
+  labs(title = "STAT113",
+       subtitle = "Q1. Valuable") +
+  theme(plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5))
+```
+
