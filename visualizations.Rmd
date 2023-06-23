@@ -318,6 +318,8 @@ ggplot(data = other_questions, aes(x = count_hm, y = ordered_responses,
 ```
 
 ```{r}
+library(tidyverse)
+library(pdftools)
 source("multiple_pdf_function.R")
 x <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
 y <- multiple_pdf_function("STAT113_Spring_2021_1.pdf")
@@ -332,8 +334,12 @@ ggplot(data = specific_question, aes(x = count_hm, y = responses_hm,
                                      fill = count_hm)) +
   geom_col() +
   facet_wrap(~year, ncol = 1) +
+  scale_fill_viridis_c() +
   labs(title = "STAT113",
-       subtitle = "Q1. Valuable") +
+       subtitle = "Q1. Valuable",
+       x = "Count",
+       y = "Responses",
+       fill = "Count") +
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5))
 ```
