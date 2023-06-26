@@ -328,7 +328,6 @@ server <- function(input, output, session) {
 }
 shinyApp(ui, server)
 ```
-```
 
 with navigation bar
 ```{r}
