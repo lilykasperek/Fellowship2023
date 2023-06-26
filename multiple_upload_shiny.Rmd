@@ -1,0 +1,330 @@
+---
+title: "multiple_upload_shiny"
+output: html_document
+date: "2023-06-26"
+---
+
+# example using csvs 
+```{r}
+library(shiny)
+library(data.table)
+
+ui <- fluidPage(
+  titlePanel("Multiple file uploads"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("csvs",
+                label="Upload CSVs here",
+                multiple = TRUE)
+    ),
+    mainPanel(
+      uiOutput("count")
+    )
+  )
+)
+
+server <- function(input, output) {
+  mycsvs<-reactive({
+    rbindlist(lapply(input$csvs$datapath, fread),
+              use.names = TRUE, fill = TRUE)
+  })
+  output$count <- renderUI(nrow(mycsvs()))
+}
+
+shinyApp(ui = ui, server = server)
+```
+
+# app prints table of uploads  
+```{r}
+ui <- fluidPage(
+  titlePanel("Testing multiple file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE)
+    ),
+    mainPanel(
+      tableOutput("pdfview")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE) |>
+      mutate(year = as.character(year))
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+# adding static plot 
+```{r}
+ui <- fluidPage(
+  titlePanel("Testing multiple file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE)
+    ),
+    mainPanel(
+      tableOutput("pdfview"),
+      plotOutput("faceted_barplot")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    head(rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)) |>
+      mutate(year = as.character(year))
+  })
+  output$faceted_barplot <- renderPlot ({
+    req(input$file_input)
+    use <- rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)
+    question <- use |> filter(question_hm == "Q1")
+    ggplot(data = question, aes(x = count_hm, y = responses_hm)) +
+      geom_col() +
+      facet_wrap(~year, ncol = 1) +
+      labs(x = "Count",
+       y = "Responses") +
+       theme(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5))
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+# interactive plot
+# add count/percent buttons 
+```{r}
+ui <- fluidPage(
+  titlePanel("Testing multiple file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+      radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
+                   choices = c("Count", "Percent"))
+    ),
+    mainPanel(
+      tableOutput("pdfview"),
+      plotOutput("faceted_barplot")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    head(rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)) |>
+      mutate(year = as.character(year))
+  })
+  output$faceted_barplot <- renderPlot ({
+    req(input$file_input)
+    use <- rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)
+    question <- use |> filter(question_hm == "Q1") |>
+      mutate(perc = as.double(perc)) |>
+      rename(Count = 'count_hm', 
+             Percent = 'perc')
+    ggplot(data = question, aes(x = .data[[input$choose_facet]], y = responses_hm)) +
+      geom_col() +
+      facet_wrap(~year, ncol = 1) +
+      labs(x = input$choose_facet,
+       y = "Responses") +
+       theme(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5))
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+# allow to choose from question
+```{r}
+df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+df
+
+ui <- fluidPage(
+  titlePanel("Testing multiple file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+      radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
+                   choices = c("Count", "Percent")),
+      selectInput(inputId = "select_facet", label = "Choose Question",
+                  choices = levels(factor(df$full_question)))
+    ),
+    mainPanel(
+      tableOutput("pdfview"),
+      plotOutput("faceted_barplot")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    head(rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)) |>
+      mutate(year = as.character(year))
+  })
+  output$faceted_barplot <- renderPlot ({
+    req(input$file_input)
+    df <- rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)
+    df <- df |> filter(question_hm == "Q1") |>
+      mutate(perc = as.double(perc)) |>
+      rename(Count = 'count_hm', 
+             Percent = 'perc')
+    ggplot(data = df, aes(x = .data[[input$choose_facet]], y = responses_hm)) +
+      geom_col() +
+      facet_wrap(~year, ncol = 1) +
+      labs(x = input$choose_facet,
+       y = "Responses") +
+       theme(plot.title = element_text(hjust = 0.5),
+             plot.subtitle = element_text(hjust = 0.5))
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+# make select input work 
+```{r}
+source("meta_function.R")
+ui <- fluidPage(
+  titlePanel("Compare Student Evaluation Data"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Multiple Student Evaluation
+                Files (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+      radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
+                   choices = c("Count", "Percent")),
+      selectInput(inputId = "select_facet", label = "Choose Question",
+                  choices = levels(factor(df$full_question)))
+    ),
+    mainPanel(
+      tableOutput("pdfview"),
+      plotOutput("faceted_barplot", width = "100%")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    df <- rbindlist(lapply(input$file_input$datapath, meta_function),
+              use.names = TRUE, fill = TRUE) |>
+      mutate(year = as.character(year)) |>
+      rename(Course_Number = 'course_num',
+                                   Subject = 'subject',
+                                   Semester = 'semester',
+                                   Year = 'year',
+                                   Control_Number = 'control_num',
+                                   Total_Evals = 'n_evals',
+                                   Total_Evals_University = 'n_evals_univ') |>
+      select(Subject, Year, everything())
+    return(df)
+  }, align = 'c')
+  output$faceted_barplot <- renderPlot ({
+    req(input$file_input)
+    df <- rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)
+    df <- df |> filter(full_question == input$select_facet) |>
+      mutate(perc = as.double(perc)) |>
+      rename(Count = 'count_hm', 
+             Percent = 'perc') |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                            "Somewhat High",
+                                                                            "Appropriate",
+                                                                            "Somewhat Low",
+                                                                            "Too Low")))
+    meta_df <- rbindlist(lapply(input$file_input$datapath, meta_function),
+              use.names = TRUE, fill = TRUE)
+    title <- paste(meta_df[1, 2], sep = " ", collapse = NULL)
+    ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
+                   fill = ordered_responses)) +
+      geom_col() +
+      facet_wrap(~year, ncol = 1) +
+      scale_fill_discrete() +
+      labs(x = input$choose_facet,
+       y = "Responses",
+       title = title, 
+       subtitle = input$select_facet) +
+       theme(plot.title = element_text(hjust = 0.5,
+                                       size = 16),
+             plot.subtitle = element_text(hjust = 0.5,
+                                          size = 14),
+             legend.position = "none",
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 14),
+            legend.title = element_text(size = 11,
+                                        hjust = 0.5),
+            legend.text = element_text(size = 8,
+                                       hjust = 0.5))
+  }, height = 475, width = 925)
+}
+shinyApp(ui = ui, server = server)
+```
+
+# rbindlist when manually applying function 
+```{r}
+x <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+y <- multiple_pdf_function("STAT113_Spring_2021_1.pdf")
+z <- multiple_pdf_function("STAT113_Spring_2022_1.pdf")
+
+l = list(x, y, z)
+l
+rbindlist(l)
+```
+
+# individual button for each upload but does bind the data 
+```{r}
+ui <- fluidPage(
+  titlePanel("Testing multiple file upload"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+      fileInput("file_input2", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+      fileInput("file_input3", 'Upload Student Evaluation
+                File (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+    ),
+    mainPanel(
+      tableOutput("pdfview")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    x <- multiple_pdf_function(input$file_input$datapath) |>
+      mutate(year = as.character(year))
+    y <- multiple_pdf_function(input$file_input2$datapath)
+    z <- multiple_pdf_function(input$file_input3$datapath)
+    l = list(x, y, z)
+    return(rbindlist(l))
+  })
+}
+shinyApp(ui = ui, server = server)
+```
+
+
