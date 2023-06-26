@@ -4,6 +4,84 @@ output: html_document
 date: "2023-06-26"
 ---
 
+# make select input work 
+```{r}
+source("meta_function.R")
+ui <- fluidPage(
+  titlePanel("Compare Student Evaluation Data"),
+  sidebarLayout(
+    sidebarPanel(
+      fileInput("file_input", 'Upload Multiple Student Evaluation
+                Files (.pdf format only)',
+                accept = c('pdf'),
+                multiple = TRUE),
+      radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
+                   choices = c("Count", "Percent")),
+      selectInput(inputId = "select_facet", label = "Choose Question",
+                  choices = levels(factor(df$full_question)))
+    ),
+    mainPanel(
+      tableOutput("pdfview"),
+      plotOutput("faceted_barplot", width = "100%")
+    )
+  )
+)
+server <- function(input, output) {
+  output$pdfview <- renderTable({
+    req(input$file_input)
+    df <- rbindlist(lapply(input$file_input$datapath, meta_function),
+              use.names = TRUE, fill = TRUE) |>
+      mutate(year = as.character(year)) |>
+      rename(Course_Number = 'course_num',
+                                   Subject = 'subject',
+                                   Semester = 'semester',
+                                   Year = 'year',
+                                   Control_Number = 'control_num',
+                                   Total_Evals = 'n_evals',
+                                   Total_Evals_University = 'n_evals_univ') |>
+      select(Subject, Year, everything())
+    return(df)
+  }, align = 'c')
+  output$faceted_barplot <- renderPlot ({
+    req(input$file_input)
+    df <- rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
+              use.names = TRUE, fill = TRUE)
+    df <- df |> filter(full_question == input$select_facet) |>
+      mutate(perc = as.double(perc)) |>
+      rename(Count = 'count_hm', 
+             Percent = 'perc') |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                            "Somewhat High",
+                                                                            "Appropriate",
+                                                                            "Somewhat Low",
+                                                                            "Too Low")))
+    meta_df <- rbindlist(lapply(input$file_input$datapath, meta_function),
+              use.names = TRUE, fill = TRUE)
+    title <- paste(meta_df[1, 2], sep = " ", collapse = NULL)
+    ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
+                   fill = ordered_responses)) +
+      geom_col() +
+      facet_wrap(~year, ncol = 1) +
+      scale_fill_discrete() +
+      labs(x = input$choose_facet,
+       y = "Responses",
+       title = title, 
+       subtitle = input$select_facet) +
+       theme(plot.title = element_text(hjust = 0.5,
+                                       size = 16),
+             plot.subtitle = element_text(hjust = 0.5,
+                                          size = 14),
+             legend.position = "none",
+            axis.text = element_text(size = 12),
+            axis.title = element_text(size = 14),
+            legend.title = element_text(size = 11,
+                                        hjust = 0.5),
+            legend.text = element_text(size = 8,
+                                       hjust = 0.5))
+  }, height = 475, width = 925)
+}
+shinyApp(ui = ui, server = server)
+```
+
 # example using csvs 
 ```{r}
 library(shiny)
@@ -196,84 +274,6 @@ server <- function(input, output) {
        theme(plot.title = element_text(hjust = 0.5),
              plot.subtitle = element_text(hjust = 0.5))
   })
-}
-shinyApp(ui = ui, server = server)
-```
-
-# make select input work 
-```{r}
-source("meta_function.R")
-ui <- fluidPage(
-  titlePanel("Compare Student Evaluation Data"),
-  sidebarLayout(
-    sidebarPanel(
-      fileInput("file_input", 'Upload Multiple Student Evaluation
-                Files (.pdf format only)',
-                accept = c('pdf'),
-                multiple = TRUE),
-      radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
-                   choices = c("Count", "Percent")),
-      selectInput(inputId = "select_facet", label = "Choose Question",
-                  choices = levels(factor(df$full_question)))
-    ),
-    mainPanel(
-      tableOutput("pdfview"),
-      plotOutput("faceted_barplot", width = "100%")
-    )
-  )
-)
-server <- function(input, output) {
-  output$pdfview <- renderTable({
-    req(input$file_input)
-    df <- rbindlist(lapply(input$file_input$datapath, meta_function),
-              use.names = TRUE, fill = TRUE) |>
-      mutate(year = as.character(year)) |>
-      rename(Course_Number = 'course_num',
-                                   Subject = 'subject',
-                                   Semester = 'semester',
-                                   Year = 'year',
-                                   Control_Number = 'control_num',
-                                   Total_Evals = 'n_evals',
-                                   Total_Evals_University = 'n_evals_univ') |>
-      select(Subject, Year, everything())
-    return(df)
-  }, align = 'c')
-  output$faceted_barplot <- renderPlot ({
-    req(input$file_input)
-    df <- rbindlist(lapply(input$file_input$datapath, multiple_pdf_function),
-              use.names = TRUE, fill = TRUE)
-    df <- df |> filter(full_question == input$select_facet) |>
-      mutate(perc = as.double(perc)) |>
-      rename(Count = 'count_hm', 
-             Percent = 'perc') |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
-                                                                            "Somewhat High",
-                                                                            "Appropriate",
-                                                                            "Somewhat Low",
-                                                                            "Too Low")))
-    meta_df <- rbindlist(lapply(input$file_input$datapath, meta_function),
-              use.names = TRUE, fill = TRUE)
-    title <- paste(meta_df[1, 2], sep = " ", collapse = NULL)
-    ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
-                   fill = ordered_responses)) +
-      geom_col() +
-      facet_wrap(~year, ncol = 1) +
-      scale_fill_discrete() +
-      labs(x = input$choose_facet,
-       y = "Responses",
-       title = title, 
-       subtitle = input$select_facet) +
-       theme(plot.title = element_text(hjust = 0.5,
-                                       size = 16),
-             plot.subtitle = element_text(hjust = 0.5,
-                                          size = 14),
-             legend.position = "none",
-            axis.text = element_text(size = 12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 11,
-                                        hjust = 0.5),
-            legend.text = element_text(size = 8,
-                                       hjust = 0.5))
-  }, height = 475, width = 925)
 }
 shinyApp(ui = ui, server = server)
 ```
