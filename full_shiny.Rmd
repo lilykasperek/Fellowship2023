@@ -5,6 +5,21 @@ date: "2023-06-26"
 ---
 
 ```{r}
+library(tidyverse)
+library(pdftools)
+library(shiny)
+source("pdf_function_full.R")
+source("meta_function.R")
+source("sb_function.R")
+source("multiple_pdf_function.R")
+library(shinythemes)
+library(shadowtext)
+library(data.table)
+df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+df
+```
+
+```{r}
 ui <- fluidPage(
   theme = shinytheme("superhero"), 
   navbarPage(title = "Visualizing Student Evaluation Data",
@@ -366,7 +381,7 @@ server <- function(input, output) {
         pdf_df <- pdf_df |>
           mutate(question_2 = fct_recode(question,
                                          Reason_Enrollment = "primary reason for enrollment")) |>
-          select(-question) |>
+          select(-question, -year) |>
           rename(Responses = 'responses',
                  Count = 'n_students',
                  Percent_of_Students = 'perc',
@@ -378,8 +393,9 @@ server <- function(input, output) {
       if (input$choose_table == "Full Dataset") {
         df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
                   use.names = TRUE, fill = TRUE) 
-        df <- df |> select(responses, n_students, perc, univ_perc, full_question) |>
-          rename(Responses = 'responses',
+        df <- df |> select(year, responses, n_students, perc, univ_perc, full_question) |>
+          rename(Year = 'year',
+                 Responses = 'responses',
                  Count = 'n_students',
                  Percent_of_Students = 'perc',
                  University_Percent = 'univ_perc',
@@ -391,7 +407,8 @@ server <- function(input, output) {
                   mutate(question_2 = fct_recode(question,
                                          Reason_Enrollment = "primary reason for enrollment")) |>
                   select(-question) |>
-                  rename(Responses = 'responses',
+                  rename(Year = 'year',
+                         Responses = 'responses',
                          Count = 'n_students',
                          Percent_of_Students = 'perc',
                          University_Percent = 'univ_perc',
