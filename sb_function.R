@@ -23,6 +23,27 @@ sb_function <- function(eval) {
                        "Senior",
                        "Grad Student",
                        "Other")
+  year <- c(only_numbers[[2]][1],
+            only_numbers[[2]][1],
+            only_numbers[[2]][1],
+            only_numbers[[2]][1])
+  
+  year_2 <- c(only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1])
+  
+  year_3 <- c(only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1],
+              only_numbers[[2]][1])
+  
   reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
   reasons <- only_numbers[reasons_indeces] 
   reasons[[1]] <- reasons[[1]][1:3]
@@ -36,6 +57,9 @@ sb_function <- function(eval) {
   core_reasons_df <- tibble::tibble(responses = reasons_responses,
                                     reasons_df) |>
     mutate(question = "primary reason for enrollment")
+  core_reasons_df <- tibble::tibble(year = year_2, 
+                                    core_reasons_df) 
+  core_reasons_df <- core_reasons_df |> mutate(year = as.numeric(year))
   # gender
   gender_indeces <- c(35, 37, 38, 39)
   gender <- only_numbers[gender_indeces]
@@ -46,6 +70,9 @@ sb_function <- function(eval) {
   core_gender_df <- tibble::tibble(responses = gender_responses,
                                    gender_df) |>
     mutate(question = "gender")
+  core_gender_df <- tibble::tibble(year = year, 
+                                   core_gender_df) 
+  core_gender_df <- core_gender_df |> mutate(year = as.numeric(year))
   # class year 
   class_indeces <- c(44, 45, 47, 48, 51, 53)
   class_year <- only_numbers[class_indeces]
@@ -57,6 +84,9 @@ sb_function <- function(eval) {
   core_class_df <- tibble::tibble(responses = class_responses,
                                   classyear_df) |>
     mutate(question = "class year")
+  core_class_df <- tibble::tibble(year = year_3, 
+                                  core_class_df) 
+  core_class_df <- core_class_df |> mutate(year = as.numeric(year))
   sb_df <- bind_rows(core_reasons_df,
                      core_gender_df,
                      core_class_df)
