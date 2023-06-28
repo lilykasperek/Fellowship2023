@@ -104,7 +104,8 @@ server <- function(input, output) {
                                    Control_Number = 'control_num',
                                    Total_Evals = 'n_evals',
                                    Total_Evals_University = 'n_evals_univ') |>
-      select(Subject, Year, everything())
+      select(Subject, Year, everything()) |>
+      arrange(Year)
       return(df)
   }, align = 'c',
   width = 100000)
@@ -126,24 +127,30 @@ server <- function(input, output) {
     ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
                    fill = ordered_responses)) +
       geom_col() +
-      facet_wrap(~year, ncol = 1) +
+      facet_wrap(~Semester + course, ncol = 1) +
       scale_fill_discrete() +
       labs(x = input$choose_facet,
        y = "Responses",
        title = title, 
        subtitle = input$select_facet) +
+       theme_classic() +
        theme(plot.title = element_text(hjust = 0.5,
-                                       size = 16),
+                                       size = 16,
+                                       margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
              plot.subtitle = element_text(hjust = 0.5,
-                                          size = 14),
+                                          size = 14,
+                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
              legend.position = "none",
-            axis.text = element_text(size = 12),
-            axis.title = element_text(size = 14),
-            legend.title = element_text(size = 11,
+            axis.text = element_text(size = 10),
+            axis.title = element_text(size = 12),
+            legend.title = element_text(size = 9,
                                         hjust = 0.5),
-            legend.text = element_text(size = 8,
-                                       hjust = 0.5))
-  }, height = 475, width = 925)
+            legend.text = element_text(size = 6,
+                                       hjust = 0.5),
+            strip.text.x = element_text(size = 9),
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  }, height = 550, width = 910)
   output$pdf_summary <- renderTable({
     req(input$file_input)
     meta_df <- meta_function(input$file_input$datapath)
@@ -195,10 +202,12 @@ server <- function(input, output) {
                   fontface = 'bold'), size = 6,
                 colour = "gray",
             show.legend = FALSE) +
-      theme_bw() +
+      theme_classic() +
       theme(plot.title = element_text(hjust = 0.5,
-                                  size = 18),
-            plot.subtitle = element_text(hjust = 0.5),
+                                  size = 18,
+                                       margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
             legend.box.background = element_rect(colour = "black"),
             axis.text = element_text(size = 14),
             axis.title = element_text(size = 16),
@@ -209,7 +218,8 @@ server <- function(input, output) {
             legend.key.size = unit(1, 'cm'), 
           legend.key.height = unit(1, 'cm'), 
           legend.key.width = unit(1, 'cm'),
-          ) 
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
     } else{
       pdf_df <- pdf_function_full(input$file_input$datapath)
       pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
@@ -230,7 +240,6 @@ server <- function(input, output) {
       pdf_df <- pdf_df |> mutate(perc = as.double(perc))
       pdf_df <- pdf_df |> rename(Count = 'count_hm',
                                Percent = 'perc')
-      
       pdf_df <- pdf_df |> mutate(ordered = fct_reorder(.f = responses_hm,
                                                        .x = .data[[input$choose]]))
       meta_df <- meta_function(input$file_input$datapath)
@@ -249,10 +258,12 @@ server <- function(input, output) {
                 #colour = "gray",
             #show.legend = FALSE) +
       scale_fill_viridis_c() +
-      theme_bw() +
+      theme_classic() +
       theme(plot.title = element_text(hjust = 0.5,
-                                  size = 18),
-            plot.subtitle = element_text(hjust = 0.5),
+                                  size = 18,
+                                  margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
             legend.box.background = element_rect(colour = "black"),
             axis.text.x = element_text(size = 10),
             axis.text.y = element_text(size = 12),
@@ -262,7 +273,9 @@ server <- function(input, output) {
             legend.text = element_text(size = 10,
                                        hjust = 0.5),
             strip.text.x = element_text(size = 14),
-            legend.position = "none") 
+            legend.position = "none",
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
     }
   }, height = 475, width = 1025)
   output$choose_plot_special <- renderPlot({
@@ -299,10 +312,12 @@ server <- function(input, output) {
                         size = 6,
                         colour = "gray",
                         show.legend = FALSE) +
-        theme_bw() +
+        theme_classic() +
         theme(plot.title = element_text(hjust = 0.5,
-                                        size = 18),
-            plot.subtitle = element_text(hjust = 0.5),
+                                        size = 18,
+                                  margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
             legend.box.background = element_rect(colour = "black"),
             axis.text = element_text(size = 14),
             axis.title = element_text(size = 16),
@@ -313,7 +328,8 @@ server <- function(input, output) {
             legend.key.size = unit(1, 'cm'),
             legend.key.height = unit(1, 'cm'),
             legend.key.width = unit(1, 'cm'),
-        )
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   } else {
     other_questions <- pdf_function_full(input$file_input$datapath)
     other_questions <- other_questions |> filter(responses_hm == "Too High" |
@@ -342,10 +358,12 @@ server <- function(input, output) {
            title = title,
            subtitle = subtitle) +
       scale_fill_viridis_c() +
-      theme_bw() +
+      theme_classic() +
       theme(plot.title = element_text(hjust = 0.5,
-                                  size = 18),
-            plot.subtitle = element_text(hjust = 0.5),
+                                  size = 18,
+                                  margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
             legend.box.background = element_rect(colour = "black"),
             axis.text.x = element_text(size = 10),
             axis.text.y = element_text(size = 12),
@@ -355,7 +373,9 @@ server <- function(input, output) {
             legend.text = element_text(size = 10,
                                        hjust = 0.5),
             strip.text.x = element_text(size = 14),
-            legend.position = "none")
+            legend.position = "none",
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
   }
 }, height = 475, width = 1025)
   output$pdfview2 <- renderDataTable({
@@ -381,7 +401,7 @@ server <- function(input, output) {
         pdf_df <- pdf_df |>
           mutate(question_2 = fct_recode(question,
                                          Reason_Enrollment = "primary reason for enrollment")) |>
-          select(-question, -year) |>
+          select(-question, -year, -course) |>
           rename(Responses = 'responses',
                  Count = 'n_students',
                  Percent_of_Students = 'perc',
@@ -393,8 +413,8 @@ server <- function(input, output) {
       if (input$choose_table == "Full Dataset") {
         df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
                   use.names = TRUE, fill = TRUE) 
-        df <- df |> select(year, responses, n_students, perc, univ_perc, full_question) |>
-          rename(Year = 'year',
+        df <- df |> select(course, Semester, responses, n_students, perc, univ_perc, full_question) |>
+          rename(Course = 'course',
                  Responses = 'responses',
                  Count = 'n_students',
                  Percent_of_Students = 'perc',
@@ -407,7 +427,8 @@ server <- function(input, output) {
                   mutate(question_2 = fct_recode(question,
                                          Reason_Enrollment = "primary reason for enrollment")) |>
                   select(-question) |>
-                  rename(Year = 'year',
+                  rename(Course = 'course',
+                         Year = 'year',
                          Responses = 'responses',
                          Count = 'n_students',
                          Percent_of_Students = 'perc',
