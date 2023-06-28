@@ -547,7 +547,7 @@ server <- function(input, output, session) {
   output$choose_plot <- renderPlot({
     req(input$file_input)
     if (input$choose_graph == "Heatmap") {
-      pdf_df <- pdf_function_full(input$file_input$datapath)
+    pdf_df <- pdf_function_full(input$file_input$datapath)
     pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
                         responses_hm != "Too Low" &
                         responses_hm != "Appropriate" &
