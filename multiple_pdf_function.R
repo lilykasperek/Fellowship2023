@@ -37,12 +37,32 @@ multiple_pdf_function <- function(pdf) {
             only_numbers[[2]][1],
             only_numbers[[2]][1],
             only_numbers[[2]][1])
+  course <- c(only_numbers[[2]][3],
+              only_numbers[[2]][3],
+              only_numbers[[2]][3],
+              only_numbers[[2]][3],
+              only_numbers[[2]][3],
+              only_numbers[[2]][3],
+              only_numbers[[2]][3])
+  semester_string <- str_replace_all(first_page_zeroes[[2]], " ", "")
+  semester <- semester_string |> substring(5, 6)
+  semester_1 <- c(semester,
+                  semester,
+                  semester,
+                  semester,
+                  semester,
+                  semester,
+                  semester)
   core_df_1 <- tibble::tibble(responses = responses,
                               q1_df) |>
     mutate(question = "Q1")
   core_df_1 <- tibble::tibble(year = year, 
                               core_df_1)
   core_df_1 <- core_df_1 |> mutate(year = as.numeric(year))
+  core_df_1 <- tibble::tibble(semester = semester_1,
+                              core_df_1)
+  core_df_1 <- tibble::tibble(course = course,
+                              core_df_1)
   # question 2
   q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
   q2 <- only_numbers[q2_indeces]
@@ -55,6 +75,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_2 <- tibble::tibble(year = year,
                               core_df_2)
   core_df_2 <- core_df_2 |> mutate(year = as.numeric(year))
+  core_df_2 <- tibble::tibble(semester = semester_1,
+                              core_df_2)
+  core_df_2 <- tibble::tibble(course = course,
+                              core_df_2)
   # question 3
   q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
   q3 <- only_numbers[q3_indeces]
@@ -69,6 +93,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_3 <- tibble::tibble(year = year,
                               core_df_3)
   core_df_3 <- core_df_3 |> mutate(year = as.numeric(year))
+  core_df_3 <- tibble::tibble(semester = semester_1,
+                              core_df_3)
+  core_df_3 <- tibble::tibble(course = course,
+                              core_df_3)
   # question 4a
   q4a_indeces <- c(38, 39, 40, 41, 43)
   q4a <- only_numbers[q4a_indeces]
@@ -87,6 +115,16 @@ multiple_pdf_function <- function(pdf) {
               only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1])
+  semester_2 <- c(semester,
+                  semester,
+                  semester,
+                  semester,
+                  semester)
+  course_2 <- c(only_numbers[[2]][3],
+                only_numbers[[2]][3],
+                only_numbers[[2]][3],
+                only_numbers[[2]][3],
+                only_numbers[[2]][3])
   core_df_4a <- tibble::tibble(responses = responses_2,
                                q4a_df) |>
     mutate(question = "Q4a")
@@ -94,6 +132,10 @@ multiple_pdf_function <- function(pdf) {
                                core_df_4a) 
   core_df_4a <- core_df_4a |> rename(year = 'year_2')
   core_df_4a <- core_df_4a |> mutate(year = as.numeric(year))
+  core_df_4a <- tibble::tibble(semester = semester_2,
+                               core_df_4a)
+  core_df_4a <- tibble::tibble(course = course_2,
+                               core_df_4a)
   # question 4b
   q4b_indeces <- c(50, 52, 54, 56, 57)
   q4b <- only_numbers[q4b_indeces]
@@ -106,6 +148,10 @@ multiple_pdf_function <- function(pdf) {
                                core_df_4b)
   core_df_4b <- core_df_4b |> rename(year = 'year_2')
   core_df_4b <- core_df_4b |> mutate(year = as.numeric(year))
+  core_df_4b <- tibble::tibble(semester = semester_2,
+                               core_df_4b)
+  core_df_4b <- tibble::tibble(course = course_2,
+                               core_df_4b)
   # question 4c
   q4c_indeces <- c(63, 64, 65, 66, 67)
   q4c <- only_numbers[q4c_indeces]
@@ -123,6 +169,10 @@ multiple_pdf_function <- function(pdf) {
                                core_df_4c)
   core_df_4c <- core_df_4c |> rename(year = 'year_2')
   core_df_4c <- core_df_4c |> mutate(year = as.numeric(year))
+  core_df_4c <- tibble::tibble(semester = semester_2,
+                               core_df_4c)
+  core_df_4c <- tibble::tibble(course = course_2,
+                               core_df_4c)
   # question 5a
   q5a_indeces <- c(3, 4, 5, 6, 7, 8, 9)
   q5a <- only_numbers_2[q5a_indeces]
@@ -141,6 +191,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_5a <- tibble::tibble(year = year,
                                core_df_5a) 
   core_df_5a <- core_df_5a |> mutate(year = as.numeric(year))
+  core_df_5a <- tibble::tibble(semester = semester_1,
+                               core_df_5a)
+  core_df_5a <- tibble::tibble(course = course,
+                               core_df_5a)
   # question 5b
   q5b_indeces <- c(13, 14, 15, 16, 17, 18, 19)
   q5b <- only_numbers_2[q5b_indeces]
@@ -159,6 +213,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_5b <- tibble::tibble(year = year,
                                core_df_5b)
   core_df_5b <- core_df_5b |> mutate(year = as.numeric(year))
+  core_df_5b <- tibble::tibble(semester = semester_1,
+                               core_df_5b)
+  core_df_5b <- tibble::tibble(course = course,
+                               core_df_5b)
   # question 5c
   q5c_indeces <- c(24, 26, 27, 28, 31, 33, 34)
   q5c <- only_numbers_2[q5c_indeces]
@@ -173,6 +231,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_5c <- tibble::tibble(year = year,
                                core_df_5c)
   core_df_5c <- core_df_5c |> mutate(year = as.numeric(year))
+  core_df_5c <- tibble::tibble(semester = semester_1,
+                               core_df_5c)
+  core_df_5c <- tibble::tibble(course = course,
+                               core_df_5c)
   # question 6a
   q6a_indeces <- c(40, 41, 43, 45, 47, 48, 50)
   q6a <- only_numbers_2[q6a_indeces]
@@ -186,6 +248,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_6a <- tibble::tibble(year = year,
                                core_df_6a)
   core_df_6a <- core_df_6a |> mutate(year = as.numeric(year))
+  core_df_6a <- tibble::tibble(semester = semester_1,
+                               core_df_6a)
+  core_df_6a <- tibble::tibble(course = course,
+                               core_df_6a)
   # question 6b
   q6b_indeces <- c(3, 4, 5, 6, 7, 8, 9)
   q6b <- only_numbers_2[q6b_indeces]
@@ -204,6 +270,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_6b <- tibble::tibble(year = year, 
                                core_df_6b)
   core_df_6b <- core_df_6b |> mutate(year = as.numeric(year))
+  core_df_6b <- tibble::tibble(semester = semester_1,
+                               core_df_6b)
+  core_df_6b <- tibble::tibble(course = course,
+                               core_df_6b)
   # question 6c
   q6c_indeces <- c(13, 14, 15, 16, 17, 18, 19)
   q6c <- only_numbers_2[q6c_indeces]
@@ -222,6 +292,10 @@ multiple_pdf_function <- function(pdf) {
   core_df_6c <- tibble::tibble(year = year, 
                                core_df_6c) 
   core_df_6c <- core_df_6c |> mutate(year = as.numeric(year))
+  core_df_6c <- tibble::tibble(semester = semester_1,
+                               core_df_6c)
+  core_df_6c <- tibble::tibble(course = course,
+                               core_df_6c)
   binded_df <- bind_rows(core_df_1, 
                          core_df_2,
                          core_df_3, 
@@ -262,5 +336,7 @@ multiple_pdf_function <- function(pdf) {
                        question_hm == "Q4a" ~ "Q4a. Workload",
                        question_hm == "Q4b" ~ "Q4b. Grading",
                        question_hm == "Q4c" ~ "Q4c. Sophistication")) 
+  binded_df <- binded_df |> unite("Semester", c(year, semester),
+                                  sep = "_")
   return(binded_df)
 }
