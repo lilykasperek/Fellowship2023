@@ -18,6 +18,9 @@ library(data.table)
 
 # combined
 ```{r}
+df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+df
+
 ui <- fluidPage(
   theme = shinytheme("superhero"), 
   navbarPage(title = "Visualizing Student Evaluation Data",
@@ -38,7 +41,7 @@ ui <- fluidPage(
       tableOutput("pdfview"),
       plotOutput("faceted_barplot", width = "100%")
     )))),
-    tabPanel(title = "Upload and View Visualizations",
+    tabPanel(title = "Upload and View Visualizations (single pdf)",
                     fluidPage(
                       sidebarLayout(
                         sidebarPanel(
@@ -56,7 +59,7 @@ ui <- fluidPage(
                       )
                     )
                     ),
-    tabPanel(title = "Questions with Different Scale",
+    tabPanel(title = "Questions with Different Scale (single pdf)",
                    fluidPage(fluidRow(
                      sidebarLayout(
                        sidebarPanel(
@@ -72,6 +75,18 @@ ui <- fluidPage(
                                  )
                      )
                    ))),
+    tabPanel(title = "Summary Output Tables",
+                    fluidPage(fluidRow(
+                      sidebarLayout(
+                        sidebarPanel(
+                          radioButtons(inputId = "choose_table", label = "Choose Table",
+                                   choices = c("Full Dataset",
+                                               "Student Backgrounds")),
+                        ),
+                          mainPanel(
+                            dataTableOutput("pdfview2")),
+          ))
+          ))
     )
 )
 server <- function(input, output) {
@@ -89,7 +104,8 @@ server <- function(input, output) {
                                    Total_Evals_University = 'n_evals_univ') |>
       select(Subject, Year, everything())
       return(df)
-  }, align = 'c')
+  }, align = 'c',
+  width = 100000)
   output$faceted_barplot <- renderPlot ({
     req(input$file_input2)
     df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
@@ -340,6 +356,37 @@ server <- function(input, output) {
             legend.position = "none")
   }
 }, height = 475, width = 1025)
+  output$pdfview2 <- renderDataTable({
+    req(input$file_input)
+    if (input$choose_table == "Full Dataset") {
+      pdf_df <- pdf_function_full(input$file_input$datapath)
+      pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
+                          responses_hm != "Too Low" &
+                          responses_hm != "Appropriate" &
+                          responses_hm != "Somewhat High" &
+                          responses_hm != "Somewhat Low")
+      pdf_display <- pdf_df |>
+        select(responses, n_students, perc, univ_perc, full_question) |>
+        rename(Responses = 'responses',
+               Count = 'n_students',
+               Percent_of_Students = 'perc',
+               University_Percent = 'univ_perc',
+               Question = 'full_question')
+      return(pdf_display)
+    } else {
+      pdf_df <- sb_function(input$file_input$datapath)
+      pdf_df <- pdf_df |>
+        mutate(question_2 = fct_recode(question,
+                                       Reason_Enrollment = "primary reason for enrollment")) |>
+        select(-question) |>
+        rename(Responses = 'responses',
+               Count = 'n_students',
+               Percent_of_Students = 'perc',
+               University_Percent = 'univ_perc',
+               Question = 'question_2')
+      return(pdf_df)
+    }
+  })
 }
 shinyApp(ui = ui, server = server)
 ```
