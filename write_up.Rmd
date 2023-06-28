@@ -1,0 +1,15 @@
+---
+title: "Visualizing Student Evaluation Data"
+author: "Lily Kasperek"
+date: "2023-06-28"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+## Introduction
+
+Developed in 1932, the Likert scale is a tool used to measure respondents’ attitudes or subjective opinions and thought processes in a scientifically accepted and validated way. Respondents are given a set of statements and asked to indicate their level of agreement with a given statement on a metric scale, usually ranging from *Strongly Disagree* to *Strongly Agree*. This scale is still prominently used in questionnaires today and is what is used at St. Lawrence University and many other educational institutions for course evaluations. However, several variations of the Likert scale are used, strongly impacting how results are interpreted.
+
+The first important distinction is the number of points on a Likert scale, referring to the number of possible responses to given statements, such as agree or disagree. Some questionnaires only include a five-point Likert scale, while others include seven or even ten. Even more important, however, is whether the Likert scale is analyzed as an interval or ordinal scale. When analyzing responses to individual statements, a Likert scale should be treated as ordinal, arranged in some ranking order without showing the relative magnitude and distance between two responses. When analyzing a Likert scale in this way, using the mean of the responses is statistically inappropriate and can often misrepresent response data. Visualizations, such as histograms, Likert charts, and heatmaps, are often the best route for communicating Likert scale data. At St. Lawrence, both a seven-point and five-point Likert scale are used for course evaluations, with the most beneficial analysis coming from looking at the responses to individual statements. Thus, the goal of my project is to construct a shiny app that visualizes student evaluation data. 
+
