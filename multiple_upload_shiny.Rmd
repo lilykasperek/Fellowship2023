@@ -29,7 +29,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$pdfview <- renderTable({
     req(input$file_input)
-    df <- rbindlist(lapply(input$file_input$datapath, meta_function),
+    df_2 <- rbindlist(lapply(input$file_input$datapath, meta_function),
               use.names = TRUE, fill = TRUE) |>
       mutate(year = as.character(year)) |>
       rename(Course_Number = 'course_num',
@@ -40,7 +40,7 @@ server <- function(input, output) {
                                    Total_Evals = 'n_evals',
                                    Total_Evals_University = 'n_evals_univ') |>
       select(Subject, Year, everything())
-    return(df)
+    return(df_2)
   }, align = 'c')
   output$faceted_barplot <- renderPlot ({
     req(input$file_input)
