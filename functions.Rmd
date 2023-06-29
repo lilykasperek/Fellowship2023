@@ -10,28 +10,27 @@ library(pdftools)
 
 # function for one question
 pdf_function <- function(eval) {
-  tab <- pdf_text(eval)
+  tab <- pdf_text("STAT113_Fall_2020_1.pdf")
   first_page <- strsplit(tab[1], "\n")[[1]]
   first_page_zeroes <- str_replace_all(first_page,
-                                     pattern = "-",
-                                     replacement = "0")
+                                       pattern = "-",
+                                       replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
-  q4b_indeces <- c(50, 52, 54, 56, 57)
+  only_numbers <- compact(only_numbers)
+  q4b_indeces <- c(38, 40, 42, 44, 45)
   q4b <- only_numbers[q4b_indeces]
   q4b_df <- do.call(rbind.data.frame, q4b)
   names(q4b_df) <- c("n_students", "perc", "univ_perc")
-  responses_2 <- c("Too High",
-               "Somewhat High", 
-               "Appropriate",
-               "Somewhat Low",
-               "Too Low") 
   core_df_4b <- tibble::tibble(responses = responses_2,
-                          q4b_df) |>
-  mutate(question = "Q4b")
+                            q4b_df) |>
+    mutate(question = "Q4b")
+  core_df_4b <- tibble::tibble(year_2 = year_2,
+                              core_df_4b)
+  core_df_4b <- core_df_4b |> rename(year = 'year_2')
   return(core_df_4b)
 }
 
-pdf_function("STAT113_Fall_2020_2.pdf")
+pdf_function("STAT113_Fall_2020_1.pdf")
 pdf_function("STAT234_Fall_2022.pdf")
 ```
 
@@ -45,6 +44,7 @@ pdf_function_full <- function(eval) {
                                      pattern = "-",
                                      replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   
   # page 2
   second_page <- strsplit(tab[2], "\n")[[1]]
@@ -52,6 +52,7 @@ pdf_function_full <- function(eval) {
                                        pattern = "-",
                                        replacement = "0")
   only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
+  only_numbers_2 <- compact(only_numbers_2)
   
   responses <- c("Strongly Agree",
                  "Agree", 
@@ -68,7 +69,7 @@ pdf_function_full <- function(eval) {
                  "Too Low") 
 
   # question 1
-  q1_indeces <- c(63, 64, 65, 66, 67, 68, 69)
+  q1_indeces <- c(49, 50, 51, 52, 53, 54, 55)
   q1 <- only_numbers[q1_indeces]
   q1[[1]] <- q1[[1]][1:3]
   q1[[2]] <- q1[[2]][1:3]
@@ -81,9 +82,8 @@ pdf_function_full <- function(eval) {
   core_df_1 <- tibble::tibble(responses = responses,
                               q1_df) |>
     mutate(question = "Q1")
-  
   # question 2
-  q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) 
+  q2_indeces <- c(5, 7, 8, 9, 10, 11, 12) ## back half of 16
   q2 <- only_numbers[q2_indeces]
   q2[[7]] <- q2[[7]][4:6]
   q2_df <- do.call(rbind.data.frame, q2)
@@ -93,7 +93,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q2")
   
   # question 3
-  q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
+  q3_indeces <- c(16, 17, 18, 19, 20, 22, 24)
   q3 <- only_numbers[q3_indeces]
   q3[[1]] <- q3[[1]][4:6]
   q3[[2]] <- q3[[2]][4:6]
@@ -105,7 +105,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q3")
   
   # question 4a
-  q4a_indeces <- c(38, 39, 40, 41, 43)
+  q4a_indeces <- c(29, 30, 31, 32, 33)
   q4a <- only_numbers[q4a_indeces]
   q4a[[1]] <- q4a[[1]][4:6]
   q4a[[2]] <- q4a[[2]][4:6]
@@ -117,7 +117,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q4a")
   
   # question 4b
-  q4b_indeces <- c(50, 52, 54, 56, 57)
+  q4b_indeces <- c(38, 40, 42, 44, 45)
   q4b <- only_numbers[q4b_indeces]
   q4b_df <- do.call(rbind.data.frame, q4b)
   names(q4b_df) <- c("n_students", "perc", "univ_perc")
@@ -126,7 +126,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q4b")
   
   # question 4c
-  q4c_indeces <- c(63, 64, 65, 66, 67)
+  q4c_indeces <- c(49, 50, 51, 52, 53)
   q4c <- only_numbers[q4c_indeces]
   q4c[[1]] <- q4c[[1]][4:6]
   q4c[[2]] <- q4c[[2]][4:6]
@@ -140,7 +140,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q4c")
   
   # question 5a
-  q5a_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+  q5a_indeces <- c(2, 3, 4, 5, 6, 7, 8)
   q5a <- only_numbers_2[q5a_indeces]
   q5a[[1]] <- q5a[[1]][1:3]
   q5a[[2]] <- q5a[[2]][1:3]
@@ -156,7 +156,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q5a")
   
   # question 5b
-  q5b_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+  q5b_indeces <- c(11, 12, 13, 14, 15, 16, 17)
   q5b <- only_numbers_2[q5b_indeces]
   q5b[[1]] <- q5b[[1]][1:3]
   q5b[[2]] <- q5b[[2]][1:3]
@@ -172,7 +172,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q5b")
   
   # question 5c
-  q5c_indeces <- c(24, 26, 27, 28, 31, 33, 34)
+  q5c_indeces <- c(22, 23, 24, 25, 26, 28, 29)
   q5c <- only_numbers_2[q5c_indeces]
   q5c[[2]] <- q5c[[2]][1:3]
   q5c[[4]] <- q5c[[4]][1:3]
@@ -184,7 +184,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q5c")
   
   # question 6a
-  q6a_indeces <- c(40, 41, 43, 45, 47, 48, 50)
+  q6a_indeces <- c(34, 35, 36, 38, 39, 40, 41)
   q6a <- only_numbers_2[q6a_indeces]
   q6a[[2]] <- q6a[[2]][1:3]
   q6a[[7]] <- q6a[[7]][1:3]
@@ -195,7 +195,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q6a")
   
   # question 6b
-  q6b_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+  q6b_indeces <- c(2, 3, 4, 5, 6, 7, 8)
   q6b <- only_numbers_2[q6b_indeces]
   q6b[[1]] <- q6b[[1]][4:6]
   q6b[[2]] <- q6b[[2]][4:6]
@@ -211,7 +211,7 @@ pdf_function_full <- function(eval) {
     mutate(question = "Q6b")
   
   # question 6c
-  q6c_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+  q6c_indeces <- c(11, 12, 13, 14, 15, 16, 17)
   q6c <- only_numbers_2[q6c_indeces]
   q6c[[1]] <- q6c[[1]][4:6]
   q6c[[2]] <- q6c[[2]][4:6]
@@ -271,7 +271,7 @@ pdf_function_full <- function(eval) {
   return(full_df)
 }
 
-pdf_function_full("STAT113_Fall_2020_2.pdf") |> 
+pdf_function_full("STAT113_Fall_2020_1.pdf") |> 
   arrange(question) |> 
   print(n = 78) 
 pdf_function_full("STAT234_Fall_2022.pdf") |>
@@ -288,15 +288,16 @@ metadata_function <- function(eval) {
                                        pattern = "-",
                                        replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   metadata_df <- tibble::tibble(control_num = only_numbers[[1]][2],
                                 year = only_numbers[[2]][1],
                                 course_num = only_numbers[[2]][3],
                                 n_evals = only_numbers[[4]][1],
-                                n_evals_univ = only_numbers[[8]][1])
+                              n_evals_univ = only_numbers[[6]][1])
   return(metadata_df)
 }
 
-metadata_function("STAT113_Fall_2020_2.pdf")
+metadata_function("STAT113_Fall_2020_1.pdf")
 metadata_function("STAT234_Fall_2022.pdf")
 ```
 
@@ -310,6 +311,7 @@ meta_function <- function(eval) {
                                        pattern = "-",
                                        replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   semester_string <- str_replace_all(first_page_zeroes[[2]], " ", "")
   semester <- semester_string |> substring(5, 6)
   
@@ -323,10 +325,10 @@ meta_function <- function(eval) {
                             year = only_numbers[[2]][1],
                             control_num = only_numbers[[1]][2],
                             n_evals = only_numbers[[4]][1],
-                            n_evals_univ = only_numbers[[8]][1]) 
+                            n_evals_univ = only_numbers[[6]][1]) 
   return(meta_test)
 }
-meta_function("STAT113_Fall_2020_2.pdf")
+meta_function("STAT113_Fall_2020_1.pdf")
 meta_function("STAT234_Fall_2022.pdf")
 ```
 
@@ -339,6 +341,7 @@ sb_function <- function(eval) {
                                      pattern = "-",
                                      replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   gender_responses <- c("Male",
                       "Female",
                       "Other",
@@ -399,7 +402,7 @@ sb_function <- function(eval) {
               only_numbers[[2]][3],
               only_numbers[[2]][3])
    
-  reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
+  reasons_indeces <- c(12, 13, 14, 15, 16, 17, 19, 21)
   reasons <- only_numbers[reasons_indeces] 
   reasons[[1]] <- reasons[[1]][1:3]
   reasons[[2]] <- reasons[[2]][1:3]
@@ -418,7 +421,7 @@ sb_function <- function(eval) {
   core_reasons_df <- tibble::tibble(course = course_2,
                                     core_reasons_df)
   # gender
-  gender_indeces <- c(35, 37, 38, 39)
+  gender_indeces <- c(26, 28, 29, 30)
   gender <- only_numbers[gender_indeces]
   gender[[3]] <- gender[[3]][1:3]
   gender[[4]] <- gender[[4]][1:3]
@@ -433,7 +436,7 @@ sb_function <- function(eval) {
   core_gender_df <- tibble::tibble(course = course,
                                    core_gender_df)
    # class year 
-  class_indeces <- c(44, 45, 47, 48, 51, 53)
+  class_indeces <- c(34, 35, 36, 37, 39, 41)
   class_year <- only_numbers[class_indeces]
   class_year[[1]] <- class_year[[1]][1:3]
   class_year[[2]] <- class_year[[2]][1:3]
@@ -454,7 +457,7 @@ sb_function <- function(eval) {
   return(sb_df)
 }
 
-sb_function("STAT113_Fall_2020_2.pdf")
+sb_function("STAT113_Fall_2020_1.pdf")
 sb_function("STAT234_Fall_2022.pdf")
 ```
 
@@ -468,14 +471,16 @@ test_function <- function(pdf) {
                                      pattern = "-",
                                      replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   # page 2
   second_page <- strsplit(tab[2], "\n")[[1]]
   second_page_zeroes <- str_replace_all(second_page,
                                        pattern = "-",
                                        replacement = "0")
   only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
+  only_numbers_2 <- compact(only_numbers_2)
   # question 1
-  q1_indeces <- c(63, 64, 65, 66, 67, 68, 69)
+  q1_indeces <- c(49, 50, 51, 52, 53, 54, 55)
   q1 <- only_numbers[q1_indeces]
   q1[[1]] <- q1[[1]][1:3]
   q1[[2]] <- q1[[2]][1:3]
@@ -506,7 +511,7 @@ test_function <- function(pdf) {
                               core_df_1)
   core_df_1 <- core_df_1 |> mutate(year = as.numeric(year))
   # question 2
-  q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
+  q2_indeces <- c(5, 7, 8, 9, 10, 11, 12) ## back half of 16
   q2 <- only_numbers[q2_indeces]
   q2[[7]] <- q2[[7]][4:6]
   q2_df <- do.call(rbind.data.frame, q2)
@@ -518,7 +523,7 @@ test_function <- function(pdf) {
                               core_df_2)
   core_df_2 <- core_df_2 |> mutate(year = as.numeric(year))
   # question 3
-  q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
+  q3_indeces <- c(16, 17, 18, 19, 20, 22, 24)
   q3 <- only_numbers[q3_indeces]
   q3[[1]] <- q3[[1]][4:6]
   q3[[2]] <- q3[[2]][4:6]
@@ -532,7 +537,7 @@ test_function <- function(pdf) {
                               core_df_3)
   core_df_3 <- core_df_3 |> mutate(year = as.numeric(year))
   # question 4a
-  q4a_indeces <- c(38, 39, 40, 41, 43)
+  q4a_indeces <- c(29, 30, 31, 32, 33)
   q4a <- only_numbers[q4a_indeces]
   q4a[[1]] <- q4a[[1]][4:6]
   q4a[[2]] <- q4a[[2]][4:6]
@@ -557,7 +562,7 @@ test_function <- function(pdf) {
   core_df_4a <- core_df_4a |> rename(year = 'year_2')
   core_df_4a <- core_df_4a |> mutate(year = as.numeric(year))
   # question 4b
-  q4b_indeces <- c(50, 52, 54, 56, 57)
+  q4b_indeces <- c(38, 40, 42, 44, 45)
   q4b <- only_numbers[q4b_indeces]
   q4b_df <- do.call(rbind.data.frame, q4b)
   names(q4b_df) <- c("n_students", "perc", "univ_perc")
@@ -569,7 +574,7 @@ test_function <- function(pdf) {
   core_df_4b <- core_df_4b |> rename(year = 'year_2')
   core_df_4b <- core_df_4b |> mutate(year = as.numeric(year))
   # question 4c
-  q4c_indeces <- c(63, 64, 65, 66, 67)
+  q4c_indeces <- c(49, 50, 51, 52, 53)
   q4c <- only_numbers[q4c_indeces]
   q4c[[1]] <- q4c[[1]][4:6]
   q4c[[2]] <- q4c[[2]][4:6]
@@ -586,7 +591,7 @@ test_function <- function(pdf) {
   core_df_4c <- core_df_4c |> rename(year = 'year_2')
   core_df_4c <- core_df_4c |> mutate(year = as.numeric(year))
   # question 5a
-  q5a_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+  q5a_indeces <- c(2, 3, 4, 5, 6, 7, 8)
   q5a <- only_numbers_2[q5a_indeces]
   q5a[[1]] <- q5a[[1]][1:3]
   q5a[[2]] <- q5a[[2]][1:3]
@@ -604,7 +609,7 @@ test_function <- function(pdf) {
                                core_df_5a) 
   core_df_5a <- core_df_5a |> mutate(year = as.numeric(year))
   # question 5b
-  q5b_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+  q5b_indeces <- c(11, 12, 13, 14, 15, 16, 17)
   q5b <- only_numbers_2[q5b_indeces]
   q5b[[1]] <- q5b[[1]][1:3]
   q5b[[2]] <- q5b[[2]][1:3]
@@ -622,7 +627,7 @@ test_function <- function(pdf) {
                                core_df_5b)
   core_df_5b <- core_df_5b |> mutate(year = as.numeric(year))
   # question 5c
-  q5c_indeces <- c(24, 26, 27, 28, 31, 33, 34)
+  q5c_indeces <- c(22, 23, 24, 25, 26, 28, 29)
   q5c <- only_numbers_2[q5c_indeces]
   q5c[[2]] <- q5c[[2]][1:3]
   q5c[[4]] <- q5c[[4]][1:3]
@@ -636,7 +641,7 @@ test_function <- function(pdf) {
                                core_df_5c)
   core_df_5c <- core_df_5c |> mutate(year = as.numeric(year))
   # question 6a
-  q6a_indeces <- c(40, 41, 43, 45, 47, 48, 50)
+  q6a_indeces <- c(34, 35, 36, 38, 39, 40, 41)
   q6a <- only_numbers_2[q6a_indeces]
   q6a[[2]] <- q6a[[2]][1:3]
   q6a[[7]] <- q6a[[7]][1:3]
@@ -649,7 +654,7 @@ test_function <- function(pdf) {
                                core_df_6a)
   core_df_6a <- core_df_6a |> mutate(year = as.numeric(year))
   # question 6b
-  q6b_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+  q6b_indeces <- c(2, 3, 4, 5, 6, 7, 8)
   q6b <- only_numbers_2[q6b_indeces]
   q6b[[1]] <- q6b[[1]][4:6]
   q6b[[2]] <- q6b[[2]][4:6]
@@ -667,7 +672,7 @@ test_function <- function(pdf) {
                                core_df_6b)
   core_df_6b <- core_df_6b |> mutate(year = as.numeric(year))
   # question 6c
-  q6c_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+  q6c_indeces <- c(11, 12, 13, 14, 15, 16, 17)
   q6c <- only_numbers_2[q6c_indeces]
   q6c[[1]] <- q6c[[1]][4:6]
   q6c[[2]] <- q6c[[2]][4:6]
