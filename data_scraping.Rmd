@@ -30,19 +30,20 @@ first_page_zeroes <- str_replace_all(first_page,
 first_page_zeroes
 
 only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+only_numbers <- compact(only_numbers)
 only_numbers
 
 metadata_df <- tibble::tibble(control_num = only_numbers[[1]][2],
                               year = only_numbers[[2]][1],
                               course_num = only_numbers[[2]][3],
                               n_evals = only_numbers[[4]][1],
-                              n_evals_univ = only_numbers[[8]][1])
+                              n_evals_univ = only_numbers[[6]][1])
 metadata_df
 ```
 
 question 1
 ```{r}
-q1_indeces <- c(63, 64, 65, 66, 67, 68, 69)
+q1_indeces <- c(49, 50, 51, 52, 53, 54, 55)
 q1 <- only_numbers[q1_indeces]
 q1
 
@@ -86,7 +87,7 @@ core_df_1
 
 question 2
 ```{r}
-q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
+q2_indeces <- c(5, 7, 8, 9, 10, 11, 12) ## back half of 16
 q2 <- only_numbers[q2_indeces]
 q2
 
@@ -110,7 +111,7 @@ core_df_2
 
 question 3
 ```{r}
-q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
+q3_indeces <- c(16, 17, 18, 19, 20, 22, 24)
 q3 <- only_numbers[q3_indeces]
 q3
 
@@ -135,7 +136,7 @@ core_df_3
 
 question 4a
 ```{r}
-q4a_indeces <- c(38, 39, 40, 41, 43)
+q4a_indeces <- c(29, 30, 31, 32, 33)
 q4a <- only_numbers[q4a_indeces]
 q4a
 
@@ -173,7 +174,7 @@ core_df_4a
 
 question 4b
 ```{r}
-q4b_indeces <- c(50, 52, 54, 56, 57)
+q4b_indeces <- c(38, 40, 42, 44, 45)
 q4b <- only_numbers[q4b_indeces]
 q4b
 
@@ -195,7 +196,7 @@ core_df_4b
 
 question 4c
 ```{r}
-q4c_indeces <- c(63, 64, 65, 66, 67)
+q4c_indeces <- c(49, 50, 51, 52, 53)
 q4c <- only_numbers[q4c_indeces]
 q4c
 
@@ -230,12 +231,13 @@ second_page_zeroes <- str_replace_all(second_page,
                                      replacement = "0")
 second_page_zeroes
 only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
+only_numbers_2 <- compact(only_numbers_2)
 only_numbers_2
 ```
 
 question 5a
 ```{r}
-q5a_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+q5a_indeces <- c(2, 3, 4, 5, 6, 7, 8)
 q5a <- only_numbers_2[q5a_indeces]
 q5a
 
@@ -264,7 +266,7 @@ core_df_5a
 
 question 5b
 ```{r}
-q5b_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+q5b_indeces <- c(11, 12, 13, 14, 15, 16, 17)
 q5b <- only_numbers_2[q5b_indeces]
 q5b
 
@@ -293,7 +295,7 @@ core_df_5b
 
 question 5c
 ```{r}
-q5c_indeces <- c(24, 26, 27, 28, 31, 33, 34)
+q5c_indeces <- c(22, 23, 24, 25, 26, 28, 29)
 q5c <- only_numbers_2[q5c_indeces]
 q5c
 
@@ -318,7 +320,7 @@ core_df_5c
 
 question 6a
 ```{r}
-q6a_indeces <- c(40, 41, 43, 45, 47, 48, 50)
+q6a_indeces <- c(34, 35, 36, 38, 39, 40, 41)
 q6a <- only_numbers_2[q6a_indeces]
 q6a
 
@@ -342,7 +344,7 @@ core_df_6a
 
 question 6b
 ```{r}
-q6b_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+q6b_indeces <- c(2, 3, 4, 5, 6, 7, 8)
 q6b <- only_numbers_2[q6b_indeces]
 q6b
 
@@ -371,7 +373,7 @@ core_df_6b
 
 question 6c
 ```{r}
-q6c_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+q6c_indeces <- c(11, 12, 13, 14, 15, 16, 17)
 q6c <- only_numbers_2[q6c_indeces]
 q6c
 
@@ -400,7 +402,7 @@ core_df_6c
 
 primary reason for enrolling in course
 ```{r}
-reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
+reasons_indeces <- c(12, 13, 14, 15, 16, 17, 19, 21)
 reasons <- only_numbers[reasons_indeces] 
 reasons
 
@@ -447,7 +449,7 @@ core_reasons_df
 
 gender 
 ```{r}
-gender_indeces <- c(35, 37, 38, 39)
+gender_indeces <- c(26, 28, 29, 30)
 gender <- only_numbers[gender_indeces]
 gender
 
@@ -482,7 +484,7 @@ core_gender_df
 
 class year
 ```{r}
-class_indeces <- c(44, 45, 47, 48, 51, 53)
+class_indeces <- c(34, 35, 36, 37, 39, 41)
 class_year <- only_numbers[class_indeces]
 class_year
 
