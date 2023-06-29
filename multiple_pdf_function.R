@@ -6,14 +6,16 @@ multiple_pdf_function <- function(pdf) {
                                        pattern = "-",
                                        replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   # page 2
   second_page <- strsplit(tab[2], "\n")[[1]]
   second_page_zeroes <- str_replace_all(second_page,
                                         pattern = "-",
                                         replacement = "0")
   only_numbers_2 <- str_extract_all(second_page_zeroes, "\\d+")
+  only_numbers_2 <- compact(only_numbers_2)
   # question 1
-  q1_indeces <- c(63, 64, 65, 66, 67, 68, 69)
+  q1_indeces <- c(49, 50, 51, 52, 53, 54, 55)
   q1 <- only_numbers[q1_indeces]
   q1[[1]] <- q1[[1]][1:3]
   q1[[2]] <- q1[[2]][1:3]
@@ -64,7 +66,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_1 <- tibble::tibble(course = course,
                               core_df_1)
   # question 2
-  q2_indeces <- c(7, 9, 10, 11, 12, 14, 16) ## back half of 16
+  q2_indeces <- c(5, 7, 8, 9, 10, 11, 12) ## back half of 16
   q2 <- only_numbers[q2_indeces]
   q2[[7]] <- q2[[7]][4:6]
   q2_df <- do.call(rbind.data.frame, q2)
@@ -80,7 +82,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_2 <- tibble::tibble(course = course,
                               core_df_2)
   # question 3
-  q3_indeces <- c(21, 23, 25, 26, 29, 31, 33)
+  q3_indeces <- c(16, 17, 18, 19, 20, 22, 24)
   q3 <- only_numbers[q3_indeces]
   q3[[1]] <- q3[[1]][4:6]
   q3[[2]] <- q3[[2]][4:6]
@@ -98,7 +100,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_3 <- tibble::tibble(course = course,
                               core_df_3)
   # question 4a
-  q4a_indeces <- c(38, 39, 40, 41, 43)
+  q4a_indeces <- c(29, 30, 31, 32, 33)
   q4a <- only_numbers[q4a_indeces]
   q4a[[1]] <- q4a[[1]][4:6]
   q4a[[2]] <- q4a[[2]][4:6]
@@ -137,7 +139,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_4a <- tibble::tibble(course = course_2,
                                core_df_4a)
   # question 4b
-  q4b_indeces <- c(50, 52, 54, 56, 57)
+  q4b_indeces <- c(38, 40, 42, 44, 45)
   q4b <- only_numbers[q4b_indeces]
   q4b_df <- do.call(rbind.data.frame, q4b)
   names(q4b_df) <- c("n_students", "perc", "univ_perc")
@@ -153,7 +155,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_4b <- tibble::tibble(course = course_2,
                                core_df_4b)
   # question 4c
-  q4c_indeces <- c(63, 64, 65, 66, 67)
+  q4c_indeces <- c(49, 50, 51, 52, 53)
   q4c <- only_numbers[q4c_indeces]
   q4c[[1]] <- q4c[[1]][4:6]
   q4c[[2]] <- q4c[[2]][4:6]
@@ -174,7 +176,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_4c <- tibble::tibble(course = course_2,
                                core_df_4c)
   # question 5a
-  q5a_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+  q5a_indeces <- c(2, 3, 4, 5, 6, 7, 8)
   q5a <- only_numbers_2[q5a_indeces]
   q5a[[1]] <- q5a[[1]][1:3]
   q5a[[2]] <- q5a[[2]][1:3]
@@ -196,7 +198,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_5a <- tibble::tibble(course = course,
                                core_df_5a)
   # question 5b
-  q5b_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+  q5b_indeces <- c(11, 12, 13, 14, 15, 16, 17)
   q5b <- only_numbers_2[q5b_indeces]
   q5b[[1]] <- q5b[[1]][1:3]
   q5b[[2]] <- q5b[[2]][1:3]
@@ -218,7 +220,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_5b <- tibble::tibble(course = course,
                                core_df_5b)
   # question 5c
-  q5c_indeces <- c(24, 26, 27, 28, 31, 33, 34)
+  q5c_indeces <- c(22, 23, 24, 25, 26, 28, 29)
   q5c <- only_numbers_2[q5c_indeces]
   q5c[[2]] <- q5c[[2]][1:3]
   q5c[[4]] <- q5c[[4]][1:3]
@@ -236,7 +238,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_5c <- tibble::tibble(course = course,
                                core_df_5c)
   # question 6a
-  q6a_indeces <- c(40, 41, 43, 45, 47, 48, 50)
+  q6a_indeces <- c(34, 35, 36, 38, 39, 40, 41)
   q6a <- only_numbers_2[q6a_indeces]
   q6a[[2]] <- q6a[[2]][1:3]
   q6a[[7]] <- q6a[[7]][1:3]
@@ -253,7 +255,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_6a <- tibble::tibble(course = course,
                                core_df_6a)
   # question 6b
-  q6b_indeces <- c(3, 4, 5, 6, 7, 8, 9)
+  q6b_indeces <- c(2, 3, 4, 5, 6, 7, 8)
   q6b <- only_numbers_2[q6b_indeces]
   q6b[[1]] <- q6b[[1]][4:6]
   q6b[[2]] <- q6b[[2]][4:6]
@@ -275,7 +277,7 @@ multiple_pdf_function <- function(pdf) {
   core_df_6b <- tibble::tibble(course = course,
                                core_df_6b)
   # question 6c
-  q6c_indeces <- c(13, 14, 15, 16, 17, 18, 19)
+  q6c_indeces <- c(11, 12, 13, 14, 15, 16, 17)
   q6c <- only_numbers_2[q6c_indeces]
   q6c[[1]] <- q6c[[1]][4:6]
   q6c[[2]] <- q6c[[2]][4:6]
