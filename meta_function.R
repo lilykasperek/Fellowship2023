@@ -5,6 +5,7 @@ meta_function <- function(eval) {
                                        pattern = "-",
                                        replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   semester_string <- str_replace_all(first_page_zeroes[[2]], " ", "")
   semester <- semester_string |> substring(5, 6)
   
@@ -18,6 +19,6 @@ meta_function <- function(eval) {
                               year = only_numbers[[2]][1],
                               control_num = only_numbers[[1]][2],
                               n_evals = only_numbers[[4]][1],
-                              n_evals_univ = only_numbers[[8]][1]) 
+                              n_evals_univ = only_numbers[[6]][1]) 
   return(meta_test)
 }
