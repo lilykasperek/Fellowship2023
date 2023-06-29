@@ -5,6 +5,7 @@ sb_function <- function(eval) {
                                        pattern = "-",
                                        replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
+  only_numbers <- compact(only_numbers)
   gender_responses <- c("Male",
                         "Female",
                         "Other",
@@ -27,6 +28,7 @@ sb_function <- function(eval) {
             only_numbers[[2]][1],
             only_numbers[[2]][1],
             only_numbers[[2]][1])
+  
   year_2 <- c(only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1],
@@ -35,16 +37,19 @@ sb_function <- function(eval) {
               only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1])
+  
   year_3 <- c(only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1],
               only_numbers[[2]][1])
+  
   course <- c(only_numbers[[2]][3],
               only_numbers[[2]][3],
               only_numbers[[2]][3],
               only_numbers[[2]][3])
+  
   course_2 <- c(only_numbers[[2]][3],
                 only_numbers[[2]][3],
                 only_numbers[[2]][3],
@@ -53,13 +58,15 @@ sb_function <- function(eval) {
                 only_numbers[[2]][3],
                 only_numbers[[2]][3],
                 only_numbers[[2]][3])
+  
   course_3 <- c(only_numbers[[2]][3],
                 only_numbers[[2]][3],
                 only_numbers[[2]][3],
                 only_numbers[[2]][3],
                 only_numbers[[2]][3],
                 only_numbers[[2]][3])
-  reasons_indeces <- c(16, 18, 19, 20, 21, 23, 26, 30)
+  
+  reasons_indeces <- c(12, 13, 14, 15, 16, 17, 19, 21)
   reasons <- only_numbers[reasons_indeces] 
   reasons[[1]] <- reasons[[1]][1:3]
   reasons[[2]] <- reasons[[2]][1:3]
@@ -78,7 +85,7 @@ sb_function <- function(eval) {
   core_reasons_df <- tibble::tibble(course = course_2,
                                     core_reasons_df)
   # gender
-  gender_indeces <- c(35, 37, 38, 39)
+  gender_indeces <- c(26, 28, 29, 30)
   gender <- only_numbers[gender_indeces]
   gender[[3]] <- gender[[3]][1:3]
   gender[[4]] <- gender[[4]][1:3]
@@ -93,7 +100,7 @@ sb_function <- function(eval) {
   core_gender_df <- tibble::tibble(course = course,
                                    core_gender_df)
   # class year 
-  class_indeces <- c(44, 45, 47, 48, 51, 53)
+  class_indeces <- c(34, 35, 36, 37, 39, 41)
   class_year <- only_numbers[class_indeces]
   class_year[[1]] <- class_year[[1]][1:3]
   class_year[[2]] <- class_year[[2]][1:3]
