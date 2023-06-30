@@ -16,7 +16,7 @@ library(shinythemes)
 library(shadowtext)
 library(data.table)
 df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
-df
+questions <- levels(factor(df$full_question))
 ```
 
 ```{r}
@@ -34,7 +34,7 @@ ui <- fluidPage(
                     radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
                                  choices = c("Count", "Percent")),
                     selectInput(inputId = "select_facet", label = "Choose Question",
-                                choices = levels(factor(df$full_question)))
+                                choices = questions)
                   ),
     mainPanel(
       tableOutput("pdfview"),
@@ -127,7 +127,7 @@ server <- function(input, output) {
     ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
                    fill = ordered_responses)) +
       geom_col() +
-      facet_wrap(~Semester + course, ncol = 1) +
+      facet_wrap(~fct_inorder(new_semester) + course, ncol = 1) +
       scale_fill_discrete() +
       labs(x = input$choose_facet,
        y = "Responses",
@@ -413,8 +413,9 @@ server <- function(input, output) {
       if (input$choose_table == "Full Dataset") {
         df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
                   use.names = TRUE, fill = TRUE) 
-        df <- df |> select(course, Semester, responses, n_students, perc, univ_perc, full_question) |>
+        df <- df |> select(course, new_semester, responses, n_students, perc, univ_perc, full_question) |>
           rename(Course = 'course',
+                 Semester = 'new_semester',
                  Responses = 'responses',
                  Count = 'n_students',
                  Percent_of_Students = 'perc',
