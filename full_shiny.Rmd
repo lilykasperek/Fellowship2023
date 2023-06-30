@@ -15,6 +15,7 @@ source("multiple_pdf_function.R")
 library(shinythemes)
 library(shadowtext)
 library(data.table)
+library(viridis)
 df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
 questions <- levels(factor(df$full_question))
 ```
@@ -50,6 +51,14 @@ ui <- fluidPage(
                                        choices = c("Heatmap", "Bar Plot")),
                           radioButtons(inputId = "choose", label = "Counts or Percent of Students",
                                        choices = c("Count", "Percent")),
+                          checkboxInput(inputId = "check", label = "Display Count/Percent on Heatmap",
+                                        value = TRUE),
+                          selectInput(inputId = "color", label = "Choose Color Scale for Heatmap",
+                                      choices = c("viridis",
+                                                  "plasma",
+                                                  "mako",
+                                                  "turbo",
+                                                  "rocket")),
                           width = 3),
                         mainPanel(
                           tableOutput("pdf_summary"), 
@@ -68,6 +77,14 @@ ui <- fluidPage(
                        radioButtons(inputId = "choose_special", label = "Count or Percent
                                     of Students", 
                                     choices = c("Count", "Percent")),
+                        checkboxInput(inputId = "check_2", label = "Display Count/Percent on Heatmap",
+                                      value = TRUE),
+                        selectInput(inputId = "color_2", label = "Choose Color Scale for Heatmap",
+                                      choices = c("viridis",
+                                                  "plasma",
+                                                  "mako",
+                                                  "turbo",
+                                                  "rocket")),
                        width = 3),
                        mainPanel(tableOutput("pdf_summary_special"),
                                              plotOutput("choose_plot_special", width = "100%")
@@ -127,7 +144,7 @@ server <- function(input, output) {
     ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
                    fill = ordered_responses)) +
       geom_col() +
-      facet_wrap(~fct_inorder(new_semester) + course, ncol = 1) +
+      facet_wrap(~new_semester + course, ncol = 1) +
       scale_fill_discrete() +
       labs(x = input$choose_facet,
        y = "Responses",
@@ -189,37 +206,69 @@ server <- function(input, output) {
     meta_df <- meta_function(input$file_input$datapath)
     title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
     subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-    ggplot(data = pdf_df, aes(x = responses_hm, y = fct_rev(question_2),
-                                fill = .data[[input$choose]])) +
-    geom_tile() +
-    scale_fill_viridis_c(direction = 1) +
-      labs(x = "Responses",
-           y = "Questions",
-           fill = input$choose,
-           title = title,
-           subtitle = subtitle) +
-      geom_shadowtext(aes(label = .data[[input$choose]],
-                  fontface = 'bold'), size = 6,
-                colour = "gray",
-            show.legend = FALSE) +
-      theme_classic() +
-      theme(plot.title = element_text(hjust = 0.5,
-                                  size = 18,
-                                       margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
-            plot.subtitle = element_text(hjust = 0.5,
-                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
-            legend.box.background = element_rect(colour = "black"),
-            axis.text = element_text(size = 14),
-            axis.title = element_text(size = 16),
-            legend.title = element_text(size = 13,
-                                        hjust = 0.5),
-            legend.text = element_text(size = 10,
-                                       hjust = 0.5),
-            legend.key.size = unit(1, 'cm'), 
-          legend.key.height = unit(1, 'cm'), 
-          legend.key.width = unit(1, 'cm'),
-            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
-            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+    if (input$check == TRUE) {
+      ggplot(data = pdf_df, aes(x = responses_hm, y = fct_rev(question_2),
+                                  fill = .data[[input$choose]])) +
+      geom_tile() +
+      scale_fill_viridis(option = input$color,
+                         direction = 1) +
+        labs(x = "Responses",
+             y = "Questions",
+             fill = input$choose,
+             title = title,
+             subtitle = subtitle) +
+        geom_shadowtext(aes(label = .data[[input$choose]],
+                    fontface = 'bold'), size = 6,
+                  colour = "gray",
+              show.legend = FALSE) +
+        theme_classic() +
+        theme(plot.title = element_text(hjust = 0.5,
+                                    size = 18,
+                                         margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                            margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+              legend.box.background = element_rect(colour = "black"),
+              axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16),
+              legend.title = element_text(size = 13,
+                                          hjust = 0.5),
+              legend.text = element_text(size = 10,
+                                         hjust = 0.5),
+              legend.key.size = unit(1, 'cm'), 
+            legend.key.height = unit(1, 'cm'), 
+            legend.key.width = unit(1, 'cm'),
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+    } else {
+        ggplot(data = pdf_df, aes(x = responses_hm, y = fct_rev(question_2),
+                                  fill = .data[[input$choose]])) +
+      geom_tile() +
+      scale_fill_viridis_c(option = input$color, 
+                           direction = 1) +
+        labs(x = "Responses",
+             y = "Questions",
+             fill = input$choose,
+             title = title,
+             subtitle = subtitle) +
+        theme_classic() +
+        theme(plot.title = element_text(hjust = 0.5,
+                                    size = 18,
+                                         margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                            margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+              legend.box.background = element_rect(colour = "black"),
+              axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16),
+              legend.title = element_text(size = 13,
+                                          hjust = 0.5),
+              legend.text = element_text(size = 10,
+                                         hjust = 0.5),
+              legend.key.size = unit(1, 'cm'), 
+            legend.key.height = unit(1, 'cm'), 
+            legend.key.width = unit(1, 'cm'),
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+      }
     } else{
       pdf_df <- pdf_function_full(input$file_input$datapath)
       pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
@@ -246,7 +295,7 @@ server <- function(input, output) {
       title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
       subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
       ggplot(data = pdf_df, aes(x = ordered, y = .data[[input$choose]])) +
-        geom_col(aes(fill = .data[[input$choose]])) +
+        geom_col(aes(fill = ordered)) +
         coord_flip() +
         facet_wrap(~question_2) +
         labs(x = "Responses",
@@ -256,8 +305,7 @@ server <- function(input, output) {
       #geom_shadowtext(aes(label = .data[[input$choose]],
                   #fontface = 'bold'), size = 6,
                 #colour = "gray",
-            #show.legend = FALSE) +
-      scale_fill_viridis_c() +
+            #show.legend = FALSE) 
       theme_classic() +
       theme(plot.title = element_text(hjust = 0.5,
                                   size = 18,
@@ -298,38 +346,70 @@ server <- function(input, output) {
       meta_df <- meta_function(input$file_input$datapath)
       title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
       subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-      ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
-                                         fill = .data[[input$choose_special]])) +
-        geom_tile() +
-        scale_fill_viridis_c(direction = 1) +
-        labs(title = title,
-             subtitle = subtitle,
-             x = "Responses",
-             y = "Questions",
-             fill = input$choose_special) +
-        geom_shadowtext(aes(label = .data[[input$choose_special]],
-                            fontface = 'bold'),
-                        size = 6,
-                        colour = "gray",
-                        show.legend = FALSE) +
-        theme_classic() +
-        theme(plot.title = element_text(hjust = 0.5,
-                                        size = 18,
-                                  margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
-            plot.subtitle = element_text(hjust = 0.5,
-                                          margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
-            legend.box.background = element_rect(colour = "black"),
-            axis.text = element_text(size = 14),
-            axis.title = element_text(size = 16),
-            legend.title = element_text(size = 13,
-                                        hjust = 0.5),
-            legend.text = element_text(size = 10,
-                                       hjust = 0.5),
-            legend.key.size = unit(1, 'cm'),
-            legend.key.height = unit(1, 'cm'),
-            legend.key.width = unit(1, 'cm'),
-            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
-            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+      if (input$check_2 == TRUE) {
+        ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
+                                           fill = .data[[input$choose_special]])) +
+          geom_tile() +
+          scale_fill_viridis(option = input$color_2,
+                             direction = 1) +
+          labs(title = title,
+               subtitle = subtitle,
+               x = "Responses",
+               y = "Questions",
+               fill = input$choose_special) +
+          geom_shadowtext(aes(label = .data[[input$choose_special]],
+                              fontface = 'bold'),
+                          size = 6,
+                          colour = "gray",
+                          show.legend = FALSE) +
+          theme_classic() +
+          theme(plot.title = element_text(hjust = 0.5,
+                                          size = 18,
+                                    margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                            margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+              legend.box.background = element_rect(colour = "black"),
+              axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16),
+              legend.title = element_text(size = 13,
+                                          hjust = 0.5),
+              legend.text = element_text(size = 10,
+                                         hjust = 0.5),
+              legend.key.size = unit(1, 'cm'),
+              legend.key.height = unit(1, 'cm'),
+              legend.key.width = unit(1, 'cm'),
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+      } else {
+          ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
+                                           fill = .data[[input$choose_special]])) +
+          geom_tile() +
+          scale_fill_viridis(option = input$color_2,
+                             direction = 1) +
+          labs(title = title,
+               subtitle = subtitle,
+               x = "Responses",
+               y = "Questions",
+               fill = input$choose_special) +
+          theme_classic() +
+          theme(plot.title = element_text(hjust = 0.5,
+                                          size = 18,
+                                    margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                            margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+              legend.box.background = element_rect(colour = "black"),
+              axis.text = element_text(size = 14),
+              axis.title = element_text(size = 16),
+              legend.title = element_text(size = 13,
+                                          hjust = 0.5),
+              legend.text = element_text(size = 10,
+                                         hjust = 0.5),
+              legend.key.size = unit(1, 'cm'),
+              legend.key.height = unit(1, 'cm'),
+              legend.key.width = unit(1, 'cm'),
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+        }
   } else {
     other_questions <- pdf_function_full(input$file_input$datapath)
     other_questions <- other_questions |> filter(responses_hm == "Too High" |
@@ -349,7 +429,7 @@ server <- function(input, output) {
     title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
     subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
     ggplot(data = other_questions, aes(x = .data[[input$choose_special]], y = ordered_responses,
-                                       fill = .data[[input$choose_special]])) +
+                                       fill = ordered_responses)) +
       geom_col() +
       coord_flip() +
       facet_wrap(~full_question, ncol = 1) +
@@ -357,7 +437,6 @@ server <- function(input, output) {
            x = input$choose_special,
            title = title,
            subtitle = subtitle) +
-      scale_fill_viridis_c() +
       theme_classic() +
       theme(plot.title = element_text(hjust = 0.5,
                                   size = 18,
