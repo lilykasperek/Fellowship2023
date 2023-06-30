@@ -340,5 +340,13 @@ multiple_pdf_function <- function(pdf) {
                        question_hm == "Q4c" ~ "Q4c. Sophistication")) 
   binded_df <- binded_df |> unite("Semester", c(year, semester),
                                   sep = "_")
+  # step 1
+  binded_df <- binded_df |> separate(col = Semester, into = c("year", "semester"),
+                                     sep = "_")
+  # step 2
+  binded_df <- binded_df |> arrange(year, desc(semester))
+  # step 3
+  binded_df <- binded_df |> unite("new_semester", c(year, semester),
+                                  sep = "_")
   return(binded_df)
 }
