@@ -702,13 +702,33 @@ ggplot(data = test_df, aes(x = count_hm, y = responses_hm,
   facet_wrap(~Semester + course, ncol = 1) 
 
 source("multiple_pdf_function.R")
-check_1 <- multiple_pdf_function("STAT113_Fall_2020_2.pdf") |> print(n = 78)
-check_2 <- multiple_pdf_function("STAT113_Spring_2020_2.pdf") |> print(n = 78)
-check_3 <- bind_rows(check_1, check_2) |>
+check_1 <- multiple_pdf_function("STAT113_Spring_2020_2.pdf") |> print(n = 78)
+check_2 <- multiple_pdf_function("STAT113_Fall_2020_2.pdf") |> print(n = 78)
+check_3 <- multiple_pdf_function("STAT113_Spring_2021_1.pdf") |> print(n = 78)
+check_4 <- bind_rows(check_1, check_2, check_3) |>
   filter(question_hm == "Q1")
-ggplot(data = check_3, aes(x = count_hm, y = responses_hm,
+ggplot(data = check_4, aes(x = count_hm, y = responses_hm,
                            fill = responses_hm)) +
   geom_col() +
   facet_wrap(~Semester + course, ncol = 1) 
-```
 
+# step 1
+check_4 <- check_4 |> separate(col = Semester, into = c("year", "semester"),
+                    sep = "_")
+check_4
+
+# step 2
+check_4 <- check_4 |> arrange(year, desc(semester))
+check_4
+
+# step 3
+check_4 <- check_4 |> unite("new_semester", c(year, semester), 
+            sep = "_")
+check_4
+
+# step 4
+ggplot(data = check_4, aes(x = count_hm, y = responses_hm,
+                           fill = responses_hm)) +
+  geom_col() +
+  facet_wrap(~fct_inorder(new_semester) + course, ncol = 1) 
+```
