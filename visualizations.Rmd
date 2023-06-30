@@ -686,11 +686,19 @@ test_function <- function(pdf) {
                        question_hm == "Q4c" ~ "Q4c. Sophistication")) 
   binded_df <- binded_df |> unite("Semester", c(year, semester),
                                   sep = "_")
+  # step 1
+  binded_df <- binded_df |> separate(col = Semester, into = c("year", "semester"),
+                                     sep = "_")
+  # step 2
+  binded_df <- binded_df |> arrange(year, desc(semester))
+  # step 3
+  binded_df <- binded_df |> unite("new_semester", c(year, semester),
+                                  sep = "_")
   return(binded_df)
 }
 
-a <- test_function("STAT113_Fall_2020_2.pdf") |> print(n = 78)
-b <- test_function("STAT113_Spring_2020_2.pdf") |> print(n = 78)
+a <- test_function("STAT113_Spring_2020_2.pdf") |> print(n = 30)
+b <- test_function("STAT113_Fall_2020_2.pdf") |> print(n = 30)
 c <- test_function("STAT113_Spring_2021_1.pdf")
 test_df <- bind_rows(a, b, c) |>
   filter(question_hm == "Q1")
@@ -699,7 +707,8 @@ test_df
 ggplot(data = test_df, aes(x = count_hm, y = responses_hm,
                            fill = responses_hm)) +
   geom_col() +
-  facet_wrap(~Semester + course, ncol = 1) 
+  facet_wrap(~fct_inorder(new_semester) + course, ncol = 1) +
+  labs(title = "Testing function")
 
 source("multiple_pdf_function.R")
 check_1 <- multiple_pdf_function("STAT113_Spring_2020_2.pdf") |> print(n = 78)
@@ -710,25 +719,41 @@ check_4 <- bind_rows(check_1, check_2, check_3) |>
 ggplot(data = check_4, aes(x = count_hm, y = responses_hm,
                            fill = responses_hm)) +
   geom_col() +
-  facet_wrap(~Semester + course, ncol = 1) 
+  facet_wrap(~Semester + course, ncol = 1) +
+  labs(title = "Wrong Order")
 
 # step 1
-check_4 <- check_4 |> separate(col = Semester, into = c("year", "semester"),
+check_5 <- check_4 |> separate(col = Semester, into = c("year", "semester"),
                     sep = "_")
-check_4
+check_5
 
 # step 2
-check_4 <- check_4 |> arrange(year, desc(semester))
-check_4
+check_5 <- check_5 |> arrange(year, desc(semester))
+check_5
 
 # step 3
-check_4 <- check_4 |> unite("new_semester", c(year, semester), 
+check_5 <- check_5 |> unite("new_semester", c(year, semester), 
             sep = "_")
-check_4
+check_5
+check_5 <- check_5 |> mutate(new_semester = fct_inorder(new_semester))
 
 # step 4
+ggplot(data = check_5, aes(x = count_hm, y = responses_hm,
+                           fill = responses_hm)) +
+  geom_col() +
+  facet_wrap(~new_semester + course, ncol = 1) +
+  labs(title = "Correct Order")
+
+# testing again after putting in r script 
+source("multiple_pdf_function.R")
+check_1 <- multiple_pdf_function("STAT113_Spring_2020_2.pdf") |> print(n = 78)
+check_2 <- multiple_pdf_function("STAT113_Fall_2020_2.pdf") |> print(n = 78)
+check_3 <- multiple_pdf_function("STAT113_Spring_2021_1.pdf") |> print(n = 78)
+check_4 <- bind_rows(check_1, check_2, check_3) |>
+  filter(question_hm == "Q1")
 ggplot(data = check_4, aes(x = count_hm, y = responses_hm,
                            fill = responses_hm)) +
   geom_col() +
-  facet_wrap(~fct_inorder(new_semester) + course, ncol = 1) 
+  facet_wrap(~fct_inorder(new_semester) + course, ncol = 1) +
+  labs(title = "Function works")
 ```
