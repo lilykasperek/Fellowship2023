@@ -348,5 +348,6 @@ multiple_pdf_function <- function(pdf) {
   # step 3
   binded_df <- binded_df |> unite("new_semester", c(year, semester),
                                   sep = "_")
+  binded_df <- binded_df |> mutate(new_semester = fct_inorder(new_semester))
   return(binded_df)
 }
