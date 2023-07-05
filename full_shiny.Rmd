@@ -35,7 +35,9 @@ ui <- fluidPage(
                     radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
                                  choices = c("Count", "Percent")),
                     selectInput(inputId = "select_facet", label = "Choose Question",
-                                choices = questions)
+                                choices = questions),
+                    downloadButton(outputId = "downloadPlot", label = "Download Plot",
+                                   ),
                   ),
     mainPanel(
       tableOutput("pdfview"),
@@ -109,24 +111,8 @@ ui <- fluidPage(
     )
 )
 server <- function(input, output) {
-  output$pdfview <- renderTable({
-    req(input$file_input2)
-    df <- rbindlist(lapply(input$file_input2$datapath, meta_function),
-              use.names = TRUE, fill = TRUE) |>
-      mutate(year = as.character(year)) |>
-      rename(Course_Number = 'course_num',
-                                   Subject = 'subject',
-                                   Semester = 'semester',
-                                   Year = 'year',
-                                   Control_Number = 'control_num',
-                                   Total_Evals = 'n_evals',
-                                   Total_Evals_University = 'n_evals_univ') |>
-      select(Subject, Year, everything()) |>
-      arrange(Year)
-      return(df)
-  }, align = 'c',
-  width = 100000)
-  output$faceted_barplot <- renderPlot ({
+  # testing if this will work for download button 
+  plotInput <- reactive({
     req(input$file_input2)
     df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
               use.names = TRUE, fill = TRUE)
@@ -176,7 +162,85 @@ server <- function(input, output) {
             strip.text.x = element_text(size = 9),
             axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
             axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  })
+  output$faceted_barplot <- renderPlot({
+    print(plotInput())
   }, height = 550, width = 910)
+  output$downloadPlot <- downloadHandler(
+    filename = function() { "plot.png" },
+    content = function(file) {
+      ggsave(file, plot = plotInput(), device = "png",
+             width = 10, height = 6.67)
+    }
+  )
+  output$pdfview <- renderTable({
+    req(input$file_input2)
+    df <- rbindlist(lapply(input$file_input2$datapath, meta_function),
+              use.names = TRUE, fill = TRUE) |>
+      mutate(year = as.character(year)) |>
+      rename(Course_Number = 'course_num',
+                                   Subject = 'subject',
+                                   Semester = 'semester',
+                                   Year = 'year',
+                                   Control_Number = 'control_num',
+                                   Total_Evals = 'n_evals',
+                                   Total_Evals_University = 'n_evals_univ') |>
+      select(Subject, Year, everything()) |>
+      arrange(Year)
+      return(df)
+  }, align = 'c',
+  width = 100000)
+  #output$faceted_barplot <- renderPlot ({
+    #req(input$file_input2)
+    #df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
+              #use.names = TRUE, fill = TRUE)
+    #df <- df |> filter(full_question == input$select_facet) |>
+      #mutate(perc = as.double(perc)) |>
+      #rename(Count = 'count_hm', 
+             #Percent = 'perc') |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                            #"Somewhat High",
+                                                                            #"Appropriate",
+                                                                            #"Somewhat Low",
+                                                                            #"Too Low")))
+    # step 1
+    #df <- df |> separate(col = Semester, into = c("year", "semester"),
+                        #sep = "_")
+    # step 2
+    #df <- df |> arrange(year, desc(semester))
+    # step 3
+    #df <- df |> unite("new_semester", c(year, semester), 
+                #sep = "_")
+    #df <- df |> mutate(new_semester = fct_inorder(new_semester))
+    #meta_df <- rbindlist(lapply(input$file_input2$datapath, meta_function),
+              #use.names = TRUE, fill = TRUE)
+    #title <- paste(meta_df[1, 2], sep = " ", collapse = NULL)
+    #ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
+                   #fill = ordered_responses)) +
+      #geom_col() +
+      #facet_wrap(~new_semester + course, ncol = 1) +
+      #scale_fill_discrete() +
+      #labs(x = input$choose_facet,
+       #y = "Responses",
+       #title = title, 
+       #subtitle = input$select_facet) +
+       #theme_classic() +
+       #theme(plot.title = element_text(hjust = 0.5,
+                                       #size = 16,
+                                       #margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+             #plot.subtitle = element_text(hjust = 0.5,
+                                          #size = 14,
+                                          #margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+             #legend.position = "none",
+            #axis.text = element_text(size = 10),
+            #axis.title = element_text(size = 12),
+            #legend.title = element_text(size = 9,
+                                        #hjust = 0.5),
+            #legend.text = element_text(size = 6,
+                                       #hjust = 0.5),
+            #strip.text.x = element_text(size = 9),
+            #axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            #axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  #}, height = 550, width = 910)
   output$pdf_summary <- renderTable({
     req(input$file_input)
     meta_df <- meta_function(input$file_input$datapath)
