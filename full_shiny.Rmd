@@ -138,6 +138,15 @@ server <- function(input, output) {
                                                                             "Appropriate",
                                                                             "Somewhat Low",
                                                                             "Too Low")))
+    # step 1
+    df <- df |> separate(col = Semester, into = c("year", "semester"),
+                        sep = "_")
+    # step 2
+    df <- df |> arrange(year, desc(semester))
+    # step 3
+    df <- df |> unite("new_semester", c(year, semester), 
+                sep = "_")
+    df <- df |> mutate(new_semester = fct_inorder(new_semester))
     meta_df <- rbindlist(lapply(input$file_input2$datapath, meta_function),
               use.names = TRUE, fill = TRUE)
     title <- paste(meta_df[1, 2], sep = " ", collapse = NULL)
