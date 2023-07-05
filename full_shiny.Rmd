@@ -501,6 +501,15 @@ server <- function(input, output) {
       if (input$choose_table == "Full Dataset") {
         df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
                   use.names = TRUE, fill = TRUE) 
+        # step 1
+        df <- df |> separate(col = Semester, into = c("year", "semester"),
+                            sep = "_")
+        # step 2
+        df <- df |> arrange(year, desc(semester))
+        # step 3
+        df <- df |> unite("new_semester", c(year, semester), 
+                    sep = "_")
+        df <- df |> mutate(new_semester = fct_inorder(new_semester))
         df <- df |> select(course, new_semester, responses, n_students, perc, univ_perc, full_question) |>
           rename(Course = 'course',
                  Semester = 'new_semester',
