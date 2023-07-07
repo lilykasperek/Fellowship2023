@@ -204,7 +204,6 @@ server <- function(input, output, session) {
       pdf_df <- pdf_df |> mutate(perc = as.double(perc))
       pdf_df <- pdf_df |> rename(Count = 'count_hm',
                                Percent = 'perc')
-      
       pdf_df <- pdf_df |> mutate(ordered = fct_reorder(.f = responses_hm,
                                                        .x = .data[[input$choose]]))
       meta_df <- meta_function(input$file_input$datapath)
@@ -302,7 +301,7 @@ server <- function(input, output, session) {
         ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
                                            fill = .data[[input$choose_special]])) +
           geom_tile() +
-          scale_fill_viridis_c(option = input$color_2,
+          scale_fill_viridis(option = input$color_2,
                                direction = 1) +
           labs(title = title,
                subtitle = subtitle,
@@ -333,7 +332,7 @@ server <- function(input, output, session) {
           ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
                                             fill = .data[[input$choose_special]])) +
           geom_tile() +
-          scale_fill_viridis_c(option = input$color_2,
+          scale_fill_viridis(option = input$color_2,
                                direction = 1) +
           labs(title = title,
                subtitle = subtitle,

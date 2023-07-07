@@ -749,7 +749,8 @@ source("multiple_pdf_function.R")
 check_1 <- multiple_pdf_function("STAT113_Spring_2020_2.pdf") |> print(n = 78)
 check_2 <- multiple_pdf_function("STAT113_Fall_2020_2.pdf") |> print(n = 78)
 check_3 <- multiple_pdf_function("STAT113_Spring_2021_1.pdf") |> print(n = 78)
-check_4 <- bind_rows(check_1, check_2, check_3) |>
+x <- multiple_pdf_function("STAT113_Fall_2022.pdf")
+check_4 <- bind_rows(check_1, check_2, check_3,x) |>
   filter(question_hm == "Q1")
 ggplot(data = check_4, aes(x = count_hm, y = responses_hm,
                            fill = responses_hm)) +
