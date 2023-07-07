@@ -1,16 +1,108 @@
 library(tidyverse)
 library(pdftools)
 library(shiny)
+library(shinythemes)
+library(shadowtext)
+library(data.table)
+library(viridis)
+library(bslib)
 source("pdf_function_full.R")
 source("meta_function.R")
 source("sb_function.R")
-library(shinythemes)
-library(shadowtext)
+source("multiple_pdf_function.R")
+df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+questions <- levels(factor(df$full_question))
 
 ui <- fluidPage(
-  theme = shinytheme("superhero"),
-  navbarPage(title = "Visualizing Student Evaluation Data",
-             tabPanel(title = "Upload and View Visualizations",
+  theme = shinytheme("superhero"), 
+  navbarPage(title = "Visualizing SLU Student Evaluation Data",
+             tabPanel(title = "Home",
+                      h2(strong("Project Description"),
+                         style = "text-align: center;"),
+                      p(style = "text-align: center; font-size = 35px", 
+                        "The purpose of this Shiny App is to visualize Likert scale data scraped from 
+                SLU student evaluation reports. The data is provided as tables of numbers on 
+                pdf files, which can be visually overwhelming, and may not be very helpful.
+                Additional inspiration for this project is the fact that Likert scale data 
+                is being used. Likert scale data is best analyzed and interpreted
+                through visualizations, such as Heatmaps or Bar Plots, rather than using the mean
+               score of responses."),
+                      h5(strong("Compare Student Evaluation Data Tab"),
+                         style = "text-align: left;"),
+                      p(style = "text-align: justify; font-size = 15px",
+                        tags$ul(
+                          tags$li("Upload multiple SLU student evaluation pdf files for the same course to compare responses
+               from semester to semester"),
+                          tags$li("View the count or percent of students for each possible response,
+                       with the ability to view count or percent of responses by question"),
+                          tags$li("Choose different color sclaes"),
+                          tags$li("Download Plot button saves visualizations as .png files"),
+                          tags$li("This tab is meant for multiple pdf files but also works to visualize
+                       data from a single pdf as well"),
+                        )),
+                      h5(strong("Upload and View Visualizations (single pdf) Tab"),
+                         style = "text-align: left;"),
+                      p(style = "text-align: justify; font-size = 15px",
+                        tags$ul(
+                          tags$li("Upload a single SLU student evaluation pdf file"),
+                          tags$li("Choose which visualization you'd like to see: Heatmap or Bar Plot"),
+                          tags$li("View counts or percents of students of each response for questions 1, 2, 3,
+                      5a, 5b, 5c, 6a, 6b, and 6c"),
+                          tags$li("Select whether you'd like to view counts or percents of students labeled on heatmap"),
+                          tags$li("Select different color scale for both the Heatmap and Bar Plot"),
+                          tags$li("Download Plot saves visualizations as .png files")
+                        )),
+                      h5(strong("Questions with Different Scale (single pdf) Tab"),
+                         style = "text-align: left;"),
+                      p(style = "text-align: justify; font-size = 15px",
+                        tags$ul(
+                          tags$li("This tab visualizes the data from the SLU student evaluation pdf file 
+                      uploaded on the", em("Upload and View Visualizations (single pdf)"), "Tab"),
+                          tags$li("This tab has the same features, however visualizes questions
+                              4a, 4b, and 4c, as they use a different set of possible responses for
+                              each question")
+                        )),
+                      h5(strong("Summary Output Tables Tab"),
+                         style = "text-align: left;"),
+                      p(style = "text-align: justify; font-size = 15px",
+                        tags$ul(
+                          tags$li("View the full datasets used in both the",
+                                  em("Compare Student Evaluation Data"), "and",
+                                  em("Upload and View Visualizations (single pdf)"), "Tabs"),
+                          tags$li("This tab also provides the student background data for the uploaded 
+                      SLU student evaluation pdf files from both tabs"),
+                        )),
+                      tags$blockquote(a(href = "https://github.com/lilykasperek/Fellowship2023",
+                                        "Visualizing SLU Student Evaluation Data GitHub Page")),
+             ),
+             tabPanel(title = "Compare Student Evaluation Data",
+                      fluidPage(
+                        sidebarLayout(
+                          sidebarPanel(
+                            fileInput("file_input2", 'Upload Multiple Student Evaluation
+                              Files (.pdf format only)',
+                                      accept = c('pdf'),
+                                      multiple = TRUE),
+                            radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
+                                         choices = c("Count", "Percent")),
+                            selectInput(inputId = "select_facet", label = "Choose Question",
+                                        choices = questions),
+                            selectInput(inputId = "color_choose", label = "Choose Color Scale",
+                                        choices = c("viridis",
+                                                    "plasma",
+                                                    "mako",
+                                                    "turbo",
+                                                    "rocket",
+                                                    "cividis",
+                                                    "magma")),
+                            downloadButton(outputId = "downloadPlot", label = "Download Plot",
+                            ),
+                          ),
+                          mainPanel(
+                            tableOutput("pdfview"),
+                            plotOutput("faceted_barplot", width = "100%")
+                          )))),
+             tabPanel(title = "Upload and View Visualizations (single pdf)",
                       fluidPage(
                         sidebarLayout(
                           sidebarPanel(
@@ -20,6 +112,18 @@ ui <- fluidPage(
                                          choices = c("Heatmap", "Bar Plot")),
                             radioButtons(inputId = "choose", label = "Counts or Percent of Students",
                                          choices = c("Count", "Percent")),
+                            checkboxInput(inputId = "check", label = "Display Count/Percent on Heatmap",
+                                          value = TRUE),
+                            selectInput(inputId = "color", label = "Choose Color Scale",
+                                        choices = c("viridis",
+                                                    "plasma",
+                                                    "mako",
+                                                    "turbo",
+                                                    "rocket",
+                                                    "cividis",
+                                                    "magma")),
+                            downloadButton(outputId = "downloadPlot2", label = "Download Plot",
+                            ),
                             width = 3),
                           mainPanel(
                             tableOutput("pdf_summary"), 
@@ -28,7 +132,7 @@ ui <- fluidPage(
                         )
                       )
              ),
-             tabPanel(title = "Questions with Different Scale",
+             tabPanel(title = "Questions with Different Scale (single pdf)",
                       fluidPage(fluidRow(
                         sidebarLayout(
                           sidebarPanel(
@@ -38,6 +142,18 @@ ui <- fluidPage(
                             radioButtons(inputId = "choose_special", label = "Count or Percent
                                     of Students", 
                                          choices = c("Count", "Percent")),
+                            checkboxInput(inputId = "check_2", label = "Display Count/Percent on Heatmap",
+                                          value = TRUE),
+                            selectInput(inputId = "color_2", label = "Choose Color Scale",
+                                        choices = c("viridis",
+                                                    "plasma",
+                                                    "mako",
+                                                    "turbo",
+                                                    "rocket",
+                                                    "cividis",
+                                                    "magma")),
+                            downloadButton(outputId = "downloadPlot3", label = "Download Plot",
+                            ),
                             width = 3),
                           mainPanel(tableOutput("pdf_summary_special"),
                                     plotOutput("choose_plot_special", width = "100%")
@@ -48,17 +164,99 @@ ui <- fluidPage(
                       fluidPage(fluidRow(
                         sidebarLayout(
                           sidebarPanel(
+                            radioButtons(inputId = "mult_or_sing", label = "Multiple Uploads
+                                       or Single Upload?",
+                                         choices = c("Multiple", "Single")),
                             radioButtons(inputId = "choose_table", label = "Choose Table",
                                          choices = c("Full Dataset",
                                                      "Student Backgrounds")),
-                            width = 3),
-                          mainPanel(
-                            dataTableOutput("pdfview")
                           ),
+                          mainPanel(
+                            dataTableOutput("pdfview2")),
                         ))
-                      )),
-  ))
-server <- function(input, output, session) {
+                      ))
+  )
+)
+server <- function(input, output) {
+  # testing if this will work for download button 
+  plotInput <- reactive({
+    req(input$file_input2)
+    df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
+                    use.names = TRUE, fill = TRUE)
+    df <- df |> filter(full_question == input$select_facet) |>
+      mutate(perc = as.double(perc)) |>
+      rename(Count = 'count_hm', 
+             Percent = 'perc') |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                                         "Somewhat High",
+                                                                                         "Appropriate",
+                                                                                         "Somewhat Low",
+                                                                                         "Too Low")))
+    # step 1
+    df <- df |> separate(col = Semester, into = c("year", "semester"),
+                         sep = "_")
+    # step 2
+    df <- df |> arrange(year, desc(semester))
+    # step 3
+    df <- df |> unite("new_semester", c(year, semester), 
+                      sep = "_")
+    df <- df |> mutate(new_semester = fct_inorder(new_semester))
+    meta_df <- rbindlist(lapply(input$file_input2$datapath, meta_function),
+                         use.names = TRUE, fill = TRUE)
+    title <- paste(meta_df[1, 2], sep = " ", collapse = NULL)
+    ggplot(df, aes(x = .data[[input$choose_facet]], y = ordered_responses,
+                   fill = ordered_responses)) +
+      geom_col() +
+      facet_wrap(~new_semester + course, ncol = 1) +
+      scale_fill_viridis_d(option = input$color_choose) +
+      labs(x = input$choose_facet,
+           y = "Responses",
+           title = title, 
+           subtitle = input$select_facet) +
+      theme_classic() +
+      theme(plot.title = element_text(hjust = 0.5,
+                                      size = 16,
+                                      margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                         size = 14,
+                                         margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+            legend.position = "none",
+            axis.text = element_text(size = 10),
+            axis.title = element_text(size = 12),
+            legend.title = element_text(size = 9,
+                                        hjust = 0.5),
+            legend.text = element_text(size = 6,
+                                       hjust = 0.5),
+            strip.text.x = element_text(size = 9),
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  })
+  output$faceted_barplot <- renderPlot({
+    print(plotInput())
+  }, height = 550, width = 910)
+  output$downloadPlot <- downloadHandler(
+    filename = function() { "plot.png" },
+    content = function(file) {
+      ggsave(file, plot = plotInput(), device = "png",
+             width = 12, height = 6.67)
+    }
+  )
+  output$pdfview <- renderTable({
+    req(input$file_input2)
+    df <- rbindlist(lapply(input$file_input2$datapath, meta_function),
+                    use.names = TRUE, fill = TRUE) |>
+      mutate(year = as.character(year)) |>
+      rename(Course_Number = 'course_num',
+             Subject = 'subject',
+             Semester = 'semester',
+             Year = 'year',
+             Control_Number = 'control_num',
+             Total_Evals = 'n_evals',
+             Total_Evals_University = 'n_evals_univ') |>
+      select(Subject, Year, everything()) |>
+      arrange(Year)
+    return(df)
+  }, align = 'c',
+  width = 100000)
   output$pdf_summary <- renderTable({
     req(input$file_input)
     meta_df <- meta_function(input$file_input$datapath)
@@ -72,35 +270,36 @@ server <- function(input, output, session) {
     return(meta_df)
   }, align = 'c',
   width = 100000)
-  output$choose_plot <- renderPlot({
+  plotInputHeatmap <- reactive({
     req(input$file_input)
-    if (input$choose_graph == "Heatmap") {
-      pdf_df <- pdf_function_full(input$file_input$datapath)
-      pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                                   responses_hm != "Too Low" &
-                                   responses_hm != "Appropriate" &
-                                   responses_hm != "Somewhat High" &
-                                   responses_hm != "Somewhat Low")
-      pdf_df <- pdf_df |> mutate(question_2 = 
-                                   fct_relevel(full_question, c("Q1. Valuable",
-                                                                "Q2. Organized",
-                                                                "Q3. Learning",
-                                                                "Q5a. Fair",
-                                                                "Q5b. Timely",
-                                                                "Q5c. Constructive",
-                                                                "Q6a. Rec_Prof",
-                                                                "Q6b. Rec_Course",
-                                                                "Q6c. Effective")))
-      pdf_df <- pdf_df |> mutate(perc = as.double(perc))
-      pdf_df <- pdf_df |> rename(Count = 'count_hm',
-                                 Percent = 'perc')
-      meta_df <- meta_function(input$file_input$datapath)
-      title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
-      subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    pdf_df <- pdf_function_full(input$file_input$datapath)
+    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
+                                 responses_hm != "Too Low" &
+                                 responses_hm != "Appropriate" &
+                                 responses_hm != "Somewhat High" &
+                                 responses_hm != "Somewhat Low")
+    pdf_df <- pdf_df |> mutate(question_2 = 
+                                 fct_relevel(full_question, c("Q1. Valuable",
+                                                              "Q2. Organized",
+                                                              "Q3. Learning",
+                                                              "Q5a. Fair",
+                                                              "Q5b. Timely",
+                                                              "Q5c. Constructive",
+                                                              "Q6a. Rec_Prof",
+                                                              "Q6b. Rec_Course",
+                                                              "Q6c. Effective")))
+    pdf_df <- pdf_df |> mutate(perc = as.double(perc))
+    pdf_df <- pdf_df |> rename(Count = 'count_hm',
+                               Percent = 'perc')
+    meta_df <- meta_function(input$file_input$datapath)
+    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
+    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    if (input$check == TRUE) {
       ggplot(data = pdf_df, aes(x = responses_hm, y = fct_rev(question_2),
                                 fill = .data[[input$choose]])) +
         geom_tile() +
-        scale_fill_viridis_c(direction = 1) +
+        scale_fill_viridis_c(option = input$color,
+                             direction = 1) +
         labs(x = "Responses",
              y = "Questions",
              fill = input$choose,
@@ -110,10 +309,12 @@ server <- function(input, output, session) {
                             fontface = 'bold'), size = 6,
                         colour = "gray",
                         show.legend = FALSE) +
-        theme_bw() +
+        theme_classic() +
         theme(plot.title = element_text(hjust = 0.5,
-                                        size = 18),
-              plot.subtitle = element_text(hjust = 0.5),
+                                        size = 18,
+                                        margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                           margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
               legend.box.background = element_rect(colour = "black"),
               axis.text = element_text(size = 14),
               axis.title = element_text(size = 16),
@@ -124,125 +325,142 @@ server <- function(input, output, session) {
               legend.key.size = unit(1, 'cm'), 
               legend.key.height = unit(1, 'cm'), 
               legend.key.width = unit(1, 'cm'),
-        ) 
-    } else{
-      pdf_df <- pdf_function_full(input$file_input$datapath)
-      pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
-                                   responses_hm != "Too Low" &
-                                   responses_hm != "Appropriate" &
-                                   responses_hm != "Somewhat High" &
-                                   responses_hm != "Somewhat Low")
-      pdf_df <- pdf_df |> mutate(question_2 = 
-                                   fct_relevel(full_question, c("Q1. Valuable",
-                                                                "Q2. Organized",
-                                                                "Q3. Learning",
-                                                                "Q5a. Fair",
-                                                                "Q5b. Timely",
-                                                                "Q5c. Constructive",
-                                                                "Q6a. Rec_Prof",
-                                                                "Q6b. Rec_Course",
-                                                                "Q6c. Effective")))
-      pdf_df <- pdf_df |> mutate(perc = as.double(perc))
-      pdf_df <- pdf_df |> rename(Count = 'count_hm',
-                                 Percent = 'perc')
-      
-      pdf_df <- pdf_df |> mutate(ordered = fct_reorder(.f = responses_hm,
-                                                       .x = .data[[input$choose]]))
-      meta_df <- meta_function(input$file_input$datapath)
-      title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
-      subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-      ggplot(data = pdf_df, aes(x = ordered, y = .data[[input$choose]])) +
-        geom_col(aes(fill = .data[[input$choose]])) +
-        coord_flip() +
-        facet_wrap(~question_2) +
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+    } else {
+      ggplot(data = pdf_df, aes(x = responses_hm, y = fct_rev(question_2),
+                                fill = .data[[input$choose]])) +
+        geom_tile() +
+        scale_fill_viridis_c(option = input$color, 
+                             direction = 1) +
         labs(x = "Responses",
-             y = input$choose,
+             y = "Questions",
+             fill = input$choose,
              title = title,
              subtitle = subtitle) +
-        #geom_shadowtext(aes(label = .data[[input$choose]],
-        #fontface = 'bold'), size = 6,
-        #colour = "gray",
-        #show.legend = FALSE) +
-        scale_fill_viridis_c() +
-        theme_bw() +
+        theme_classic() +
         theme(plot.title = element_text(hjust = 0.5,
-                                        size = 18),
-              plot.subtitle = element_text(hjust = 0.5),
+                                        size = 18,
+                                        margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                           margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
               legend.box.background = element_rect(colour = "black"),
-              axis.text.x = element_text(size = 10),
-              axis.text.y = element_text(size = 12),
+              axis.text = element_text(size = 14),
               axis.title = element_text(size = 16),
               legend.title = element_text(size = 13,
                                           hjust = 0.5),
               legend.text = element_text(size = 10,
                                          hjust = 0.5),
-              strip.text.x = element_text(size = 14),
-              legend.position = "none") 
-    }
-  }, height = 475, width = 1025)
-  output$pdf_summary_special <- renderTable({
-    req(input$file_input)
-    meta_df <- meta_function(input$file_input$datapath)
-    meta_df <- meta_df |> rename(Course_Number = 'course_num',
-                                 Subject = 'subject',
-                                 Semester = 'semester',
-                                 Year = 'year',
-                                 Control_Number = 'control_num',
-                                 Total_Evals = 'n_evals',
-                                 Total_Evals_University = 'n_evals_univ')
-    return(meta_df)
-  }, align = 'c',
-  width = 100000)
-  output$pdfview <- renderDataTable({
-    req(input$file_input)
-    if (input$choose_table == "Full Dataset") {
-      pdf_df <- pdf_function_full(input$file_input$datapath)
-      pdf_display <- pdf_df |>
-        select(responses, n_students, perc, univ_perc, full_question) |>
-        rename(Responses = 'responses',
-               Count = 'n_students',
-               Percent_of_Students = 'perc',
-               University_Percent = 'univ_perc',
-               Question = 'full_question')
-      return(pdf_display)
-    } else {
-      pdf_df <- sb_function(input$file_input$datapath)
-      pdf_df <- pdf_df |>
-        mutate(question_2 = fct_recode(question,
-                                       Reason_Enrollment = "primary reason for enrollment")) |>
-        select(-question) |>
-        rename(Responses = 'responses',
-               Count = 'n_students',
-               Percent_of_Students = 'perc',
-               University_Percent = 'univ_perc',
-               Question = 'question_2')
-      return(pdf_df)
+              legend.key.size = unit(1, 'cm'), 
+              legend.key.height = unit(1, 'cm'), 
+              legend.key.width = unit(1, 'cm'),
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
     }
   })
-  output$choose_plot_special <- renderPlot({
+  plotInputBarPlot <- reactive({
     req(input$file_input)
-    if (input$choose_graph_special == "Heatmap") {
-      other_questions <- pdf_function_full(input$file_input$datapath)
-      other_questions <- other_questions |> filter(responses_hm == "Too High" |
-                                                     responses_hm == "Too Low" |
-                                                     responses_hm == "Appropriate" |
-                                                     responses_hm == "Somewhat High" |
-                                                     responses_hm == "Somewhat Low")
-      other_questions <- other_questions |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
-                                                                                                   "Somewhat High",
-                                                                                                   "Appropriate",
-                                                                                                   "Somewhat Low",
-                                                                                                   "Too Low")))
-      other_questions <- other_questions |> mutate(perc = as.double(perc))
-      other_questions <- other_questions |> rename(Count = 'count_hm',
-                                                   Percent = 'perc')
-      meta_df <- meta_function(input$file_input$datapath)
-      title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
-      subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    pdf_df <- pdf_function_full(input$file_input$datapath)
+    pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
+                                 responses_hm != "Too Low" &
+                                 responses_hm != "Appropriate" &
+                                 responses_hm != "Somewhat High" &
+                                 responses_hm != "Somewhat Low")
+    pdf_df <- pdf_df |> mutate(question_2 = 
+                                 fct_relevel(full_question, c("Q1. Valuable",
+                                                              "Q2. Organized",
+                                                              "Q3. Learning",
+                                                              "Q5a. Fair",
+                                                              "Q5b. Timely",
+                                                              "Q5c. Constructive",
+                                                              "Q6a. Rec_Prof",
+                                                              "Q6b. Rec_Course",
+                                                              "Q6c. Effective")))
+    pdf_df <- pdf_df |> mutate(perc = as.double(perc))
+    pdf_df <- pdf_df |> rename(Count = 'count_hm',
+                               Percent = 'perc')
+    pdf_df <- pdf_df |> mutate(ordered = fct_reorder(.f = responses_hm,
+                                                     .x = .data[[input$choose]]))
+    meta_df <- meta_function(input$file_input$datapath)
+    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
+    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    ggplot(data = pdf_df, aes(x = ordered, y = .data[[input$choose]])) +
+      geom_col(aes(fill = ordered)) +
+      scale_fill_viridis_d(option = input$color) +
+      coord_flip() +
+      facet_wrap(~question_2) +
+      labs(x = "Responses",
+           y = input$choose,
+           title = title,
+           subtitle = subtitle) +
+      #geom_shadowtext(aes(label = .data[[input$choose]],
+      #fontface = 'bold'), size = 6,
+      #colour = "gray",
+      #show.legend = FALSE) +
+      theme_classic() +
+      theme(plot.title = element_text(hjust = 0.5,
+                                      size = 18,
+                                      margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                         margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+            legend.box.background = element_rect(colour = "black"),
+            axis.text.x = element_text(size = 10),
+            axis.text.y = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 13,
+                                        hjust = 0.5),
+            legend.text = element_text(size = 10,
+                                       hjust = 0.5),
+            strip.text.x = element_text(size = 14),
+            legend.position = "none",
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0))) 
+  })
+  output$choose_plot <- renderPlot({
+    req(input$file_input)
+    if (input$choose_graph == "Heatmap") {
+      print(plotInputHeatmap())
+    } else {
+      print(plotInputBarPlot())
+    }
+  }, width = 1025, height = 475)
+  output$downloadPlot2 <- downloadHandler(
+    filename = function() { "plot.png" },
+    content = function(file) {
+      if (input$choose_graph == "Heatmap") {
+        ggsave(file, plot = plotInputHeatmap(), device = "png",
+               width = 12, height = 6.67)
+      } else {
+        ggsave(file, plot = plotInputBarPlot(), device = "png",
+               width = 12, height = 6.67)
+      }
+    }
+  )
+  plotInputHeatmapSpecial <- reactive({
+    req(input$file_input)
+    other_questions <- pdf_function_full(input$file_input$datapath)
+    other_questions <- other_questions |> filter(responses_hm == "Too High" |
+                                                   responses_hm == "Too Low" |
+                                                   responses_hm == "Appropriate" |
+                                                   responses_hm == "Somewhat High" |
+                                                   responses_hm == "Somewhat Low")
+    other_questions <- other_questions |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                                                 "Somewhat High",
+                                                                                                 "Appropriate",
+                                                                                                 "Somewhat Low",
+                                                                                                 "Too Low")))
+    other_questions <- other_questions |> mutate(perc = as.double(perc))
+    other_questions <- other_questions |> rename(Count = 'count_hm',
+                                                 Percent = 'perc')
+    meta_df <- meta_function(input$file_input$datapath)
+    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
+    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    if (input$check_2 == TRUE) {
       ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
                                          fill = .data[[input$choose_special]])) +
         geom_tile() +
-        scale_fill_viridis_c(direction = 1) +
+        scale_fill_viridis_c(option = input$color_2,
+                             direction = 1) +
         labs(title = title,
              subtitle = subtitle,
              x = "Responses",
@@ -253,10 +471,12 @@ server <- function(input, output, session) {
                         size = 6,
                         colour = "gray",
                         show.legend = FALSE) +
-        theme_bw() +
+        theme_classic() +
         theme(plot.title = element_text(hjust = 0.5,
-                                        size = 18),
-              plot.subtitle = element_text(hjust = 0.5),
+                                        size = 18,
+                                        margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                           margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
               legend.box.background = element_rect(colour = "black"),
               axis.text = element_text(size = 14),
               axis.title = element_text(size = 16),
@@ -267,50 +487,177 @@ server <- function(input, output, session) {
               legend.key.size = unit(1, 'cm'),
               legend.key.height = unit(1, 'cm'),
               legend.key.width = unit(1, 'cm'),
-        )
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
     } else {
-      other_questions <- pdf_function_full(input$file_input$datapath)
-      other_questions <- other_questions |> filter(responses_hm == "Too High" |
-                                                     responses_hm == "Too Low" |
-                                                     responses_hm == "Appropriate" |
-                                                     responses_hm == "Somewhat High" |
-                                                     responses_hm == "Somewhat Low")
-      other_questions <- other_questions |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
-                                                                                                   "Somewhat High",
-                                                                                                   "Appropriate",
-                                                                                                   "Somewhat Low",
-                                                                                                   "Too Low")))
-      other_questions <- other_questions |> mutate(perc = as.double(perc))
-      other_questions <- other_questions |> rename(Count = 'count_hm',
-                                                   Percent = 'perc')
-      meta_df <- meta_function(input$file_input$datapath)
-      title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
-      subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
-      ggplot(data = other_questions, aes(x = .data[[input$choose_special]], y = ordered_responses,
+      ggplot(data = other_questions, aes(y = fct_rev(full_question), x = ordered_responses,
                                          fill = .data[[input$choose_special]])) +
-        geom_col() +
-        coord_flip() +
-        facet_wrap(~full_question, ncol = 1) +
-        labs(y = "Responses",
-             x = input$choose_special,
-             title = title,
-             subtitle = subtitle) +
-        scale_fill_viridis_c() +
-        theme_bw() +
+        geom_tile() +
+        scale_fill_viridis_c(option = input$color_2,
+                             direction = 1) +
+        labs(title = title,
+             subtitle = subtitle,
+             x = "Responses",
+             y = "Questions",
+             fill = input$choose_special) +
+        theme_classic() +
         theme(plot.title = element_text(hjust = 0.5,
-                                        size = 18),
-              plot.subtitle = element_text(hjust = 0.5),
+                                        size = 18,
+                                        margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+              plot.subtitle = element_text(hjust = 0.5,
+                                           margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
               legend.box.background = element_rect(colour = "black"),
-              axis.text.x = element_text(size = 10),
-              axis.text.y = element_text(size = 12),
+              axis.text = element_text(size = 14),
               axis.title = element_text(size = 16),
               legend.title = element_text(size = 13,
                                           hjust = 0.5),
               legend.text = element_text(size = 10,
                                          hjust = 0.5),
-              strip.text.x = element_text(size = 14),
-              legend.position = "none")
+              legend.key.size = unit(1, 'cm'),
+              legend.key.height = unit(1, 'cm'),
+              legend.key.width = unit(1, 'cm'),
+              axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+              axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+    }
+  })
+  plotInputBarPlotSpecial <- reactive({
+    req(input$file_input)
+    other_questions <- pdf_function_full(input$file_input$datapath)
+    other_questions <- other_questions |> filter(responses_hm == "Too High" |
+                                                   responses_hm == "Too Low" |
+                                                   responses_hm == "Appropriate" |
+                                                   responses_hm == "Somewhat High" |
+                                                   responses_hm == "Somewhat Low")
+    other_questions <- other_questions |> mutate(ordered_responses = fct_relevel(responses_hm, c("Too High",
+                                                                                                 "Somewhat High",
+                                                                                                 "Appropriate",
+                                                                                                 "Somewhat Low",
+                                                                                                 "Too Low")))
+    other_questions <- other_questions |> mutate(perc = as.double(perc))
+    other_questions <- other_questions |> rename(Count = 'count_hm',
+                                                 Percent = 'perc')
+    meta_df <- meta_function(input$file_input$datapath)
+    title <- paste(meta_df[1, 2], meta_df[1, 1], sep = " ", collapse = NULL)
+    subtitle <- paste(meta_df[1, 3], meta_df[1, 4], sep = " ", collapse = NULL)
+    ggplot(data = other_questions, aes(x = .data[[input$choose_special]], y = ordered_responses,
+                                       fill = ordered_responses)) +
+      geom_col() +
+      coord_flip() +
+      scale_fill_viridis_d(option = input$color_2) +
+      facet_wrap(~full_question, ncol = 1) +
+      labs(y = "Responses",
+           x = input$choose_special,
+           title = title,
+           subtitle = subtitle) +
+      theme_classic() +
+      theme(plot.title = element_text(hjust = 0.5,
+                                      size = 18,
+                                      margin = margin(t = 5, r = 0, b = 2.5, l = 0)),
+            plot.subtitle = element_text(hjust = 0.5,
+                                         margin = margin(t = 2.5, r = 0, b = 5, l = 0)),
+            legend.box.background = element_rect(colour = "black"),
+            axis.text.x = element_text(size = 10),
+            axis.text.y = element_text(size = 12),
+            axis.title = element_text(size = 16),
+            legend.title = element_text(size = 13,
+                                        hjust = 0.5),
+            legend.text = element_text(size = 10,
+                                       hjust = 0.5),
+            strip.text.x = element_text(size = 14),
+            legend.position = "none",
+            axis.title.y = element_text(margin = margin(t = 0, r = 15, b = 0, l = 0)),
+            axis.title.x = element_text(margin = margin(t = 10, r = 0, b = 0, l = 0)))
+  })
+  output$choose_plot_special <- renderPlot({
+    req(input$file_input)
+    if (input$choose_graph_special == "Heatmap") {
+      print(plotInputHeatmapSpecial())
+    } else {
+      print(plotInputBarPlotSpecial())
     }
   }, height = 475, width = 1025)
+  output$downloadPlot3 <- downloadHandler(
+    filename = function() { "plot.png" },
+    content = function(file) {
+      if (input$choose_graph_special == "Heatmap") {
+        ggsave(file, plot = plotInputHeatmapSpecial(), device = "png",
+               width = 12, height = 6.67)
+      } else {
+        ggsave(file, plot = plotInputBarPlotSpecial(), device = "png",
+               width = 12, height = 6.67)
+      }
+    }
+  )
+  output$pdfview2 <- renderDataTable({
+    if (input$mult_or_sing == "Single") {
+      req(input$file_input)
+      if (input$choose_table == "Full Dataset") {
+        pdf_df <- pdf_function_full(input$file_input$datapath)
+        pdf_df <- pdf_df |> filter(responses_hm != "Too High" &
+                                     responses_hm != "Too Low" &
+                                     responses_hm != "Appropriate" &
+                                     responses_hm != "Somewhat High" &
+                                     responses_hm != "Somewhat Low")
+        pdf_display <- pdf_df |>
+          select(responses, n_students, perc, univ_perc, full_question) |>
+          rename(Responses = 'responses',
+                 Count = 'n_students',
+                 Percent_of_Students = 'perc',
+                 University_Percent = 'univ_perc',
+                 Question = 'full_question')
+        return(pdf_display)
+      } else {
+        pdf_df <- sb_function(input$file_input$datapath)
+        pdf_df <- pdf_df |>
+          mutate(question_2 = fct_recode(question,
+                                         Reason_Enrollment = "primary reason for enrollment")) |>
+          select(-question, -year, -course) |>
+          rename(Responses = 'responses',
+                 Count = 'n_students',
+                 Percent_of_Students = 'perc',
+                 University_Percent = 'univ_perc',
+                 Question = 'question_2')
+        return(pdf_df)
+      }
+    } else {
+      if (input$choose_table == "Full Dataset") {
+        req(input$file_input2)
+        df <- rbindlist(lapply(input$file_input2$datapath, multiple_pdf_function),
+                        use.names = TRUE, fill = TRUE) 
+        # step 1
+        df <- df |> separate(col = Semester, into = c("year", "semester"),
+                             sep = "_")
+        # step 2
+        df <- df |> arrange(year, desc(semester))
+        # step 3
+        df <- df |> unite("new_semester", c(year, semester), 
+                          sep = "_")
+        df <- df |> mutate(new_semester = fct_inorder(new_semester))
+        df <- df |> select(course, new_semester, responses, n_students, perc, univ_perc, full_question) |>
+          rename(Course = 'course',
+                 Semester = 'new_semester',
+                 Responses = 'responses',
+                 Count = 'n_students',
+                 Percent_of_Students = 'perc',
+                 University_Percent = 'univ_perc',
+                 Question = 'full_question')
+        return(df)
+      } else {
+        df_2 <- rbindlist(lapply(input$file_input2$datapath, sb_function),
+                          use.names = TRUE, fill = TRUE) |>
+          mutate(question_2 = fct_recode(question,
+                                         Reason_Enrollment = "primary reason for enrollment")) |>
+          select(-question) |>
+          rename(Course = 'course',
+                 Year = 'year',
+                 Responses = 'responses',
+                 Count = 'n_students',
+                 Percent_of_Students = 'perc',
+                 University_Percent = 'univ_perc',
+                 Question = 'question_2')
+        return(df_2)
+      }
+    }
+  })
 }
-shinyApp(ui, server)
+shinyApp(ui = ui, server = server)
