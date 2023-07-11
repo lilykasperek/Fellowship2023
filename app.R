@@ -10,8 +10,11 @@ source("pdf_function_full.R")
 source("meta_function.R")
 source("sb_function.R")
 source("multiple_pdf_function.R")
-df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
-questions <- levels(factor(df$full_question))
+#df <- multiple_pdf_function("STAT113_Fall_2020_1.pdf")
+#questions <- levels(factor(df$full_question))
+questions <- c("Q1. Valuable", "Q2. Organized", "Q3. Learning", "Q4a. Workload", "Q4b. Grading",      
+"Q4c. Sophistication", "Q5a. Fair", "Q5b. Timely" , "Q5c. Constructive", "Q6a. Rec_Prof",     
+"Q6b. Rec_Course", "Q6c. Effective")
 
 ui <- fluidPage(
   theme = shinytheme("superhero"), 
