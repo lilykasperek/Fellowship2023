@@ -8,8 +8,9 @@ date: "2023-07-11"
 library(tidyverse)
 library(dplyr)
 library(pdftools)
-source("model_function1.R")
 library(MASS)
+source("model_function1.R")
+source("model_function2.R")
 ```
 
 ```{r}
@@ -63,8 +64,45 @@ model <- all_levels |>
 summary(model)
 # fit model
 model_fit <- polr(new_responses ~ Course_Level, data = model, Hess = TRUE)
+model_fit2 <- polr(responses_hm ~ Course_Level, data = model, Hess = TRUE)
 # summary of fit model 
 summary(model_fit)
+summary(model_fit2)
 ```
 
+```{r}
+lev_113 <- model_function2("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT113_Spring_2020_2.pdf")
+lev_213 <- model_function2("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT213_Spring_2020_1.pdf")
+lev_234 <- model_function2("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT234_Fall_2020_1.pdf")
+all_levs <- bind_rows(lev_113, lev_213, lev_234) 
+all_levs <- all_levs |>
+  separate(col = course, into = c("Course_Level", "Section"),
+                       sep = "0") 
+all_levs <- all_levs |>
+  dplyr::select(-Section)
+all_levs <- all_levs |>
+  dplyr::select(full_question, Course_Level, responses, everything())
+all_levs <- all_levs |> mutate(responses = as.factor(responses))
+levels(all_levs$responses)
+all_levs <- all_levs |> mutate(new_responses = factor(responses,
+                                          levels = c("Too Low",
+                                                     "Somewhat Low",
+                                                     "Appropriate",
+                                                     "Somewhat High",
+                                                     "Too High")))
+levels(all_levs$new_responses)
+all_levs <- all_levs |>
+  mutate(count = as.double(n_students))
+all_levs <- all_levs |>
+  uncount(count)
+model_2 <- all_levs |>
+  filter(full_question == "Q4c. Sophistication")
+```
 
+```{r}
+summary(model_2)
+mod_fit <- polr(new_responses ~ Course_Level, data = model_2, Hess = TRUE)
+mod_fit2 <- polr(responses ~ Course_Level, data = model_2, Hess = TRUE)
+summary(mod_fit)
+summary(mod_fit2)
+```
