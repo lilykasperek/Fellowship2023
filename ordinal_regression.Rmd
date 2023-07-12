@@ -125,3 +125,85 @@ p <- pnorm(abs(ctable_mod2[, "t value"]), lower.tail = FALSE) * 2
 (ctable <- cbind(ctable_mod2, "p value" = p))
 exp(coef(mod_fit2))
 ```
+
+1 - Major
+2 - Minor
+3 - Distribution
+4 - Interest
+5 - Instructor
+6 - Other
+
+1 - Male 
+2 - Female 
+3 - Other
+4 - prefer not to disclose
+
+```{r}
+library(readr)
+modeling_data <- read_csv("data/modeling_data_student_by_student.csv")
+modeling_data
+```
+
+```{r}
+modeling_data <- modeling_data |> mutate(Reason = as.character(Reason),
+                        Year = as.character(Year),
+                        Gender = as.character(Gender),
+                        Response = as.character(Response))
+model_df <- modeling_data |> 
+  mutate(reason = fct_recode(Reason,
+                             Major = "1",
+                             Minor = "2",
+                             Distribution = "3",
+                             Interest = "4",
+                             Instructor = "5",
+                             Other = "6")) |>
+  mutate(year = fct_recode(Year,
+                           First_Year = "1",
+                           Sophomore = "2",
+                           Junior = "3",
+                           Senior = "4")) |>
+  mutate(gender = fct_recode(Gender,
+                             Male = "1",
+                             Female = "2",
+                             Other = "3",
+                             PNTD = "4")) |>
+  mutate(response = fct_recode(Response,
+                               DisagreeStrongly = "1",
+                               Disagree = "2",
+                               DisagreeSomewhat = "3",
+                               Neutral = "4",
+                               AgreeSomewhat = "5",
+                               Agree = "6",
+                               AgreeStrongly = "7")) 
+model_df <- model_df |>
+  dplyr::mutate(new_responses = fct_collapse(response,
+                                                  Agree = c("AgreeStrongly",
+                                                            "Agree"),
+                                                  Neutral = c("AgreeSomewhat",
+                                                              "Neutral",
+                                                              "DisagreeSomewhat"),
+                                                  Disagree = c("Disagree",
+                                                               "DisagreeStrongly")))
+
+model_df |> 
+  dplyr::select(Reason, reason, Year, year, Gender, gender, Response, response, new_responses,
+                   Course, Semester)
+mod_df <- model_df |>
+  dplyr::select(reason, year, gender, response, new_responses, Course, Semester)
+```
+
+```{r}
+# models 
+summary(mod_df)
+# error: year_mod <- polr(response ~ year, data = mod_df, Hess = TRUE)
+year_mod <- polr(response ~ year, data = mod_df, Hess = TRUE)
+summary(year_mod)
+# error: gender_mod <- polr(new_responses ~ gender, data = mod_df, Hess = TRUE)
+gender_mod <- polr(response ~ gender, data = mod_df, Hess = TRUE)
+summary(gender_mod)
+# error: both_mod <- polr(new_responses ~ year + gender, data = mod_df, Hess = TRUE)
+both_mod <- polr(response ~ year + gender, data = mod_df, Hess = TRUE)
+summary(both_mod)
+```
+
+
