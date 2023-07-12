@@ -65,9 +65,18 @@ summary(model)
 # fit model
 model_fit <- polr(new_responses ~ Course_Level, data = model, Hess = TRUE)
 model_fit2 <- polr(responses_hm ~ Course_Level, data = model, Hess = TRUE)
-# summary of fit model 
+# summary of fit model collapsed responses
 summary(model_fit)
+(ctable <- coef(summary(model_fit)))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+(ctable <- cbind(ctable, "p value" = p))
+exp(coef(model_fit))
+# summary of fit model old responses
 summary(model_fit2)
+(ctable2 <- coef(summary(model_fit2)))
+p <- pnorm(abs(ctable2[, "t value"]), lower.tail = FALSE) * 2
+(ctable <- cbind(ctable2, "p value" = p))
+exp(coef(model_fit2))
 ```
 
 ```{r}
@@ -103,6 +112,16 @@ model_2 <- all_levs |>
 summary(model_2)
 mod_fit <- polr(new_responses ~ Course_Level, data = model_2, Hess = TRUE)
 mod_fit2 <- polr(responses ~ Course_Level, data = model_2, Hess = TRUE)
+# summary of fit model new responses
 summary(mod_fit)
+(ctable_mod <- coef(summary(mod_fit)))
+p <- pnorm(abs(ctable_mod[, "t value"]), lower.tail = FALSE) * 2
+(ctable <- cbind(ctable_mod, "p value" = p))
+exp(coef(mod_fit))
+# summary of fit model old responses
 summary(mod_fit2)
+(ctable_mod2 <- coef(summary(mod_fit2)))
+p <- pnorm(abs(ctable_mod2[, "t value"]), lower.tail = FALSE) * 2
+(ctable <- cbind(ctable_mod2, "p value" = p))
+exp(coef(mod_fit2))
 ```
