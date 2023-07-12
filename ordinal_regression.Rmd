@@ -1,0 +1,70 @@
+---
+title: "ordinal_regression"
+output: html_document
+date: "2023-07-11"
+---
+
+```{r}
+library(tidyverse)
+library(dplyr)
+library(pdftools)
+source("model_function1.R")
+library(MASS)
+```
+
+```{r}
+# load data 
+level_113 <- model_function("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT113_Spring_2020_2.pdf")
+level_213 <- model_function("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT213_Spring_2020_1.pdf")
+level_234 <- model_function("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT234_Fall_2020_1.pdf")
+all_levels <- bind_rows(level_113, level_213, level_234) 
+all_levels <- all_levels |> dplyr::filter(full_question == "Q6c. Effective")
+  
+# separate course column 
+all_levels <- all_levels |> 
+  separate(col = course, into = c("Course_Level", "Section"),
+                       sep = "0") 
+# delete section column
+all_levels <- all_levels |> 
+  dplyr::select(-Section) 
+# filter out different likert scale 
+#all_levels <- all_levels |> 
+  #dplyr::filter(responses != "Too High" &
+                                #responses != "Too Low" &
+                                #responses != "Appropriate" &
+                                #responses != "Somewhat High" &
+                                #responses != "Somewhat Low" &
+                                  #full_question == "Q6c. Effective")
+# select columns needed for model 
+all_levels <- all_levels |> 
+  dplyr::select(full_question, Course_Level, responses_hm, everything())
+```
+
+```{r}
+# fct_collapse() to prevent errors 
+all_levels <- all_levels |> 
+  dplyr::mutate(new_responses = fct_collapse(responses_hm,
+                                                  Agree = c("AgreeStrongly",
+                                                            "Agree"),
+                                                  Neutral = c("AgreeSomewhat",
+                                                              "Neutral",
+                                                              "DisagreeSomewhat"),
+                                                  Disagree = c("Disagree",
+                                                               "DisagreeStrongly"))) 
+# check new_responses
+all_levels <- all_levels |>
+  dplyr::select(new_responses, everything()) 
+# use uncount() for response to show up correct amount of times 
+model <- all_levels |> 
+  uncount(count_hm)
+```
+
+```{r}
+summary(model)
+# fit model
+model_fit <- polr(new_responses ~ Course_Level, data = model, Hess = TRUE)
+# summary of fit model 
+summary(model_fit)
+```
+
+
