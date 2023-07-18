@@ -194,6 +194,7 @@ mod_df <- model_df |>
 ```{r}
 # models 
 summary(mod_df)
+mod_df$new_responses
 # error: year_mod <- polr(response ~ year, data = mod_df, Hess = TRUE)
 year_mod <- polr(response ~ year, data = mod_df, Hess = TRUE)
 summary(year_mod)
@@ -268,18 +269,21 @@ glm(I(as.numeric(response) >= 3) ~ year, family="binomial", data = mod_df)
 
 ```{r}
 newdat <- cbind(mod_df_filter, predict(both_mod_2, type = "probs")) |>
-  dplyr::select(-reason, -year, -gender, -Response, -Semester, -Course,
-                -response, -new_responses)
-lnewdat <- melt(newdat, id.vars = c("Reason", "Year", "Gender"),
+  dplyr::select(-reason, -year, -Response, -Semester, -Course,
+                -response, -new_responses, -Gender)
+new_dat <- newdat |> dplyr::rename(Gender = 'gender')
+lnewdat <- melt(new_dat, id.vars = c("Reason", "Year", "Gender"),
                 variable.name = "Level", value.name = "Probability")
+lnewdat <- lnewdat |> 
+  mutate(Level = fct_relevel(Level, c("AgreeStrongly",
+                                      "Agree",
+                                      "AgreeSomewhat",
+                                      "Neutral",
+                                      "DisagreeSomewhat")))
 head(lnewdat)
-ggplot(lnewdat, aes(x = Reason, y = Probability, colour = Level)) +
-  geom_point() + 
-  geom_line(group = 1) +
-  facet_grid(Year ~ Gender, labeller="label_both")
-
-ggplot(lnewdat, aes(x = Probability, colour = Level)) +
-  geom_freqpoly() +
-  facet_grid(Year ~ Gender, labeller="label_both")
+ggplot(lnewdat, aes(x = Year, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both")
 ```
 
