@@ -12,6 +12,7 @@ library(shadowtext)
 library(data.table)
 library(viridis)
 library(bslib)
+library(dplyr)
 source("pdf_function_full.R")
 source("meta_function.R")
 source("sb_function.R")
@@ -261,7 +262,7 @@ server <- function(input, output) {
                                    Control_Number = 'control_num',
                                    Total_Evals = 'n_evals',
                                    Total_Evals_University = 'n_evals_univ') |>
-      select(Subject, Year, everything()) |>
+      dplyr::select(Subject, Year, everything()) |>
       arrange(Year)
       return(df)
   }, align = 'c',
@@ -642,7 +643,7 @@ server <- function(input, output) {
         df <- df |> unite("new_semester", c(year, semester), 
                     sep = "_")
         df <- df |> mutate(new_semester = fct_inorder(new_semester))
-        df <- df |> select(course, new_semester, responses, n_students, perc, univ_perc, full_question) |>
+        df <- df |> dplyr::select(course, new_semester, responses, n_students, perc, univ_perc, full_question) |>
           rename(Course = 'course',
                  Semester = 'new_semester',
                  Responses = 'responses',
@@ -656,7 +657,7 @@ server <- function(input, output) {
                   use.names = TRUE, fill = TRUE) |>
                   mutate(question_2 = fct_recode(question,
                                          Reason_Enrollment = "primary reason for enrollment")) |>
-                  select(-question) |>
+                  dplyr::select(-question) |>
                   rename(Course = 'course',
                          Year = 'year',
                          Responses = 'responses',
