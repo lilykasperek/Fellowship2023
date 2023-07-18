@@ -9,6 +9,7 @@ library(tidyverse)
 library(dplyr)
 library(pdftools)
 library(MASS)
+library(reshape2)
 source("model_function1.R")
 source("model_function2.R")
 ```
@@ -185,11 +186,9 @@ model_df <- model_df |>
                                                   Disagree = c("Disagree",
                                                                "DisagreeStrongly")))
 
-model_df |> 
+mod_df <- model_df |> 
   dplyr::select(Reason, reason, Year, year, Gender, gender, Response, response, new_responses,
                    Course, Semester)
-mod_df <- model_df |>
-  dplyr::select(reason, year, gender, response, new_responses, Course, Semester)
 ```
 
 ```{r}
@@ -204,6 +203,83 @@ summary(gender_mod)
 # error: both_mod <- polr(new_responses ~ year + gender, data = mod_df, Hess = TRUE)
 both_mod <- polr(response ~ year + gender, data = mod_df, Hess = TRUE)
 summary(both_mod)
+
+mod_df_filter <-
+  mod_df |> filter(is.na(year) != TRUE) |>
+  filter(is.na(gender) != TRUE) |>
+  filter(is.na(reason) != TRUE)
+
+summary(mod_df_filter)
+year_mod_2 <- polr(response ~ year, data = mod_df_filter, Hess = TRUE)
+summary(year_mod_2)
+
+gender_mod_2 <- polr(response ~ gender, data = mod_df_filter, Hess = TRUE)
+summary(gender_mod_2)
+
+both_mod_2 <- polr(response ~ year + gender, data = mod_df_filter, Hess = TRUE)
+summary(both_mod_2)
 ```
 
+distribution of reason at every level of response broken down by year and gender 
+```{r}
+head(mod_df)
+lapply(mod_df[, c("response", "year", "gender")], table)
+ftable(xtabs(~ year + response + gender, data = mod_df))
+summary(mod_df)
+
+ggplot(data = mod_df, aes(x = response, y = reason)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) +
+  facet_grid(year ~ gender, margins = TRUE) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+
+head(mod_df_filter)
+lapply(mod_df_filter[, c("response", "year", "gender")], table)
+ftable(xtabs(~ year + response + gender, data = mod_df_filter))
+summary(mod_df_filter)
+
+ggplot(data = mod_df_filter, aes(x = new_responses, y = reason)) +
+  geom_boxplot(size = .75) +
+  geom_jitter(alpha = .5) +
+  facet_grid(year ~ gender, margins = TRUE) +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
+```
+
+```{r}
+(ctable <- coef(summary(both_mod_2)))
+p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
+(ctable <- cbind(ctable, "p value" = p))
+#(ci <- confint(both_mod_2))
+exp(coef(both_mod_2))
+```
+
+```{r}
+mod_df
+sf <- function(y) {
+  c('Y>=1' = qlogis(mean(y >= 3)),
+    'Y>=2' = qlogis(mean(y >= 4)),
+    'Y>=3' = qlogis(mean(y >= 5)),
+    'Y>=4' = qlogis(mean(y >= 6)))
+}
+(s <- with(both_mod_2, summary(as.numeric(response) ~ year + gender + reason, fun=sf)))
+glm(I(as.numeric(response) >= 2) ~ year, family="binomial", data = mod_df)
+glm(I(as.numeric(response) >= 3) ~ year, family="binomial", data = mod_df)
+```
+
+```{r}
+newdat <- cbind(mod_df_filter, predict(both_mod_2, type = "probs")) |>
+  dplyr::select(-reason, -year, -gender, -Response, -Semester, -Course,
+                -response, -new_responses)
+lnewdat <- melt(newdat, id.vars = c("Reason", "Year", "Gender"),
+                variable.name = "Level", value.name = "Probability")
+head(lnewdat)
+ggplot(lnewdat, aes(x = Reason, y = Probability, colour = Level)) +
+  geom_point() + 
+  geom_line(group = 1) +
+  facet_grid(Year ~ Gender, labeller="label_both")
+
+ggplot(lnewdat, aes(x = Probability, colour = Level)) +
+  geom_freqpoly() +
+  facet_grid(Year ~ Gender, labeller="label_both")
+```
 
