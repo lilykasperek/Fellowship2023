@@ -1,0 +1,87 @@
+---
+title: Visualizing Student Evaluation Data
+author:
+  - name: Lily Kasperek
+affiliation:
+    address: Department of Math, Computer Science, and Statistics at St. Lawrence University
+column_numbers: 3
+output: 
+  posterdown::posterdown_html:
+    self_contained: false
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message = FALSE)
+```
+
+# Goals and Description
+
+-   Create Shiny App to scrape student evaluation data from PDFs and provide a more in-depth analysis of the data by providing appropriate visuals
+
+-   Model and predict ordinal responses based on student class year and sex
+
+**Process**
+
+1.  Scrape data from summary reports
+
+2.  Wrangle data and construct visualizations
+
+3.  Write functions for data scraping and wrangling
+
+4.  Build and test Shiny App
+
+5.  Fit ordinal logistic regression model and visualize
+
+# Likert Scale Data
+
+-   SLU student evaluations use a 7-point Likert scale, which refers to the set of potential responses ranging from *Strongly Disagree* to *Strongly Agree*
+
+-   Likert scale data is best analyzed and interpreted through visualizations, such as Heatmaps or Bar Plots, rather than mean score of responses
+
+```{r, out.width = "1150px", fig.align = "center"}
+library(tidyverse)
+year_label <- as_labeller(c
+                ('1' = "Year 1",
+                '2' = "Year 2"))
+toy_df <- tibble(year = c(rep(1, 5), rep(2, 5)),
+                 resp = rep(c("Agree", "Agree somewhat", "Neutral",
+                              "Disagree somewhat", "Disagree"), 2),
+                 n_resp = c(5, 2, 1, 2, 5, 
+                            0, 2, 11, 2, 0)) |>
+  mutate(resp = fct_inorder(resp))
+ggplot(data = toy_df, aes(x = resp, y = n_resp)) +
+  geom_col(colour = "black", fill = "lightblue") +
+  facet_wrap(~year,
+             labeller = year_label) +
+  coord_flip() +
+  labs(x = "Response", y = "Number of Students",
+       title = "Example Distribution using Likert Scale Data") +
+  theme(plot.title = element_text(hjust = 0.5))
+```
+
+-   The mean of both data sets is the same (3 points, or Neutral) but the distributions are very different
+
+-   Using the average from these two data sets fails to communicate what was actually reported by participants, illustrating the danger of using the averages of Likert Scale data
+
+# Shiny App Tabs
+
+```{r, out.width = "1150px", fig.align = "center"}
+knitr::include_graphics("multiple_tab.png")
+knitr::include_graphics("single_tab.png")
+knitr::include_graphics("diff_scale_tab.png")
+knitr::include_graphics("tables_tab.png")
+```
+
+# Modeling: Ordinal Logistic Regression
+
+-   An ordinal logistic regression model was fitted by using student-by-student data to predict and visualize the probability of student responses based on class year and sex
+
+# Visualizing New Student Evaluation Question
+
+-  
+
+# References
+
+Barry, D. (2017). *bookdown: Do not use averages with Likert scale data.* <https://bookdown.org/Rmadillo/likert/>.
+
+Joshi, A., Kale, S., Chandel, S., & Pal, D. K. (2015). Likert Scale: Explored and Explained. *British Journal of Applied Science and Technology, 7*(4), 396-403.
