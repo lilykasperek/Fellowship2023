@@ -10,6 +10,8 @@ library(dplyr)
 library(pdftools)
 library(MASS)
 library(reshape2)
+library(effects)
+library(car)
 source("model_function1.R")
 source("model_function2.R")
 ```
@@ -285,5 +287,15 @@ ggplot(lnewdat, aes(x = Year, y = Probability, colour = Level)) +
   geom_point() +
   geom_line(aes(group = Level)) +
   facet_grid(~Gender, labeller = "label_both")
+```
+
+```{r}
+summary(both_mod_2)
+Anova(both_mod_2)
+Effect(focal.predictors = c("year", "gender"), both_mod_2)
+plot(Effect(focal.predictors = c("year", "gender"), both_mod_2), rug = FALSE)
+plot(Effect(focal.predictors = c("year", "gender"), both_mod_2), 
+     rug = FALSE,
+     style = "stacked")
 ```
 
