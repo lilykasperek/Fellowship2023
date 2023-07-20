@@ -14,6 +14,8 @@ column_numbers: 3
 output: 
   posterdown::posterdown_html:
     self_contained: false
+poster_height: "36in"
+poster_width: "48in"
 ---
 
 ```{r setup, include=FALSE}
@@ -71,14 +73,13 @@ ggplot(data = toy_df, aes(x = resp, y = n_resp)) +
 
 # Shiny App Tabs
 
-```{r, out.width = "1075px", fig.align = "center"}
+```{r, out.width = "1050px", fig.align = "center"}
 knitr::include_graphics("multiple_tab.png")
 knitr::include_graphics("single_tab.png")
 knitr::include_graphics("diff_scale_tab.png")
 knitr::include_graphics("tables_tab.png")
+# <div align = "center">*Also features a home tab with project description and GitHub link*
 ```
-
-<div align = "center">*Also features a home tab with project description and GitHub link*
 
 # Modeling with Ordinal Logistic Regression
 
@@ -92,8 +93,6 @@ library(dplyr)
 library(pdftools)
 library(MASS)
 library(reshape2)
-library(effects)
-library(car)
 library(kableExtra)
 source("model_function1.R")
 source("model_function2.R")
