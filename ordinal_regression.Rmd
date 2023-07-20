@@ -12,8 +12,8 @@ library(MASS)
 library(reshape2)
 library(effects)
 library(car)
-source("model_function1.R")
-source("model_function2.R")
+source("~/Desktop/Fellowship2023/Fellowship_Poster/model_function1.R")
+source("~/Desktop/Fellowship2023/Fellowship_Poster/model_function2.R")
 ```
 
 ```{r}
@@ -143,7 +143,7 @@ exp(coef(mod_fit2))
 
 ```{r}
 library(readr)
-modeling_data <- read_csv("data/modeling_data_student_by_student.csv")
+modeling_data <- read_csv("~/Desktop/Fellowship2023/Fellowship_Poster/modeling_data_student_by_student.csv")
 modeling_data
 ```
 
@@ -297,5 +297,36 @@ plot(Effect(focal.predictors = c("year", "gender"), both_mod_2), rug = FALSE)
 plot(Effect(focal.predictors = c("year", "gender"), both_mod_2), 
      rug = FALSE,
      style = "stacked")
+```
+
+# New model/visualization with collapsed upperclassmen 
+```{r}
+mod_df_filter_2 <- mod_df_filter |> dplyr::mutate(year_coll = fct_collapse(year,
+                                                   Upperclassmen = c("Junior",
+                                                                     "Senior")))
+coll_mod <- polr(response ~ year_coll + gender, data = mod_df_filter_2, Hess = TRUE)
+summary(coll_mod)
+
+newdat_2 <- cbind(mod_df_filter_2, predict(both_mod_2, type = "probs")) |>
+  dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
+                -response, -new_responses, -Gender)
+
+new_dat_2 <- newdat_2 |> dplyr::rename(Gender = 'gender')
+
+lnewdat_2 <- melt(new_dat_2, id.vars = c("Reason", "year_coll", "Gender"),
+                variable.name = "Level", value.name = "Probability")
+
+lnewdat_2 <- lnewdat_2 |> 
+  mutate(Level = fct_relevel(Level, c("AgreeStrongly",
+                                      "Agree",
+                                      "AgreeSomewhat",
+                                      "Neutral",
+                                      "DisagreeSomewhat")))
+
+head(lnewdat_2)
+ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both")
 ```
 
