@@ -94,6 +94,8 @@ library(pdftools)
 library(MASS)
 library(reshape2)
 library(kableExtra)
+library(gridExtra)
+library(ggplot2)
 source("model_function1.R")
 source("model_function2.R")
 # load data 
@@ -288,22 +290,43 @@ table_lnewdat <- lnewdat |>
                              Distribution = "3",
                              Interest = "4")) |>
   dplyr::select(Reason, Year, everything())
-```
-
-```{r}
 kable_lnewdat <- kable(table_lnewdat) |>
   kable_styling(full_width = FALSE,
                 font_size = 24)
 kable_lnewdat 
 ```
 
-```{r, out.width = "910px", fig.align = "center"}
+```{r, out.width = "850px", fig.align = "center"}
 knitr::include_graphics("Rplot_Probability.png")
 ```
 
 # Additional Visualization
 
 -   Static visualization of new question added to student evaluations
+
+```{r, out.width = "725px", results = 'hide', fig.align = "center"}
+toy_df <- tibble::tibble(Student_id = c("A", "B", "C", "D", "E", "F"),
+                         Lecture = c(1, 1, 0, 1, 1, 0),
+                         Group_Work = c(1, 0, 0, 1, 1, 1),
+                         Reading = c(0, 0, 0, 0, 0, 0),
+                         Presentation = c(1, 1, 0, 1, 1, 1),
+                         Code = c(1, 1, 1, 1, 1, 1))
+toy_df
+toy_hm <- toy_df |> pivot_longer(cols = c(Lecture, Group_Work, Reading, Presentation, Code),
+                       names_to = "check_boxes", values_to = "ind")
+toy_hm$yes_or_no = ifelse(toy_hm$ind == "1", "Yes", "No") 
+toy_hm
+ggplot(data = toy_hm, aes(x = check_boxes, y = fct_rev(Student_id))) +
+  geom_tile(aes(fill = fct_rev(yes_or_no)), 
+            colour = "black") +
+  scale_fill_viridis_d() +
+  labs(y = "Student ID",
+       x = "Check Boxes",
+       fill = "Response",
+       title = "Check All That Helped Your Learning") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_text(aes(label = yes_or_no))
+```
 
 # References
 
