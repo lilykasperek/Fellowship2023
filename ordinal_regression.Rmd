@@ -12,6 +12,8 @@ library(MASS)
 library(reshape2)
 library(effects)
 library(car)
+library(gridExtra)
+library(ggplot2)
 source("~/Desktop/Fellowship2023/Fellowship_Poster/model_function1.R")
 source("~/Desktop/Fellowship2023/Fellowship_Poster/model_function2.R")
 ```
@@ -324,9 +326,82 @@ lnewdat_2 <- lnewdat_2 |>
                                       "DisagreeSomewhat")))
 
 head(lnewdat_2)
+test <- as_tibble(lnewdat_2)
+test <- test |> arrange(desc(Probability)) 
+lnewdat_2 <- test |> slice(-1)
+test_2 <- lnewdat_2 |> arrange(Probability)
+lnewdat_2 <- test_2 |> slice(-1, -2, -3, -4)
 ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
   geom_point() +
   geom_line(aes(group = Level)) +
-  facet_grid(~Gender, labeller = "label_both")
+  facet_grid(~Gender, labeller = "label_both") +
+  labs(x = "Year") +
+  theme(axis.text.x = element_text(angle = 45, size = 7,
+                                   vjust = 1, hjust = 1))
+
+table_df <- lnewdat_2 |> group_by(year_coll, Gender) |>
+  summarise(total = n()) 
+table_df <- table_df |> pivot_wider(names_from = Gender,
+                        values_from = total)
+table_df <- table_df |> rename(Year = c('year_coll'))
+table_df
+data <- matrix(c(125, 40, 10, 
+                 65, 65, 15), ncol = 2)
+rownames(data) <- c('First_Year',
+                   'Sophomore',
+                   'Upperclassmen')
+colnames(data) <- c('Male',
+                    'Female')
+data <- as.table(data)
+data
+
+# putting table on plot 
+# method 1 
+plot <- ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both") +
+  labs(x = "Year") +
+  theme(axis.text.x = element_text(angle = 45, size = 7,
+                                   vjust = 1, hjust = 1))
+tbl <- tableGrob(data)
+table_df
+plot_with_table <- grid.arrange(plot, tbl,
+             nrow = 2,
+             as.table = TRUE,
+             heights = c(3, 0.5))
+# method 2
+ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both") +
+  labs(x = "Year") +
+  theme(axis.text.x = element_text(angle = 45, size = 7,
+                                   vjust = 1, hjust = 1)) 
+# method 3: labeling points/no table 
+```
+
+```{r}
+toy_df <- tibble::tibble(Student_id = c("A", "B", "C", "D", "E", "F"),
+                         Lecture = c(1, 1, 0, 1, 1, 0),
+                         Group_Work = c(1, 0, 0, 1, 1, 1),
+                         Reading = c(0, 0, 0, 0, 0, 0),
+                         Presentation = c(1, 1, 0, 1, 1, 1),
+                         Code = c(1, 1, 1, 1, 1, 1))
+toy_df
+toy_hm <- toy_df |> pivot_longer(cols = c(Lecture, Group_Work, Reading, Presentation, Code),
+                       names_to = "check_boxes", values_to = "ind")
+toy_hm$yes_or_no = ifelse(toy_hm$ind == "1", "Yes", "No") 
+toy_hm
+ggplot(data = toy_hm, aes(x = check_boxes, y = fct_rev(Student_id))) +
+  geom_tile(aes(fill = fct_rev(yes_or_no)), 
+            colour = "black") +
+  scale_fill_viridis_d() +
+  labs(y = "Student ID",
+       x = "Check Boxes",
+       fill = "Response",
+       title = "Check All That Helped Your Learning") +
+  theme(plot.title = element_text(hjust = 0.5)) +
+  geom_text(aes(label = yes_or_no))
 ```
 
