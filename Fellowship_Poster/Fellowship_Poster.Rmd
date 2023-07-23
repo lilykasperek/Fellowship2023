@@ -1,7 +1,8 @@
 ---
 title: Visualizing Student Evaluation Data
 title_textsize: "82pt"
-titlebox_borderwidth: "0cm"
+#titlebox_bordercol: "#237194"
+titlebox_borderwidth: "0.15cm"
 titletext_fontfamily: Georgia, serif;
 font_family: Georgia, serif;
 author:
@@ -16,6 +17,10 @@ output:
     self_contained: false
 poster_height: "36in"
 poster_width: "48in"
+primary_colour: "#00bbd6"
+accent_colour: "#faa32b"
+columnline_col: "#237194"
+sectitle_bordercol: "#237194"
 ---
 
 ```{r setup, include=FALSE}
@@ -58,7 +63,7 @@ toy_df <- tibble(year = c(rep(1, 5), rep(2, 5)),
                             0, 2, 11, 2, 0)) |>
   mutate(resp = fct_inorder(resp))
 ggplot(data = toy_df, aes(x = resp, y = n_resp)) +
-  geom_col(colour = "black", fill = "lightblue") +
+  geom_col(colour = "black", fill = "#faa32b") +
   facet_wrap(~year,
              labeller = year_label) +
   coord_flip() +
@@ -290,13 +295,29 @@ table_lnewdat <- lnewdat |>
                              Distribution = "3",
                              Interest = "4")) |>
   dplyr::select(Reason, Year, everything())
-kable_lnewdat <- kable(table_lnewdat) |>
-  kable_styling(full_width = FALSE,
-                font_size = 24)
-kable_lnewdat 
+#kable_lnewdat <- kable(table_lnewdat) |>
+  #kable_styling(full_width = FALSE,
+                #font_size = 24)
+#kable_lnewdat 
 ```
 
-```{r, out.width = "850px", fig.align = "center"}
+```{r, fig.align = "center"}
+data <- matrix(c(125, 40, 10, 
+                 65, 65, 15), ncol = 2)
+rownames(data) <- c('First_Year',
+                   'Sophomore',
+                   'Upperclassmen')
+colnames(data) <- c('Male',
+  'Female')
+data <- as.table(data)
+dt <- kable(data)
+dt <- dt |> kable_styling(full_width = FALSE,
+                          font_size = 27,
+                          position = "center")
+dt
+```
+
+```{r, out.width = "1100px", fig.align = "center"}
 knitr::include_graphics("Rplot_Probability.png")
 ```
 
@@ -304,7 +325,7 @@ knitr::include_graphics("Rplot_Probability.png")
 
 -   Static visualization of new question added to student evaluations
 
-```{r, out.width = "725px", results = 'hide', fig.align = "center"}
+```{r, out.width = "775px", results = 'hide', fig.align = "center"}
 toy_df <- tibble::tibble(Student_id = c("A", "B", "C", "D", "E", "F"),
                          Lecture = c(1, 1, 0, 1, 1, 0),
                          Group_Work = c(1, 0, 0, 1, 1, 1),
