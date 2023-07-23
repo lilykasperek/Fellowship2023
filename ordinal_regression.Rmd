@@ -345,16 +345,18 @@ table_df <- table_df |> pivot_wider(names_from = Gender,
                         values_from = total)
 table_df <- table_df |> rename(Year = c('year_coll'))
 table_df
+library(knitr)
+kt <- table_df |> kable()
+kt
 data <- matrix(c(125, 40, 10, 
                  65, 65, 15), ncol = 2)
 rownames(data) <- c('First_Year',
                    'Sophomore',
                    'Upperclassmen')
 colnames(data) <- c('Male',
-                    'Female')
+  'Female')
 data <- as.table(data)
-data
-
+data |> kable()
 # putting table on plot 
 # method 1 
 plot <- ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
@@ -365,12 +367,27 @@ plot <- ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
   theme(axis.text.x = element_text(angle = 45, size = 7,
                                    vjust = 1, hjust = 1))
 tbl <- tableGrob(data)
-table_df
 plot_with_table <- grid.arrange(plot, tbl,
              nrow = 2,
              as.table = TRUE,
              heights = c(3, 0.5))
 # method 2
+library("ggpmisc")
+table_df
+data
+my_table <- as.data.frame(table_df)
+my_table
+plot_2 <- plot + theme(legend.position = "bottom")
+plot_with_table_2 <- grid.arrange(plot_2, tbl, 
+             ncol = 2,
+             as.table = TRUE,
+             heights = c(3, 0.01))
+# method 3
+plot +
+  annotation_custom(tableGrob(data),
+                    xmin = 0, xmax = 1,
+                    ymin = 0, ymax = 1)
+# method 4
 ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
   geom_point() +
   geom_line(aes(group = Level)) +
@@ -378,7 +395,6 @@ ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
   labs(x = "Year") +
   theme(axis.text.x = element_text(angle = 45, size = 7,
                                    vjust = 1, hjust = 1)) 
-# method 3: labeling points/no table 
 ```
 
 ```{r}
