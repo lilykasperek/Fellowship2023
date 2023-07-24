@@ -306,7 +306,7 @@ plot(Effect(focal.predictors = c("year", "gender"), both_mod_2),
 mod_df_filter_2 <- mod_df_filter |> dplyr::mutate(year_coll = fct_collapse(year,
                                                    Upperclassmen = c("Junior",
                                                                      "Senior")))
-coll_mod <- polr(response ~ year_coll + gender, data = mod_df_filter_2, Hess = TRUE)
+coll_mod <- polr(response ~ year_coll + gender, data = mod_df_filter_2, Hess = TRUE) 
 summary(coll_mod)
 
 newdat_2 <- cbind(mod_df_filter_2, predict(both_mod_2, type = "probs")) |>
@@ -345,6 +345,7 @@ table_df <- table_df |> pivot_wider(names_from = Gender,
                         values_from = total)
 table_df <- table_df |> rename(Year = c('year_coll'))
 table_df
+
 library(knitr)
 kt <- table_df |> kable()
 kt
@@ -364,8 +365,10 @@ plot <- ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
   geom_line(aes(group = Level)) +
   facet_grid(~Gender, labeller = "label_both") +
   labs(x = "Year") +
+  theme_classic() +
   theme(axis.text.x = element_text(angle = 45, size = 7,
                                    vjust = 1, hjust = 1))
+plot
 tbl <- tableGrob(data)
 plot_with_table <- grid.arrange(plot, tbl,
              nrow = 2,
@@ -396,6 +399,19 @@ ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
   theme(axis.text.x = element_text(angle = 45, size = 7,
                                    vjust = 1, hjust = 1)) 
 ```
+
+# Full data set model, visualization, and table
+```{r}
+modeling_data_full <- read_csv("modeling_data_student_by_student.csv")
+modeling_data_full
+
+total_gender <- modeling_data_full |> group_by(Gender) |> summarise(total = n())
+total_year <- modeling_data_full |> group_by(Year) |> summarise(total = n())
+
+modeling_data_full |> group_by(Gender, Year) |> summarise(total = n()) |>
+  filter(is.na(Gender) != TRUE) 
+```
+
 
 ```{r}
 toy_df <- tibble::tibble(Student_id = c("A", "B", "C", "D", "E", "F"),
