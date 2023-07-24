@@ -402,15 +402,121 @@ ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
 
 # Full data set model, visualization, and table
 ```{r}
+# table
 modeling_data_full <- read_csv("modeling_data_student_by_student.csv")
 modeling_data_full
-
-total_gender <- modeling_data_full |> group_by(Gender) |> summarise(total = n())
-total_year <- modeling_data_full |> group_by(Year) |> summarise(total = n())
-
-modeling_data_full |> group_by(Gender, Year) |> summarise(total = n()) |>
-  filter(is.na(Gender) != TRUE) 
-```
+modeling_data_full <- modeling_data_full |> filter(is.na(Gender) != TRUE) |>
+  dplyr::mutate(Year = as.factor(Year)) |>
+  dplyr::mutate(Gender = as.factor(Gender)) |> 
+  dplyr::mutate(Reason = as.factor(Reason)) |>
+  dplyr::mutate(Response = as.factor(Response)) |>
+  mutate(reason = fct_recode(Reason, 
+                             Major = "1",
+                             Minor = "2",
+                             Distribution = "3",
+                             Interest = "4",
+                             Instructor = "5",
+                             Other = "6")) |>
+  mutate(year = fct_recode(Year,
+                           First_Year = "1",
+                           Sophomore = "2",
+                           Junior = "3",
+                           Senior = "4")) |>
+  mutate(gender = fct_recode(Gender,
+                             Male = "1",
+                             Female = "2",
+                             Other = "3",
+                             PNTD = "4")) |>
+  mutate(response = fct_recode(Response,
+                               DisagreeStrongly = "1",
+                               Disagree = "2",
+                               DisagreeSomewhat = "3",
+                               Neutral = "4",
+                               AgreeSomewhat = "5",
+                               Agree = "6",
+                               AgreeStrongly = "7")) |>
+  dplyr::mutate(new_responses = fct_collapse(response,
+                                                  Agree = c("AgreeStrongly",
+                                                            "Agree"),
+                                                  Neutral = c("AgreeSomewhat",
+                                                              "Neutral",
+                                                              "DisagreeSomewhat"),
+                                                  Disagree = c("Disagree",
+                                                               "DisagreeStrongly"))) |>
+  dplyr::mutate(year_coll = fct_collapse(year,
+                                         Upperclassmen = c("Junior",
+                                                           "Senior")))
+modeling_data_full 
+total_gender <- modeling_data_full |> group_by(gender) |> summarise(total = n())
+total_gender
+total_year <- modeling_data_full |> group_by(year) |> summarise(total = n())
+total_year
+df_1 <- modeling_data_full |> group_by(gender, year) |> summarise(total = n()) |>
+  filter(is.na(gender) != TRUE) |>
+  dplyr::select(-year)
+df_1 |> arrange(gender)
+tab <- matrix(c(50, 26, 5,
+                37, 34, 8, 
+                0, 1, 0), ncol = 3)
+rownames(tab) <- c('First_Year',
+                   'Sophomore',
+                   'Upperclassmen')
+colnames(tab) <- c('Male',
+  'Female',
+  'Other')
+tab <- as.table(tab)
+tab
+# model and viz
+# collapsing level 
+modeling_data_full
+olr_mod <- polr(new_responses ~ year_coll + gender, data = modeling_data_full, Hess = TRUE) 
+summary(olr_mod)
+probs <- cbind(modeling_data_full, predict(olr_mod, type = "probs")) |>
+  dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
+                -response, -new_responses, -Gender)
+probs <- probs |> dplyr::rename(Gender = 'gender') |>
+  dplyr::rename(Year = 'year_coll') |>
+  dplyr::select(-Reason)
+head(probs)
+melt_df <- melt(probs, id.vars = c("Gender", "Year"),
+                variable.name = "Level", value.name = "Probability") |>
+  filter(Gender != "Other")
+ggplot(melt_df, aes(x = Year, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both") +
+  labs(x = "Year") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, size = 7,
+                                   vjust = 1, hjust = 1))
+# not collapsing level 
+olr_mod_2 <- polr(response ~ year_coll + gender, data = modeling_data_full, Hess = TRUE) 
+summary(olr_mod_2)
+probs_2 <- cbind(modeling_data_full, predict(olr_mod_2, type = "probs")) |>
+  dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
+                -response, -new_responses, -Gender)
+probs_2 <- probs_2 |> dplyr::rename(Gender = 'gender') |>
+  dplyr::rename(Year = 'year_coll') |>
+  dplyr::select(-Reason)
+head(probs_2)
+melt_df_2 <- melt(probs_2, id.vars = c("Gender", "Year"),
+                variable.name = "Level", value.name = "Probability")
+melt_df_2 <- melt_df_2 |>
+  mutate(Level = fct_relevel(Level, c("AgreeStrongly",
+                                      "Agree",
+                                      "AgreeSomewhat",
+                                      "Neutral",
+                                      "DisagreeSomewhat"))) |>
+  filter(Gender != "Other")
+ggplot(melt_df_2, aes(x = Year, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both") +
+  labs(x = "Year") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, size = 7,
+                                   vjust = 1, hjust = 1))
+``` 
 
 
 ```{r}
@@ -429,11 +535,70 @@ ggplot(data = toy_hm, aes(x = check_boxes, y = fct_rev(Student_id))) +
   geom_tile(aes(fill = fct_rev(yes_or_no)), 
             colour = "black") +
   scale_fill_viridis_d() +
+  theme_classic() +
   labs(y = "Student ID",
        x = "Check Boxes",
        fill = "Response",
        title = "Check All That Helped Your Learning") +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_text(aes(label = yes_or_no))
+
+# full data set 
+## Reflect on your learning in this course as a whole and identify the top 3-5 elements that contributed the most to your learning.
+toy_df_full <- tibble::tibble(student_id = c(LETTERS[1:15]),
+               "a. Course materials" = c(0, rep(1, 14)),
+               "b. Course assignments" = rep(1, 15),
+               "c. Collaborative learning experiences (peer review, teamwork, partnered learning, etc.)" = c(rep(0, 8), 1, 1, rep(0, 5)),
+               "d. Hands-on experiences (e.g., labs, field trips, field work, community-engaged learning)" = rep(0, 15),
+               "e. Clarity in guidelines or requirements for assignments" = c(1, 1, 1, 0, 0, 0, 1, 0, 0, 1, 1, 1, 0, 1, 1),
+               "f. Explanation of challenging concepts / methods" = c(0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0, 1),
+               "g. Inclusion of diverse voices and perspectives in the course materials" = c(rep(0, 10), 1, rep(0, 4)),
+               "h. Use of a variety of teaching methods (lecture, group work, problem solving, discussion, etc.)" = c(0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 1),
+               "i. Instructor’s receptiveness to diverse student viewpoints" = c(rep(0, 14), 1),
+               "j. Instructor’s sensitivity to students of different backgrounds and life experiences" = rep(0, 15),
+               "k. Instructor’s availability to students during office hours and/or via email" = c(1, 0, 1, 0, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 0),
+               "l. Feedback on graded work" = c(0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, 1, 0, 1))
+toy_df_full <- toy_df_full |> rename(Course_Materials = 'a. Course materials',
+                      Course_Assignments = 'b. Course assignments',
+                      Collaborative_Learning = 'c. Collaborative learning experiences (peer review, teamwork, partnered learning, etc.)',
+                      Hands_on_Experiences = 'd. Hands-on experiences (e.g., labs, field trips, field work, community-engaged learning)',
+                      Clarity_of_Assignments = 'e. Clarity in guidelines or requirements for assignments',
+                      Explanations_of_Concepts = 'f. Explanation of challenging concepts / methods',
+                      Diversity = 'g. Inclusion of diverse voices and perspectives in the course materials',
+                      Variety_of_Methods = 'h. Use of a variety of teaching methods (lecture, group work, problem solving, discussion, etc.)',
+                      Receptiveness = 'i. Instructor’s receptiveness to diverse student viewpoints',
+                      Sensitity_to_Students = 'j. Instructor’s sensitivity to students of different backgrounds and life experiences',
+                      Availability = 'k. Instructor’s availability to students during office hours and/or via email',
+                      Feedback = 'l. Feedback on graded work')
+toy_df_full <- toy_df_full |> pivot_longer(cols = c(Course_Materials,
+                                     Course_Assignments,
+                                     Collaborative_Learning,
+                                     Hands_on_Experiences,
+                                     Clarity_of_Assignments,
+                                     Explanations_of_Concepts,
+                                     Diversity,
+                                     Variety_of_Methods,
+                                     Receptiveness,
+                                     Sensitity_to_Students,
+                                     Availability,
+                                     Feedback),
+                       names_to = "check_boxes", values_to = "ind")
+toy_df_full$yes_or_no = ifelse(toy_df_full$ind == "1", "Yes", "No") 
+toy_df_full
+ggplot(data = toy_df_full, aes(x = student_id, y = fct_rev(check_boxes))) +
+  geom_tile(aes(fill = yes_or_no), 
+            colour = "black") +
+  scale_fill_viridis_d() +
+  theme_classic() +
+  labs(x = "Student ID",
+       y = "Check Boxes",
+       fill = "Response",
+       title = "Reflect on your learning in this course as a whole.",
+       subtitle = "Identify the top 3-5 elements that contributed the most to your learning.") +
+  theme(plot.title = element_text(hjust = 0.5,
+                                  size = 12),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = 10),
+        axis.text.y = element_text(size = 6)) 
 ```
 
