@@ -43,36 +43,37 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 
 4.  Build and test Shiny App
 
-5.  Fit ordinal logistic regression model and visualize
-
 # Likert Scale Data
 
 -   SLU student evaluations use a 7-point Likert scale, which refers to the set of potential responses to different statements ranging from *Strongly Disagree* to *Strongly Agree*
 
+- Example statement: *The instructor was an effective teacher*
+
 -   Likert scale data is best analyzed and interpreted through visualizations, such as Heatmaps or Bar Plots, rather than mean score of responses
 
-```{r, out.width = "1300px", fig.align = "center"}
+```{r, out.width = "1225px", fig.align = "center"}
 library(tidyverse)
 year_label <- as_labeller(c
                 ('1' = "Year 1",
                 '2' = "Year 2"))
-toy_df <- tibble(year = c(rep(1, 5), rep(2, 5)),
-                 resp = rep(c("Agree", "Agree somewhat", "Neutral",
-                              "Disagree somewhat", "Disagree"), 2),
-                 n_resp = c(5, 2, 1, 2, 5, 
-                            0, 2, 11, 2, 0)) |>
+toy_df <- tibble(year = c(rep(1, 7), rep(2, 7)),
+                 resp = rep(c("Strongly Agree", "Agree", "Agree somewhat", "Neutral",
+                              "Disagree somewhat", "Disagree", "Strongly Disagree"), 2),
+                 n_resp = c(0, 13, 1, 0, 1, 13, 0,
+                            1, 2, 3, 16, 3, 2, 1)) |>
   mutate(resp = fct_inorder(resp))
 ggplot(data = toy_df, aes(x = resp, y = n_resp)) +
-  geom_col(colour = "black", fill = "#faa32b") +
+  geom_col(colour = "black", fill = "#440154") +
   facet_wrap(~year,
              labeller = year_label) +
   coord_flip() +
   labs(x = "Response", y = "Number of Students",
        title = "Example Distribution using Likert Scale Data") +
-  theme(plot.title = element_text(hjust = 0.5))
+  theme_classic() +
+  theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
--   The mean of both data sets is the same (3 points, or Neutral) but the distributions are very different
+-   The mean of both data sets is the same (4 points, or Neutral) but the distributions are very different
 
 -   Using the average from these two data sets fails to communicate what was actually reported by participants, illustrating the danger of using the averages of Likert Scale data
 
@@ -345,6 +346,7 @@ ggplot(data = toy_hm, aes(x = check_boxes, y = fct_rev(Student_id))) +
        x = "Check Boxes",
        fill = "Response",
        title = "Check All That Helped Your Learning") +
+  theme_classic() +
   theme(plot.title = element_text(hjust = 0.5)) +
   geom_text(aes(label = yes_or_no))
 ```
