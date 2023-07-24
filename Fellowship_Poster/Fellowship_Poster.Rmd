@@ -1,8 +1,6 @@
 ---
 title: Visualizing Student Evaluation Data
 title_textsize: "82pt"
-#titlebox_bordercol: "#237194"
-titlebox_borderwidth: "0.15cm"
 titletext_fontfamily: Georgia, serif;
 font_family: Georgia, serif;
 author:
@@ -17,10 +15,6 @@ output:
     self_contained: false
 poster_height: "36in"
 poster_width: "48in"
-primary_colour: "#00bbd6"
-accent_colour: "#faa32b"
-columnline_col: "#237194"
-sectitle_bordercol: "#237194"
 ---
 
 ```{r setup, include=FALSE}
@@ -51,7 +45,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE)
 
 -   Likert scale data is best analyzed and interpreted through visualizations, such as Heatmaps or Bar Plots, rather than mean score of responses
 
-```{r, out.width = "1225px", fig.align = "center"}
+```{r, out.width = "1150px", fig.align = "center"}
 library(tidyverse)
 year_label <- as_labeller(c
                 ('1' = "Year 1",
