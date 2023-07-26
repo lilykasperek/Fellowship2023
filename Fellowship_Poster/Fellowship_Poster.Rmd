@@ -15,6 +15,8 @@ output:
     self_contained: false
 poster_height: "36in"
 poster_width: "48in"
+primary_colour: "#440154"
+accent_colour: "#39568CFF"
 ---
 
 ```{r setup, include=FALSE}
@@ -187,7 +189,8 @@ t <- tab |>
   kable()
 t <- t |> kable_styling(full_width = FALSE,
                         position = "center",
-                        font_size = 25)
+                        font_size = 23) |>
+  kable_classic()
 t
 ```
 
