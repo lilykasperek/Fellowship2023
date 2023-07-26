@@ -200,10 +200,12 @@ tab <- as.table(tab)
 tab
 # model and viz
 modeling_data_full |> filter(gender == "Other")
-mod <- modeling_data_full |> filter(gender != "Other")
+mod <- modeling_data_full |> filter(gender != "Other") |>
+  mutate(gender = fct_drop(gender))
 mod
 olr_mod_2 <- polr(response ~ year_coll + gender, data = mod, Hess = TRUE) 
 summary(olr_mod_2)
+Anova(olr_mod_2)
 probs_2 <- cbind(mod, predict(olr_mod_2, type = "probs")) |>
   dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
                 -response, -new_responses, -Gender)
