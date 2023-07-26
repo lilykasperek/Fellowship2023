@@ -55,7 +55,7 @@ width: 48in;
 height: calc(36in * 0.15);
 overflow: hidden;
 background-color: #440154;
-border: 0 solid #1F968BFF;
+border: 0 solid #0b4545;
 }
 .logo_left {
 float: left;
@@ -147,7 +147,7 @@ padding-bottom: calc(36in * 0.01);
 background-color: #ffffff;
 }
 .poster_title h3 {
-color: #1F968BFF;
+color: #ffffff;
 font-size: 57pt;
 margin: 0;
 border: 0;
@@ -228,7 +228,7 @@ padding-bottom: 3mm;
 code {
 font-size: 1em;
 font-family: monospace;
-background-color: #1F968BFF24;
+background-color: #00808024;
 color: #440154;
 padding: 1.2mm;
 border-radius: 2mm;
@@ -300,7 +300,10 @@ font-size: 20pt;
 <div id="goal-and-description" class="section level1">
 <h1>Goal and Description</h1>
 <ul>
-<li><p>Create Shiny App to scrape student evaluation data from PDFs and provide a more in-depth analysis of the data by providing appropriate visuals</p></li>
+<li><p>Create Shiny App to scrape student evaluation data from PDFs and provide a more in-depth analysis of the data by providing appropriate visuals</p>
+<ul>
+<li><font size="6"> <em>Note:</em> Ordinal student evaluations are often biased, with research finding biases against women and people of color (Chavez and Mitchell). This project is intended to serve as a tool to view one’s own strengths and weaknesses, not as a means for comparison. Keeping this in mind, university averages are not used in this project. </font></li>
+</ul></li>
 <li><p>Model and predict ordinal responses based on student class year and sex</p></li>
 </ul>
 <p><strong>Process</strong></p>
@@ -314,26 +317,47 @@ font-size: 20pt;
 <div id="likert-scale-data" class="section level1">
 <h1>Likert Scale Data</h1>
 <ul>
-<li><p>SLU student evaluations use a 7-point Likert scale, which refers to the set of potential responses to different statements ranging from <em>Strongly Disagree</em> to <em>Strongly Agree</em></p></li>
-<li><p>Example statement: <em>The instructor was an effective teacher</em></p></li>
-<li><p>Likert scale data is best analyzed and interpreted through visualizations, such as Heatmaps or Bar Plots, rather than mean score of responses</p></li>
+<li><p>SLU student evaluations use a 7-point Likert scale, which refers to the set of potential responses to different statements ranging from <em>Strongly Disagree</em> to <em>Strongly Agree</em></p>
+<ul>
+<li>Example statement: <em>The instructor was an effective teacher</em></li>
+</ul></li>
+<li><p>Likert scale data is best analyzed and interpreted through visualizations rather than mean score of responses</p></li>
 </ul>
-<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-1-1.png" width="1150px" style="display: block; margin: auto;" /></p>
+<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-1-1.png" width="850px" style="display: block; margin: auto;" /></p>
 <ul>
 <li><p>The mean of both data sets is the same (4 points, or Neutral) but the distributions are very different</p></li>
-<li><p>Using the average from these two data sets fails to communicate what was actually reported by participants, illustrating the danger of using the averages of Likert Scale data</p></li>
+<li><p>Using averages fails to communicate what was actually reported by participants, illustrating the danger of using the averages of Likert Scale data</p></li>
 </ul>
 </div>
-<div id="shiny-app-tabs" class="section level1">
-<h1>Shiny App Tabs</h1>
-<p><img src="multiple_tab.png" width="1050px" style="display: block; margin: auto;" /><img src="single_tab.png" width="1050px" style="display: block; margin: auto;" /><img src="diff_scale_tab.png" width="1050px" style="display: block; margin: auto;" /><img src="tables_tab.png" width="1050px" style="display: block; margin: auto;" /></p>
+<div id="shiny-app" class="section level1">
+<h1>Shiny App</h1>
+<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-3-1.png" width="1000px" style="display: block; margin: auto;" /></p>
+<ul>
+<li><font size="6"><em>Possible interpretation:</em> Stronger in organization and timeliness, weaker in communicating course relevance</font></li>
+</ul>
+<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-5-1.png" width="900px" style="display: block; margin: auto;" /></p>
+<ul>
+<li><font size="6"><em>Possible interpretation:</em> Stronger in grading, weaker in workload and sophistication</font></li>
+</ul>
+<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-7-1.png" width="1000px" style="display: block; margin: auto;" /></p>
+<ul>
+<li><p><font size="6"><em>Note:</em> Usually used to compare same course across time</font></p></li>
+<li><p><font size="6"><em>Possible interpretation:</em> Stronger in Fall of 2022 as an effective instructor, could be related to course level</font></p></li>
+</ul>
+</div>
+<div id="additional-visualization" class="section level1">
+<h1>Additional Visualization</h1>
+<ul>
+<li>Static visualization of new question added to student evaluations</li>
+</ul>
+<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-8-1.png" width="800px" style="display: block; margin: auto;" /></p>
 </div>
 <div id="modeling-with-ordinal-logistic-regression" class="section level1">
 <h1>Modeling with Ordinal Logistic Regression</h1>
 <ul>
 <li>Fitted ordinal logistic regression model to predict and visualize probability of student responses based on student class year and sex</li>
 </ul>
-<table class="table lightable-classic" style="font-size: 23px; width: auto !important; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto;">
+<table class="table lightable-classic" style="font-size: 18px; width: auto !important; margin-left: auto; margin-right: auto; font-family: &quot;Arial Narrow&quot;, &quot;Source Sans Pro&quot;, sans-serif; margin-left: auto; margin-right: auto;">
 <thead>
 <tr>
 <th style="text-align:left;">
@@ -394,19 +418,16 @@ Upperclassmen
 </tr>
 </tbody>
 </table>
-<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-5-1.png" width="1000px" style="display: block; margin: auto;" /></p>
-</div>
-<div id="additional-visualization" class="section level1">
-<h1>Additional Visualization</h1>
+<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-11-1.png" width="750px" style="display: block; margin: auto;" /></p>
 <ul>
-<li>Static visualization of new question added to student evaluations</li>
+<li>This model predicts responses for only one professor and course, but could be expanded to quantify systematic biases in student evaluations using other predictors such as professor gender, race and ethnicity, and course type (Diversity, Arts, Humanities, STEM).</li>
 </ul>
-<p><img src="Fellowship_Poster_files/figure-html/unnamed-chunk-6-1.png" width="900px" style="display: block; margin: auto;" /></p>
 </div>
 <div id="references" class="section level1">
 <h1>References</h1>
-<p>Barry, D. (2017). <em>bookdown: Do not use averages with Likert scale data.</em> <a href="https://bookdown.org/Rmadillo/likert/" class="uri">https://bookdown.org/Rmadillo/likert/</a>.</p>
-<p>Joshi, A., Kale, S., Chandel, S., &amp; Pal, D. K. (2015). Likert Scale: Explored and Explained. <em>British Journal of Applied Science and Technology, 7</em>(4), 396-403.</p>
+<p><font size="4">Barry, D. (2017). <em>bookdown: Do not use averages with Likert scale data.</em> <a href="https://bookdown.org/Rmadillo/likert/" class="uri">https://bookdown.org/Rmadillo/likert/</a>.</font></p>
+<p><font size="4">Chávez, Kerry, and Kristina M.W. Mitchell. “Exploring Bias in Student Evaluations: Gender, Race, and Ethnicity.” <em>PS: Political Science &amp; Politics</em>, vol. 53, no. 2, 2020, pp. 270–274., <a href="doi:10.1017/S1049096519001744" class="uri">doi:10.1017/S1049096519001744</a>.</font></p>
+<p><font size="4">Joshi, A., Kale, S., Chandel, S., &amp; Pal, D. K. (2015). Likert Scale: Explored and Explained. <em>British Journal of Applied Science and Technology, 7</em>(4), 396-403.</font></p>
 </div>
 </div>
 </div>

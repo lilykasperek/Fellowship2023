@@ -59,8 +59,12 @@ intro_stat2 <- intro_stat_df |>
   filter(full_question == "Q4a. Workload" |
            full_question == "Q4b. Grading" |
            full_question == "Q4c. Sophistication")
-intro_stat2
-
+intro_stat2 <- intro_stat2 |>
+  mutate(responses_hm = fct_relevel(responses_hm, c("Too Low",
+                                                    "Somewhat Low",
+                                                    "Appropriate",
+                                                    "Somewhat High",
+                                                    "Too High")))
 ggplot(data = intro_stat2, aes(x = responses_hm, y = fct_rev(full_question),
                               fill = count_hm)) +
   geom_tile() +
@@ -77,5 +81,32 @@ ggplot(data = intro_stat2, aes(x = responses_hm, y = fct_rev(full_question),
   theme(plot.title = element_text(hjust = 0.5),
         plot.subtitle = element_text(hjust = 0.5),
         legend.box.background = element_rect(colour = "black")) 
+```
+
+```{r}
+intro_stat_mult <- multiple_pdf_function("STAT113_Fall_2020_1_edited.pdf")
+stat_mult <- intro_stat_mult |>
+  filter(full_question == "Q6c. Effective")
+stat_mult
+intro_data_df <- multiple_pdf_function("STAT234_Fall_2022_edited.pdf")
+intro_data <- intro_data_df |>
+  filter(full_question == "Q6c. Effective")
+intro_data
+full_df <- bind_rows(stat_mult, intro_data)
+ggplot(data = full_df, aes(x = count_hm, y = responses_hm,
+                           fill = responses_hm)) +
+  geom_col() +
+  scale_fill_viridis_d() +
+  facet_wrap(~Semester + course, ncol = 1) +
+  theme_classic() +
+  labs(x = "Count",
+       y = "Responses",
+       title = "Comparing SUBJ 10001 to SUBJ 20001",
+       subtitle = "Q6c. Effective") +
+  theme(legend.position = "none",
+        plot.title = element_text(hjust = 0.5,
+                                  size = 10),
+        plot.subtitle = element_text(hjust = 0.5,
+                                     size = 9))
 ```
 
