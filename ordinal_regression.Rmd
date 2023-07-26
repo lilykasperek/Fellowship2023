@@ -14,15 +14,16 @@ library(effects)
 library(car)
 library(gridExtra)
 library(ggplot2)
-source("~/Desktop/Fellowship2023/Fellowship_Poster/model_function1.R")
-source("~/Desktop/Fellowship2023/Fellowship_Poster/model_function2.R")
+library(here)
+source(here("model_function1.R"))
+source(here("model_function2.R"))
 ```
 
 ```{r}
 # load data 
-level_113 <- model_function("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT113_Spring_2020_2.pdf")
-level_213 <- model_function("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT213_Spring_2020_1.pdf")
-level_234 <- model_function("/Users/lilykasperek/Desktop/Fellowship2023/eval_pdfs/STAT234_Fall_2020_1.pdf")
+level_113 <- model_function(here("eval_pdfs/STAT113_Spring_2020_2.pdf"))
+level_213 <- model_function(here("eval_pdfs/STAT213_Spring_2020_1.pdf"))
+level_234 <- model_function(here("eval_pdfs/STAT234_Fall_2020_1.pdf"))
 all_levels <- bind_rows(level_113, level_213, level_234) 
 all_levels <- all_levels |> dplyr::filter(full_question == "Q6c. Effective")
   
@@ -131,279 +132,10 @@ p <- pnorm(abs(ctable_mod2[, "t value"]), lower.tail = FALSE) * 2
 exp(coef(mod_fit2))
 ```
 
-1 - Major
-2 - Minor
-3 - Distribution
-4 - Interest
-5 - Instructor
-6 - Other
-
-1 - Male 
-2 - Female 
-3 - Other
-4 - prefer not to disclose
-
-```{r}
-library(readr)
-modeling_data <- read_csv("~/Desktop/Fellowship2023/Fellowship_Poster/modeling_data_student_by_student.csv")
-modeling_data
-```
-
-```{r}
-modeling_data <- modeling_data |> mutate(Reason = as.character(Reason),
-                        Year = as.character(Year),
-                        Gender = as.character(Gender),
-                        Response = as.character(Response))
-model_df <- modeling_data |> 
-  mutate(reason = fct_recode(Reason,
-                             Major = "1",
-                             Minor = "2",
-                             Distribution = "3",
-                             Interest = "4",
-                             Instructor = "5",
-                             Other = "6")) |>
-  mutate(year = fct_recode(Year,
-                           First_Year = "1",
-                           Sophomore = "2",
-                           Junior = "3",
-                           Senior = "4")) |>
-  mutate(gender = fct_recode(Gender,
-                             Male = "1",
-                             Female = "2",
-                             Other = "3",
-                             PNTD = "4")) |>
-  mutate(response = fct_recode(Response,
-                               DisagreeStrongly = "1",
-                               Disagree = "2",
-                               DisagreeSomewhat = "3",
-                               Neutral = "4",
-                               AgreeSomewhat = "5",
-                               Agree = "6",
-                               AgreeStrongly = "7")) 
-model_df <- model_df |>
-  dplyr::mutate(new_responses = fct_collapse(response,
-                                                  Agree = c("AgreeStrongly",
-                                                            "Agree"),
-                                                  Neutral = c("AgreeSomewhat",
-                                                              "Neutral",
-                                                              "DisagreeSomewhat"),
-                                                  Disagree = c("Disagree",
-                                                               "DisagreeStrongly")))
-
-mod_df <- model_df |> 
-  dplyr::select(Reason, reason, Year, year, Gender, gender, Response, response, new_responses,
-                   Course, Semester)
-```
-
-```{r}
-# models 
-summary(mod_df)
-mod_df$new_responses
-# error: year_mod <- polr(response ~ year, data = mod_df, Hess = TRUE)
-year_mod <- polr(response ~ year, data = mod_df, Hess = TRUE)
-summary(year_mod)
-# error: gender_mod <- polr(new_responses ~ gender, data = mod_df, Hess = TRUE)
-gender_mod <- polr(response ~ gender, data = mod_df, Hess = TRUE)
-summary(gender_mod)
-# error: both_mod <- polr(new_responses ~ year + gender, data = mod_df, Hess = TRUE)
-both_mod <- polr(response ~ year + gender, data = mod_df, Hess = TRUE)
-summary(both_mod)
-
-mod_df_filter <-
-  mod_df |> filter(is.na(year) != TRUE) |>
-  filter(is.na(gender) != TRUE) |>
-  filter(is.na(reason) != TRUE)
-
-summary(mod_df_filter)
-year_mod_2 <- polr(response ~ year, data = mod_df_filter, Hess = TRUE)
-summary(year_mod_2)
-
-gender_mod_2 <- polr(response ~ gender, data = mod_df_filter, Hess = TRUE)
-summary(gender_mod_2)
-
-both_mod_2 <- polr(response ~ year + gender, data = mod_df_filter, Hess = TRUE)
-summary(both_mod_2)
-```
-
-distribution of reason at every level of response broken down by year and gender 
-```{r}
-head(mod_df)
-lapply(mod_df[, c("response", "year", "gender")], table)
-ftable(xtabs(~ year + response + gender, data = mod_df))
-summary(mod_df)
-
-ggplot(data = mod_df, aes(x = response, y = reason)) +
-  geom_boxplot(size = .75) +
-  geom_jitter(alpha = .5) +
-  facet_grid(year ~ gender, margins = TRUE) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
-
-head(mod_df_filter)
-lapply(mod_df_filter[, c("response", "year", "gender")], table)
-ftable(xtabs(~ year + response + gender, data = mod_df_filter))
-summary(mod_df_filter)
-
-ggplot(data = mod_df_filter, aes(x = new_responses, y = reason)) +
-  geom_boxplot(size = .75) +
-  geom_jitter(alpha = .5) +
-  facet_grid(year ~ gender, margins = TRUE) +
-  theme(axis.text.x = element_text(angle = 45, hjust = 1, vjust = 1))
-```
-
-```{r}
-(ctable <- coef(summary(both_mod_2)))
-p <- pnorm(abs(ctable[, "t value"]), lower.tail = FALSE) * 2
-(ctable <- cbind(ctable, "p value" = p))
-#(ci <- confint(both_mod_2))
-exp(coef(both_mod_2))
-```
-
-```{r}
-mod_df
-sf <- function(y) {
-  c('Y>=1' = qlogis(mean(y >= 3)),
-    'Y>=2' = qlogis(mean(y >= 4)),
-    'Y>=3' = qlogis(mean(y >= 5)),
-    'Y>=4' = qlogis(mean(y >= 6)))
-}
-(s <- with(both_mod_2, summary(as.numeric(response) ~ year + gender + reason, fun=sf)))
-glm(I(as.numeric(response) >= 2) ~ year, family="binomial", data = mod_df)
-glm(I(as.numeric(response) >= 3) ~ year, family="binomial", data = mod_df)
-```
-
-```{r}
-newdat <- cbind(mod_df_filter, predict(both_mod_2, type = "probs")) |>
-  dplyr::select(-reason, -year, -Response, -Semester, -Course,
-                -response, -new_responses, -Gender)
-new_dat <- newdat |> dplyr::rename(Gender = 'gender')
-lnewdat <- melt(new_dat, id.vars = c("Reason", "Year", "Gender"),
-                variable.name = "Level", value.name = "Probability")
-lnewdat <- lnewdat |> 
-  mutate(Level = fct_relevel(Level, c("AgreeStrongly",
-                                      "Agree",
-                                      "AgreeSomewhat",
-                                      "Neutral",
-                                      "DisagreeSomewhat")))
-head(lnewdat)
-ggplot(lnewdat, aes(x = Year, y = Probability, colour = Level)) +
-  geom_point() +
-  geom_line(aes(group = Level)) +
-  facet_grid(~Gender, labeller = "label_both")
-```
-
-```{r}
-summary(both_mod_2)
-Anova(both_mod_2)
-Effect(focal.predictors = c("year", "gender"), both_mod_2)
-plot(Effect(focal.predictors = c("year", "gender"), both_mod_2), rug = FALSE)
-plot(Effect(focal.predictors = c("year", "gender"), both_mod_2), 
-     rug = FALSE,
-     style = "stacked")
-```
-
-# New model/visualization with collapsed upperclassmen 
-```{r}
-mod_df_filter_2 <- mod_df_filter |> dplyr::mutate(year_coll = fct_collapse(year,
-                                                   Upperclassmen = c("Junior",
-                                                                     "Senior")))
-coll_mod <- polr(response ~ year_coll + gender, data = mod_df_filter_2, Hess = TRUE) 
-summary(coll_mod)
-
-newdat_2 <- cbind(mod_df_filter_2, predict(both_mod_2, type = "probs")) |>
-  dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
-                -response, -new_responses, -Gender)
-
-new_dat_2 <- newdat_2 |> dplyr::rename(Gender = 'gender')
-
-lnewdat_2 <- melt(new_dat_2, id.vars = c("Reason", "year_coll", "Gender"),
-                variable.name = "Level", value.name = "Probability")
-
-lnewdat_2 <- lnewdat_2 |> 
-  mutate(Level = fct_relevel(Level, c("AgreeStrongly",
-                                      "Agree",
-                                      "AgreeSomewhat",
-                                      "Neutral",
-                                      "DisagreeSomewhat")))
-
-head(lnewdat_2)
-test <- as_tibble(lnewdat_2)
-test <- test |> arrange(desc(Probability)) 
-lnewdat_2 <- test |> slice(-1)
-test_2 <- lnewdat_2 |> arrange(Probability)
-lnewdat_2 <- test_2 |> slice(-1, -2, -3, -4)
-ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
-  geom_point() +
-  geom_line(aes(group = Level)) +
-  facet_grid(~Gender, labeller = "label_both") +
-  labs(x = "Year") +
-  theme(axis.text.x = element_text(angle = 45, size = 7,
-                                   vjust = 1, hjust = 1))
-
-table_df <- lnewdat_2 |> group_by(year_coll, Gender) |>
-  summarise(total = n()) 
-table_df <- table_df |> pivot_wider(names_from = Gender,
-                        values_from = total)
-table_df <- table_df |> rename(Year = c('year_coll'))
-table_df
-
-library(knitr)
-kt <- table_df |> kable()
-kt
-data <- matrix(c(125, 40, 10, 
-                 65, 65, 15), ncol = 2)
-rownames(data) <- c('First_Year',
-                   'Sophomore',
-                   'Upperclassmen')
-colnames(data) <- c('Male',
-  'Female')
-data <- as.table(data)
-data |> kable()
-# putting table on plot 
-# method 1 
-plot <- ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
-  geom_point() +
-  geom_line(aes(group = Level)) +
-  facet_grid(~Gender, labeller = "label_both") +
-  labs(x = "Year") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, size = 7,
-                                   vjust = 1, hjust = 1))
-plot
-tbl <- tableGrob(data)
-plot_with_table <- grid.arrange(plot, tbl,
-             nrow = 2,
-             as.table = TRUE,
-             heights = c(3, 0.5))
-# method 2
-library("ggpmisc")
-table_df
-data
-my_table <- as.data.frame(table_df)
-my_table
-plot_2 <- plot + theme(legend.position = "bottom")
-plot_with_table_2 <- grid.arrange(plot_2, tbl, 
-             ncol = 2,
-             as.table = TRUE,
-             heights = c(3, 0.01))
-# method 3
-plot +
-  annotation_custom(tableGrob(data),
-                    xmin = 0, xmax = 1,
-                    ymin = 0, ymax = 1)
-# method 4
-ggplot(lnewdat_2, aes(x = year_coll, y = Probability, colour = Level)) +
-  geom_point() +
-  geom_line(aes(group = Level)) +
-  facet_grid(~Gender, labeller = "label_both") +
-  labs(x = "Year") +
-  theme(axis.text.x = element_text(angle = 45, size = 7,
-                                   vjust = 1, hjust = 1)) 
-```
-
 # Full data set model, visualization, and table
 ```{r}
 # table
-modeling_data_full <- read_csv("modeling_data_student_by_student.csv")
+modeling_data_full <- read_csv(here("ordinal_regression/modeling_data_student_by_student.csv"))
 modeling_data_full
 modeling_data_full <- modeling_data_full |> filter(is.na(Gender) != TRUE) |>
   dplyr::mutate(Year = as.factor(Year)) |>
@@ -518,7 +250,6 @@ ggplot(melt_df_2, aes(x = Year, y = Probability, colour = Level)) +
                                    vjust = 1, hjust = 1))
 ``` 
 
-
 ```{r}
 toy_df <- tibble::tibble(Student_id = c("A", "B", "C", "D", "E", "F"),
                          Lecture = c(1, 1, 0, 1, 1, 0),
@@ -602,3 +333,14 @@ ggplot(data = toy_df_full, aes(x = student_id, y = fct_rev(check_boxes))) +
         axis.text.y = element_text(size = 6)) 
 ```
 
+1 - Major
+2 - Minor
+3 - Distribution
+4 - Interest
+5 - Instructor
+6 - Other
+
+1 - Male 
+2 - Female 
+3 - Other
+4 - prefer not to disclose
