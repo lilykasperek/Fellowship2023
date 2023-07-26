@@ -75,6 +75,16 @@ ui <- fluidPage(
                           tags$li("This tab also provides the student background data for the uploaded 
                       SLU student evaluation pdf files from both tabs"),
                         )),
+                      h5(strong("Note About the Project"),
+                         style = "text-align: left;"),
+                      p(style = "text-align: justify; font-size = 15px",
+                        tags$ul(
+                          tags$li("Ordinal student evaluations are often biased, 
+                    with research finding biases against women and people of color. 
+                    This project is intended to serve as a tool to view one's own strengths and weaknesses, 
+                    not as a means for comparison. Keeping this in mind, university averages are not used 
+                    in this project."),
+                        )),
                       tags$blockquote(a(href = "https://github.com/lilykasperek/Fellowship2023",
                                         "Visualizing SLU Student Evaluation Data GitHub Page")),
              ),
