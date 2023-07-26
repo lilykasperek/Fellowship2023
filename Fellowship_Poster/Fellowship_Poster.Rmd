@@ -27,8 +27,8 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, singlespacing = TRUE)
 
 -   Create Shiny App to scrape student evaluation data from PDFs and provide a more in-depth analysis of the data by providing appropriate visuals
 
-    -   <font size="6"> *Note:* Ordinal student evaluations are often biased, with research finding biases against women and people of color (Chavez and Mitchell). This project is intended to serve as a tool to view one's own strengths and weaknesses, not as a means for comparison. Keeping this in mind, university averages are not used in this project. </font>
-    
+    -   <font size="6">*Note:* Ordinal student evaluations are often biased, with research finding biases against women and people of color (Chavez and Mitchell). This project is intended to serve as a tool to view one's own strengths and weaknesses, not as a means for comparison. Keeping this in mind, university averages are not used in this project.</font>
+
 -   Model and predict ordinal responses based on student class year and sex
 
 **Process**
@@ -110,7 +110,7 @@ subtitle <- paste(labels[1, 3], labels[1, 4], sep = " ", collapse = NULL)
 subtitle
 ```
 
-```{r, out.width = "1000px", fig.align = "center"}
+```{r, out.width = "1025px", fig.align = "center"}
 ggplot(data = intro_stat, aes(x = responses_hm, y = fct_rev(full_question),
                               fill = count_hm)) +
   geom_tile() +
@@ -148,7 +148,7 @@ intro_stat2 <- intro_stat2 |>
                                                     "Too High")))
 ```
 
-```{r, out.width = "900px", fig.align = "center"}
+```{r, out.width = "925px", fig.align = "center"}
 ggplot(data = intro_stat2, aes(x = responses_hm, y = fct_rev(full_question),
                               fill = count_hm)) +
   geom_tile() +
@@ -184,7 +184,7 @@ intro_data
 full_df <- bind_rows(stat_mult, intro_data)
 ```
 
-```{r, out.width = "1000px", fig.align = "center"}
+```{r, out.width = "1025px", fig.align = "center"}
 ggplot(data = full_df, aes(x = count_hm, y = responses_hm,
                            fill = responses_hm)) +
   geom_col() +
@@ -203,14 +203,13 @@ ggplot(data = full_df, aes(x = count_hm, y = responses_hm,
 ```
 
 -   <font size="6">*Note:* Usually used to compare same course across time</font>
-
--   <font size="6">*Possible interpretation:* Stronger in Fall of 2022 as an effective instructor, could be related to course level</font>
+-   <font size="6">*Possible interpretation:* Stronger in Fall of 2022 as an effective instructor (could be related to course level)</font>
 
 # Additional Visualization
 
 -   Static visualization of new question added to student evaluations
 
-```{r, out.width = "800px", results = 'hide', fig.align = "center"}
+```{r, out.width = "850px", results = 'hide', fig.align = "center"}
 toy_df_full <- tibble::tibble(student_id = c(LETTERS[1:15]),
                "a. Course materials" = c(0, rep(1, 14)),
                "b. Course assignments" = rep(1, 15),
@@ -391,7 +390,7 @@ t <- tab |>
   kable()
 t <- t |> kable_styling(full_width = FALSE,
                         position = "center",
-                        font_size = 18) |>
+                        font_size = 15) |>
   kable_classic()
 t
 ```
@@ -413,8 +412,5 @@ ggplot(melt_df_2, aes(x = Year, y = Probability, colour = Level)) +
 -   This model predicts responses for only one professor and course, but could be expanded to quantify systematic biases in student evaluations using other predictors such as professor gender, race and ethnicity, and course type (Diversity, Arts, Humanities, STEM).
 
 # References
-<font size="4">Barry, D. (2017). *bookdown: Do not use averages with Likert scale data.* <https://bookdown.org/Rmadillo/likert/>.</font>
 
-\n<font size="4">Chávez, Kerry, and Kristina M.W. Mitchell. "Exploring Bias in Student Evaluations: Gender, Race, and Ethnicity." *PS: Political Science & Politics*, vol. 53, no. 2, 2020, pp. 270--274., <doi:10.1017/S1049096519001744>.</font>
-
-\n<font size="4">Joshi, A., Kale, S., Chandel, S., & Pal, D. K. (2015). Likert Scale: Explored and Explained. *British Journal of Applied Science and Technology, 7*(4), 396-403.</font>
+<font size = "5">Barry, D. (2017). *bookdown: Do not use averages with Likert scale data.* <https://bookdown.org/Rmadillo/likert/>.</font> <br> <font size = "5">Chávez, Kerry, and Kristina M.W. Mitchell. "Exploring Bias in Student Evaluations: Gender, Race, and Ethnicity.*PS: Political Science & Politics*, vol.53, no.2, 2020, pp.270-274.,<doi:10.1017/S1049096519001744></font> <br> <font size = "5">Joshi, A., Kale, S., Chandel, S., & Pal, D. K. (2015). Likert Scale: Explored and Explained. *British Journal of Applied Science and Technology, 7*(4), 396-403.</font>
