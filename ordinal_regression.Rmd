@@ -199,32 +199,12 @@ colnames(tab) <- c('Male',
 tab <- as.table(tab)
 tab
 # model and viz
-# collapsing level 
-modeling_data_full
-olr_mod <- polr(new_responses ~ year_coll + gender, data = modeling_data_full, Hess = TRUE) 
-summary(olr_mod)
-probs <- cbind(modeling_data_full, predict(olr_mod, type = "probs")) |>
-  dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
-                -response, -new_responses, -Gender)
-probs <- probs |> dplyr::rename(Gender = 'gender') |>
-  dplyr::rename(Year = 'year_coll') |>
-  dplyr::select(-Reason)
-head(probs)
-melt_df <- melt(probs, id.vars = c("Gender", "Year"),
-                variable.name = "Level", value.name = "Probability") |>
-  filter(Gender != "Other")
-ggplot(melt_df, aes(x = Year, y = Probability, colour = Level)) +
-  geom_point() +
-  geom_line(aes(group = Level)) +
-  facet_grid(~Gender, labeller = "label_both") +
-  labs(x = "Year") +
-  theme_classic() +
-  theme(axis.text.x = element_text(angle = 45, size = 7,
-                                   vjust = 1, hjust = 1))
-# not collapsing level 
-olr_mod_2 <- polr(response ~ year_coll + gender, data = modeling_data_full, Hess = TRUE) 
+modeling_data_full |> filter(gender == "Other")
+mod <- modeling_data_full |> filter(gender != "Other")
+mod
+olr_mod_2 <- polr(response ~ year_coll + gender, data = mod, Hess = TRUE) 
 summary(olr_mod_2)
-probs_2 <- cbind(modeling_data_full, predict(olr_mod_2, type = "probs")) |>
+probs_2 <- cbind(mod, predict(olr_mod_2, type = "probs")) |>
   dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
                 -response, -new_responses, -Gender)
 probs_2 <- probs_2 |> dplyr::rename(Gender = 'gender') |>
@@ -238,13 +218,14 @@ melt_df_2 <- melt_df_2 |>
                                       "Agree",
                                       "AgreeSomewhat",
                                       "Neutral",
-                                      "DisagreeSomewhat"))) |>
-  filter(Gender != "Other")
+                                      "DisagreeSomewhat"))) 
 ggplot(melt_df_2, aes(x = Year, y = Probability, colour = Level)) +
   geom_point() +
   geom_line(aes(group = Level)) +
   facet_grid(~Gender, labeller = "label_both") +
-  labs(x = "Year") +
+  labs(x = "Year",
+       caption = "Not included in model: 
+       One student identified as Other, responding with Agree") +
   theme_classic() +
   theme(axis.text.x = element_text(angle = 45, size = 7,
                                    vjust = 1, hjust = 1))
@@ -331,6 +312,29 @@ ggplot(data = toy_df_full, aes(x = student_id, y = fct_rev(check_boxes))) +
         plot.subtitle = element_text(hjust = 0.5,
                                      size = 10),
         axis.text.y = element_text(size = 6)) 
+
+# collapsing level 
+modeling_data_full
+olr_mod <- polr(new_responses ~ year_coll + gender, data = modeling_data_full, Hess = TRUE) 
+summary(olr_mod)
+probs <- cbind(modeling_data_full, predict(olr_mod, type = "probs")) |>
+  dplyr::select(-reason, -year, -Year, -Response, -Semester, -Course,
+                -response, -new_responses, -Gender)
+probs <- probs |> dplyr::rename(Gender = 'gender') |>
+  dplyr::rename(Year = 'year_coll') |>
+  dplyr::select(-Reason)
+head(probs)
+melt_df <- melt(probs, id.vars = c("Gender", "Year"),
+                variable.name = "Level", value.name = "Probability") |>
+  filter(Gender != "Other")
+ggplot(melt_df, aes(x = Year, y = Probability, colour = Level)) +
+  geom_point() +
+  geom_line(aes(group = Level)) +
+  facet_grid(~Gender, labeller = "label_both") +
+  labs(x = "Year") +
+  theme_classic() +
+  theme(axis.text.x = element_text(angle = 45, size = 7,
+                                   vjust = 1, hjust = 1))
 ```
 
 1 - Major
