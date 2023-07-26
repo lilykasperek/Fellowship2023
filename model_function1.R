@@ -269,4 +269,3 @@ model_function <- function(pdf) {
   #binded_df <- binded_df |> mutate(new_semester = fct_inorder(new_semester))
   return(binded_df)
 }
-

@@ -7,7 +7,6 @@ model_function2 <- function(pdf) {
                                        replacement = "0")
   only_numbers <- str_extract_all(first_page_zeroes, "\\d+")
   only_numbers <- compact(only_numbers)
-  
   year <- c(only_numbers[[2]][1],
             only_numbers[[2]][1],
             only_numbers[[2]][1],
@@ -64,7 +63,7 @@ model_function2 <- function(pdf) {
     mutate(question = "Q4a")
   core_df_4a <- tibble::tibble(year_2 = year_2,
                                core_df_4a) 
-  core_df_4a <- core_df_4a |> rename(year = 'year_2')
+  core_df_4a <- core_df_4a |> dplyr::rename(year = 'year_2')
   core_df_4a <- core_df_4a |> mutate(year = as.numeric(year))
   core_df_4a <- tibble::tibble(semester = semester_2,
                                core_df_4a)
@@ -80,7 +79,7 @@ model_function2 <- function(pdf) {
     mutate(question = "Q4b")
   core_df_4b <- tibble::tibble(year_2 = year_2,
                                core_df_4b)
-  core_df_4b <- core_df_4b |> rename(year = 'year_2')
+  core_df_4b <- core_df_4b |> dplyr::rename(year = 'year_2')
   core_df_4b <- core_df_4b |> mutate(year = as.numeric(year))
   core_df_4b <- tibble::tibble(semester = semester_2,
                                core_df_4b)
@@ -101,7 +100,7 @@ model_function2 <- function(pdf) {
     mutate(question = "Q4c")
   core_df_4c <- tibble::tibble(year_2 = year_2,
                                core_df_4c)
-  core_df_4c <- core_df_4c |> rename(year = 'year_2')
+  core_df_4c <- core_df_4c |> dplyr::rename(year = 'year_2')
   core_df_4c <- core_df_4c |> mutate(year = as.numeric(year))
   core_df_4c <- tibble::tibble(semester = semester_2,
                                core_df_4c)
