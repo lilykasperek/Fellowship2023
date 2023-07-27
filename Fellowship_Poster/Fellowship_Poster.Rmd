@@ -49,7 +49,7 @@ knitr::opts_chunk$set(echo = FALSE, message = FALSE, singlespacing = TRUE)
 
 -   Likert scale data is best analyzed and interpreted through visualizations rather than mean score of responses
 
-```{r, out.width = "850px", fig.align = "center"}
+```{r, out.width = "925px", fig.align = "center"}
 library(tidyverse)
 year_label <- as_labeller(c
                 ('1' = "Year 1",
@@ -67,7 +67,7 @@ ggplot(data = toy_df, aes(x = resp, y = n_resp)) +
   coord_flip() +
   labs(x = "Response", y = "Number of Students",
        title = "Example Distribution using Likert Scale Data") +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(plot.title = element_text(hjust = 0.5)) 
 ```
 
@@ -121,16 +121,13 @@ ggplot(data = intro_stat, aes(x = responses_hm, y = fct_rev(full_question),
        fill = "Count",
        title = title,
        subtitle = subtitle) +
-        geom_shadowtext(aes(label = count_hm), size = 4,
-                  colour = "gray",
-              show.legend = FALSE) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(plot.title = element_text(hjust = 0.5,
                                   size = 11),
         plot.subtitle = element_text(hjust = 0.5,
                                      size = 10),
         legend.box.background = element_rect(colour = "black"),
-        axis.text.x = element_text(size = 7)) 
+        axis.text.x = element_text(size = 6)) 
 ```
 
 -   <font size="6">*Possible interpretation:* Stronger in organization and timeliness, weaker in communicating course relevance</font>
@@ -159,15 +156,13 @@ ggplot(data = intro_stat2, aes(x = responses_hm, y = fct_rev(full_question),
        fill = "Count",
        title = title,
        subtitle = subtitle) +
-        geom_shadowtext(aes(label = count_hm), size = 4,
-                  colour = "gray",
-              show.legend = FALSE) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   theme(plot.title = element_text(hjust = 0.5,
                                   size = 11),
         plot.subtitle = element_text(hjust = 0.5,
                                      size = 10),
-        legend.box.background = element_rect(colour = "black")) 
+        legend.box.background = element_rect(colour = "black"),
+        axis.text.x = element_text(size = 7)) 
 ```
 
 -   <font size="6">*Possible interpretation:* Stronger in grading, weaker in workload and sophistication</font>
@@ -190,7 +185,7 @@ ggplot(data = full_df, aes(x = count_hm, y = responses_hm,
   geom_col() +
   scale_fill_viridis_d() +
   facet_wrap(~Semester + course, ncol = 1) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   labs(x = "Count",
        y = "Responses",
        title = "Comparing SUBJ 10001 to SUBJ 20001",
@@ -272,7 +267,7 @@ ggplot(data = toy_df_inorder2, aes(x = student_id, y = fct_rev(check_boxes2))) +
   geom_tile(aes(fill = fct_rev(yes_or_no)), 
             colour = "black") +
   scale_fill_manual(values = c("#FDE725FF", "#440154")) +
-  theme_classic() +
+  theme_classic(base_size = 14) +
   labs(x = "Student ID",
        y = "Check Boxes",
        fill = "Response",
@@ -395,16 +390,15 @@ t <- t |> kable_styling(full_width = FALSE,
 t
 ```
 
-```{r, out.width = "750px", fig.align = "center"}
+```{r, out.width = "800px", fig.align = "center"}
 ggplot(melt_df_2, aes(x = Year, y = Probability, colour = Level)) +
   geom_point() +
   geom_line(aes(group = Level)) +
   scale_colour_viridis_d() +
   facet_grid(~Gender, labeller = "label_both") +
   labs(x = "Year",
-       caption = "Not included in model: One student identified as 
-       Other, responding with Agree") +
-  theme_classic() +
+       caption = "One student identified as Other, responding with Agree") +
+  theme_classic(base_size = 14) +
   theme(axis.text.x = element_text(angle = 45, size = 7,
                                    vjust = 1, hjust = 1))
 ```
