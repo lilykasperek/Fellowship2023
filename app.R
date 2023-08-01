@@ -29,20 +29,11 @@ ui <- fluidPage(
                 Additional inspiration for this project is the fact that Likert scale data 
                 is being used. Likert scale data is best analyzed and interpreted
                 through visualizations, such as Heatmaps or Bar Plots, rather than using the mean
-               score of responses."),
-                      h5(strong("Compare Student Evaluation Data Tab"),
-                         style = "text-align: left;"),
-                      p(style = "text-align: justify; font-size = 15px",
-                        tags$ul(
-                          tags$li("Upload multiple SLU student evaluation pdf files for the same course to compare responses
-               from semester to semester"),
-                          tags$li("View the count or percent of students for each possible response,
-                       with the ability to view count or percent of responses by question"),
-                          tags$li("Choose different color sclaes"),
-                          tags$li("Download Plot button saves visualizations as .png files"),
-                          tags$li("This tab is meant for multiple pdf files but also works to visualize
-                       data from a single pdf as well"),
-                        )),
+               score of responses. Two sample pdfs that contain fake evaluation data that can be uploaded to the app are at", tags$a(href="https://github.com/lilykasperek/Fellowship2023/blob/main/eval_sample_fake.pdf", 
+                                                                                                        "https://github.com/lilykasperek/Fellowship2023/blob/main/eval_sample_fake.pdf"), "and", 
+                        tags$a(href="https://github.com/lilykasperek/Fellowship2023/blob/main/eval_sample_fake2.pdf", 
+                               "https://github.com/lilykasperek/Fellowship2023/blob/main/eval_sample_fake2.pdf"),
+                        
                       h5(strong("Upload and View Visualizations (single pdf) Tab"),
                          style = "text-align: left;"),
                       p(style = "text-align: justify; font-size = 15px",
@@ -64,6 +55,19 @@ ui <- fluidPage(
                           tags$li("This tab has the same features, however visualizes questions
                               4a, 4b, and 4c, as they use a different set of possible responses for
                               each question")
+                        )),
+                      h5(strong("Compare Student Evaluation Data Tab"),
+                         style = "text-align: left;"),
+                      p(style = "text-align: justify; font-size = 15px",
+                        tags$ul(
+                          tags$li("Upload multiple SLU student evaluation pdf files for the same course to compare responses
+               from semester to semester"),
+                          tags$li("View the count or percent of students for each possible response,
+                       with the ability to view count or percent of responses by question"),
+                          tags$li("Choose different color sclaes"),
+                          tags$li("Download Plot button saves visualizations as .png files"),
+                          tags$li("This tab is meant for multiple pdf files but also works to visualize
+                       data from a single pdf as well"),
                         )),
                       h5(strong("Summary Output Tables Tab"),
                          style = "text-align: left;"),
@@ -87,34 +91,7 @@ ui <- fluidPage(
                         )),
                       tags$blockquote(a(href = "https://github.com/lilykasperek/Fellowship2023",
                                         "Visualizing SLU Student Evaluation Data GitHub Page")),
-             ),
-             tabPanel(title = "Compare Student Evaluation Data",
-                      fluidPage(
-                        sidebarLayout(
-                          sidebarPanel(
-                            fileInput("file_input2", 'Upload Multiple Student Evaluation
-                              Files (.pdf format only)',
-                                      accept = c('pdf'),
-                                      multiple = TRUE),
-                            radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
-                                         choices = c("Count", "Percent")),
-                            selectInput(inputId = "select_facet", label = "Choose Question",
-                                        choices = questions),
-                            selectInput(inputId = "color_choose", label = "Choose Color Scale",
-                                        choices = c("viridis",
-                                                    "plasma",
-                                                    "mako",
-                                                    "turbo",
-                                                    "rocket",
-                                                    "cividis",
-                                                    "magma")),
-                            downloadButton(outputId = "downloadPlot", label = "Download Plot",
-                            ),
-                          ),
-                          mainPanel(
-                            tableOutput("pdfview"),
-                            plotOutput("faceted_barplot", width = "100%")
-                          )))),
+             )),
              tabPanel(title = "Upload and View Visualizations (single pdf)",
                       fluidPage(
                         sidebarLayout(
@@ -173,6 +150,33 @@ ui <- fluidPage(
                           )
                         )
                       ))),
+             tabPanel(title = "Compare Student Evaluation Data",
+                      fluidPage(
+                        sidebarLayout(
+                          sidebarPanel(
+                            fileInput("file_input2", 'Upload Multiple Student Evaluation
+                              Files (.pdf format only)',
+                                      accept = c('pdf'),
+                                      multiple = TRUE),
+                            radioButtons(inputId = "choose_facet", label = "Count or Percent of Students",
+                                         choices = c("Count", "Percent")),
+                            selectInput(inputId = "select_facet", label = "Choose Question",
+                                        choices = questions),
+                            selectInput(inputId = "color_choose", label = "Choose Color Scale",
+                                        choices = c("viridis",
+                                                    "plasma",
+                                                    "mako",
+                                                    "turbo",
+                                                    "rocket",
+                                                    "cividis",
+                                                    "magma")),
+                            downloadButton(outputId = "downloadPlot", label = "Download Plot",
+                            ),
+                          ),
+                          mainPanel(
+                            tableOutput("pdfview"),
+                            plotOutput("faceted_barplot", width = "100%")
+                          )))),
              tabPanel(title = "Summary Output Tables",
                       fluidPage(fluidRow(
                         sidebarLayout(
@@ -190,6 +194,8 @@ ui <- fluidPage(
                       ))
   )
 )
+
+
 server <- function(input, output) {
   # testing if this will work for download button 
   plotInput <- reactive({
